@@ -9,7 +9,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import ja from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faUpload, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faUpload, faSearch, faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as publicUtils from './utils/publicUtils.js';
 import MyToast from './myToast';
 import store from './redux/store';
@@ -60,6 +60,7 @@ class dutyManagement extends React.Component {
 		authorityCode: "",
 		rowWorkTime: '',
 		rowApprovalStatus: '',
+		rowSelectWorkingTimeReport: '',
 		approvalStatuslist: store.getState().dropDown[27],
 		checkSectionlist: store.getState().dropDown[28],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
@@ -103,9 +104,12 @@ class dutyManagement extends React.Component {
 				var totalWorkingTime=0;
 				var minWorkingTime=999;
 				if (response.data.length>0) {
-					totalPersons=response.data.length;
-					for(var i=0;i<totalPersons;i++){
-						averageWorkingTime = averageWorkingTime+response.data[i].workTime;
+					//totalPersons=response.data.length;
+					for(var i=0;i<response.data.length;i++){
+						if(response.data[i].workTime !== null){
+							averageWorkingTime = averageWorkingTime+response.data[i].workTime;
+							totalPersons = totalPersons + 1;
+						}
 						if(Number(totalWorkingTime) < Number(response.data[i].workTime)){
 							totalWorkingTime = response.data[i].workTime;
 						}
@@ -115,7 +119,7 @@ class dutyManagement extends React.Component {
 							}
 						}
 					}
-					averageWorkingTime=Math.round(averageWorkingTime/totalPersons);
+					averageWorkingTime=Math.round(averageWorkingTime/totalPersons*100)/100;
 					if(isNaN(averageWorkingTime)){
 						averageWorkingTime=0
 					}
@@ -174,12 +178,6 @@ class dutyManagement extends React.Component {
 	state = {
 		yearAndMonth: new Date()
 	};
-  /**
-     * 作業報告書ボタン
-     */
-    workRepot=()=>{
- 
-    }
     
     overtimePayFormat = (cell,row) => {
     	if(row.workTime === "" || row.workTime === null)
@@ -202,7 +200,6 @@ class dutyManagement extends React.Component {
 	};
 	//行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
-		$("#workRepot").attr("disabled",true);
 		if (isSelected) {
 			this.setState(
 				{
@@ -213,10 +210,12 @@ class dutyManagement extends React.Component {
 					rowSelectDeductionsAndOvertimePayOfUnitPrice: row.deductionsAndOvertimePayOfUnitPrice,
 					rowWorkTime: row.workTime,
 					rowApprovalStatus: row.approvalStatus,
+					rowSelectWorkingTimeReport: row.workingTimeReport,
 				}
 			);
 			if(!(row.workTime === "" || row.workTime === null)){
 				$("#syounin").attr("disabled",false);
+				$("#workRepot").attr("disabled",false);
 				if(row.approvalStatus !== "1")
 					$("#update").attr("disabled",false);
 				else
@@ -224,6 +223,7 @@ class dutyManagement extends React.Component {
 			}else{
 				$("#syounin").attr("disabled",true);
 				$("#update").attr("disabled",true);
+				$("#workRepot").attr("disabled",true);
 			}
 
 			if(row.checkSection==0){
@@ -237,11 +237,12 @@ class dutyManagement extends React.Component {
 					rowSelectCheckSection: '',
 					rowSelectDeductionsAndOvertimePay: '',
 					rowSelectDdeductionsAndOvertimePayOfUnitPrice: '',
-					rowApprovalStatus: '',
+					rowSelectWorkingTimeReport: '',
 				}
 			);
 			$("#syounin").attr("disabled",true);
 			$("#update").attr("disabled",true);
+			$("#workRepot").attr("disabled",true);
 		}
 	}
 	
@@ -417,14 +418,14 @@ class dutyManagement extends React.Component {
 
                         <Col sm={3}>
                             <div style={{ "float": "right" }}>
-		                        <Button variant="info" size="sm" onClick={this.workRepot} id="workRepot">
-		                     		 <FontAwesomeIcon icon={faUpload} />報告書
+		                        <Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowSelectWorkingTimeReport, this.state.serverIP)} id="workRepot">
+		                     		 <FontAwesomeIcon icon={faDownload} />報告書
 		                       </Button>{' '}
 	                            <Button variant="info" size="sm" id="update" onClick={this.listApproval.bind(this,2)}>
 									<FontAwesomeIcon icon={faEdit} />残業控除更新
 								</Button>{' '}
                                <Button variant="info" size="sm" id="syounin" onClick={this.state.rowApprovalStatus !== "1" ? this.listApproval.bind(this,1) : this.listApproval.bind(this,0)}>
-									<FontAwesomeIcon icon={faEdit} />{this.state.rowApprovalStatus !== "1" ? "承認" : "取り消し" }
+									<FontAwesomeIcon icon={faEdit} />{this.state.rowApprovalStatus !== "1" ? "承認" : "取消" }
 								</Button>{' '}
                
 	 						</div>
@@ -439,8 +440,8 @@ class dutyManagement extends React.Component {
 							<TableHeaderColumn width='90' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='stationName' editable={false}>場所</TableHeaderColumn>
 							<TableHeaderColumn width='95' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='payOffRange' editable={false}>精算範囲</TableHeaderColumn>
 							<TableHeaderColumn width='90' tdStyle={ { padding: '.45em' } }  dataField='workTime' editable={false}>稼働時間</TableHeaderColumn>
-							<TableHeaderColumn width='125' tdStyle={{ padding: '.45em' }} hidden={this.state.authorityCode==="4" ? false : true} dataField='deductionsAndOvertimePay' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null)} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除</TableHeaderColumn>
-							<TableHeaderColumn width='125' tdStyle={{ padding: '.45em' }} dataField='deductionsAndOvertimePayOfUnitPrice' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null)} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除(客)</TableHeaderColumn>
+							<TableHeaderColumn width='125' tdStyle={{ padding: '.45em' }} hidden={this.state.authorityCode==="4" ? false : true} dataField='deductionsAndOvertimePay' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null) && this.state.rowApprovalStatus !== "1"} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除</TableHeaderColumn>
+							<TableHeaderColumn width='125' tdStyle={{ padding: '.45em' }} dataField='deductionsAndOvertimePayOfUnitPrice' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null) && this.state.rowApprovalStatus !== "1"} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除(客)</TableHeaderColumn>
 							<TableHeaderColumn width='120' tdStyle={ { padding: '.45em' } }  dataFormat={this.checkSection.bind(this)} hidden dataField='checkSection' editable={false}>確認区分</TableHeaderColumn>
 							<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }  dataField='updateTime' editable={false}>更新日付</TableHeaderColumn>
 							<TableHeaderColumn width='110' tdStyle={ { padding: '.45em' } }  dataFormat={this.approvalStatus.bind(this)} dataField='approvalStatus' editable={false}>ステータス</TableHeaderColumn>
