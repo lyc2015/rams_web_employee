@@ -247,7 +247,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 	                <br/>
                     <Row>
 						<Col sm={2}>
-							<font style={{ whiteSpace: 'nowrap' }}>作業報告書</font>
+							<font style={{ whiteSpace: 'nowrap' }}></font>
 						</Col>
   						<Col sm={6}></Col>
                         <Col sm={4}>
@@ -260,7 +260,8 @@ if($("#getFile").get(0).files[0].size>1048576){
 		                        </Button>
 	 						</div>
 						</Col>
-                    </Row>	
+                    </Row>
+					<Col >
 					<BootstrapTable data={employeeList} cellEdit={cellEdit} pagination={true}  options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
 						<TableHeaderColumn width='0'　hidden={true} tdStyle={ { padding: '.0em' } }  dataField='approvalStatus' ></TableHeaderColumn>
 						<TableHeaderColumn width='0'hidden={true}  tdStyle={ { padding: '.0em' } }   dataField='workingTimeReport'></TableHeaderColumn>
@@ -271,6 +272,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false}>更新日</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus' editable={false} dataFormat={this.approvalStatus.bind(this)}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
+					</Col>
 				</div>
 			</div >
 		);
