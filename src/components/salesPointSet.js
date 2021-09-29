@@ -205,7 +205,7 @@ class salesPointSet extends React.Component {
 		salesPointSetModel["point"] = "";
 		salesPointSetModel["remark"] = "";
 		salesPointData.push(salesPointSetModel);
-		var currentPage = Math.ceil(salesPointData.length / 5);
+		var currentPage = Math.ceil(salesPointData.length / 10);
 		this.setState({
 			no: salesPointSetModel["no"],
 			salesPointData: salesPointData,

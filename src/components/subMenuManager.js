@@ -12,6 +12,7 @@ import EmployeeSearch from './employeeSearch';
 import CustomerInfo from './customerInfo';
 import masterInsert from './masterInsert';
 import masterUpdate from './masterUpdate';
+import dataShare from './dataShare';
 import systemSet from './systemSet';
 import CustomerInfoSearch from './customerInfoSearch';
 import siteInfo from './siteInfo';
@@ -50,7 +51,7 @@ import ReactTooltip from 'react-tooltip';
 
 import {
 	faAddressBook, faHome, faUser, faUsers, faYenSign, faPaperPlane, faBuilding, faCalendar,
-	faCalendarAlt, faThList, faCogs, faCloudUploadAlt, faSearch, faSave,
+	faCalendarAlt, faThList, faCogs, faCloudUploadAlt, faSearch, faSave,faFileExcel,
 	faCommentDollar, faList, faSearchMinus, faNewspaper,faDownload,
 	faFilePowerpoint, faChartPie, faTable, faCog, faUpload, faCheckSquare, faBars, faCaretSquareLeft
 } from '@fortawesome/free-solid-svg-icons';
@@ -318,28 +319,28 @@ class SubMenu extends Component {
 										</ListGroup.Item>
 										{
 											authorityCode !== "2" ? authorityCode !== "3" ?
-												<ListGroup.Item style={this.state.hover.search("給料と売上") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="給料と売上" data-class="my-tabcolor"  data-effect="solid"
-													 onMouseEnter={this.toggleHover.bind(this,"給料と売上")} onMouseLeave={this.toggleHover.bind(this,"")}>
+												<ListGroup.Item style={this.state.hover.search("給料・売上") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="給料・売上" data-class="my-tabcolor"  data-effect="solid"
+													 onMouseEnter={this.toggleHover.bind(this,"給料・売上")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="3"><font
 													
-													className={this.state.hover.search("給料と売上") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('給料と売上')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faYenSign} /> 給料と売上</font></Accordion.Toggle>
-													<ReactTooltip id="給料と売上"  delayUpdate={1000} getContent={() => {
+													className={this.state.hover.search("給料・売上") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('給料・売上')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faYenSign} /> 給料・売上</font></Accordion.Toggle>
+													<ReactTooltip id="給料・売上"  delayUpdate={1000} getContent={() => {
 														return <div>
 														<ListGroup>
 															<Accordion className="menuCol">
-																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料と売上-1")} onMouseLeave={this.toggleHover.bind(this,"給料と売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/wagesInfo'})} block>
+																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-1")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/wagesInfo'})} block>
 																	<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/wagesInfo"><FontAwesomeIcon className="fa-fw" size="lg" icon={faCommentDollar} /> 給料情報</Link></div>
 																</ListGroup.Item>
-																<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料と売上-2")} onMouseLeave={this.toggleHover.bind(this,"給料と売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/individualSales'})} block>
+																<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-2")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/individualSales'})} block>
 																	<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/individualSales"><FontAwesomeIcon className="fa-fw" size="lg" icon={faList} /> 個人売上一覧</Link></div>
 																</ListGroup.Item>
-																<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料と売上-3")} onMouseLeave={this.toggleHover.bind(this,"給料と売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/monthlySalesSearch'})} block>
+																<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-3")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/monthlySalesSearch'})} block>
 																	<div><Link className={this.state.hover.search("3") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/monthlySalesSearch"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> 全員売上一覧</Link></div>
 																</ListGroup.Item>
-																<ListGroup.Item style={this.state.hover.search("4") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料と売上-4")} onMouseLeave={this.toggleHover.bind(this,"給料と売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/individualCustomerSales'})} block>
+																<ListGroup.Item style={this.state.hover.search("4") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-4")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/individualCustomerSales'})} block>
 																	<div><Link className={this.state.hover.search("4") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/individualCustomerSales"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearch} /> お客様個別売上</Link></div>
 																</ListGroup.Item>
-																<ListGroup.Item style={this.state.hover.search("5") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料と売上-5")} onMouseLeave={this.toggleHover.bind(this,"給料と売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/customerSalesList'})} block>
+																<ListGroup.Item style={this.state.hover.search("5") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-5")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/customerSalesList'})} block>
 																	<div><Link className={this.state.hover.search("5") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/customerSalesList"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> お客様売上一覧</Link></div>
 																</ListGroup.Item>
 															</Accordion>
@@ -544,16 +545,19 @@ class SubMenu extends Component {
 										}
 										{
 											authorityCode !== "2" ?
-												<ListGroup.Item style={this.state.hover.search("他の設定") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="他の設定" data-class="my-tabcolor"  data-effect="solid"
-													 onMouseEnter={this.toggleHover.bind(this,"他の設定")} onMouseLeave={this.toggleHover.bind(this,"")}>
+												<ListGroup.Item style={this.state.hover.search("設定・共有") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="設定・共有" data-class="my-tabcolor"  data-effect="solid"
+													 onMouseEnter={this.toggleHover.bind(this,"設定・共有")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="9"><font
-													className={this.state.hover.search("他の設定") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('他の設定')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> 他の設定</font></Accordion.Toggle>
-													<ReactTooltip id="他の設定"  delayUpdate={1000} getContent={() => {
+													className={this.state.hover.search("設定・共有") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('設定・共有')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> 設定・共有</font></Accordion.Toggle>
+													<ReactTooltip id="設定・共有"  delayUpdate={1000} getContent={() => {
 														return <div>
 														<ListGroup>
 															<Accordion className="menuCol">
-																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"他の設定-1")} onMouseLeave={this.toggleHover.bind(this,"他の設定")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/systemSet'})} block>
-																	<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/systemSet"><FontAwesomeIcon className="fa-fw" size="lg" icon={faCog} /> システム設定</Link></div>
+																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"設定・共有-1")} onMouseLeave={this.toggleHover.bind(this,"設定・共有")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/dataShare'})} block>
+																	<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/dataShare"><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileExcel} /> 資料共有</Link></div>
+																</ListGroup.Item>
+																<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"設定・共有-2")} onMouseLeave={this.toggleHover.bind(this,"設定・共有")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/systemSet'})} block>
+																	<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/systemSet"><FontAwesomeIcon className="fa-fw" size="lg" icon={faCog} /> システム設定</Link></div>
 																</ListGroup.Item>
 															</Accordion>
 														</ListGroup>
@@ -616,6 +620,7 @@ class SubMenu extends Component {
 								<Route exact path={`${this.props.match.url}/projectInfoSearch`} component={ProjectInfoSearch} />
 								<Route exact path={`${this.props.match.url}/individualCustomerSales`} component={IndividualCustomerSales} />
 								<Route exact path={`${this.props.match.url}/customerSalesList`} component={customerSalesList} />
+								<Route exact path={`${this.props.match.url}/dataShare`} component={dataShare} />
 								<Route exact path={`${this.props.match.url}/systemSet`} component={systemSet} />
 								<div className="container col-8">
 									<div className="container col-10">
