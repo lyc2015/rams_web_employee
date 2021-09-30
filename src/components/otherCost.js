@@ -466,7 +466,7 @@ class otherCost extends React.Component {
 							<Col sm={2}>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">出発</InputGroup.Text>
+										<InputGroup.Text id="threeKanji">出発</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode3)) || {}}
@@ -478,8 +478,7 @@ class otherCost extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  出発" type="text" {...params.inputProps} className="auto" id="stationCode3"
-													style={{ width: 172, height: 31,borderColor: "#ced4da", borderWidth: 1, borderStyle: "solid", fontSize: ".875rem", color: "#495057" }} />
+												<input placeholder="  出発" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode3" />
 											</div>
 										)}
 									/>
@@ -488,7 +487,7 @@ class otherCost extends React.Component {
 							<Col sm={2}>
 								<InputGroup size="sm" className="mb-3" >
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">到着</InputGroup.Text>
+										<InputGroup.Text id="threeKanji">到着</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode4)) || {}}
@@ -500,8 +499,7 @@ class otherCost extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  到着" type="text" {...params.inputProps} className="auto" id="stationCode4"
-													style={{ width: 172, height: 31, borderColor: "#ced4da", borderWidth: 1, borderStyle: "solid", fontSize: ".875rem", color: "#495057" }} />
+												<input placeholder="  到着" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode4" />
 											</div>
 										)}
 									/>
@@ -583,7 +581,7 @@ class otherCost extends React.Component {
 							<Col sm={2}>
 								<InputGroup size="sm" className="mb-3" >
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">場所</InputGroup.Text>
+										<InputGroup.Text id="threeKanji">場所</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode5)) || {}}
@@ -594,8 +592,7 @@ class otherCost extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  場所" type="text" {...params.inputProps} className="auto" id="stationCode5"
-													style={{ width: 172, height: 31,borderColor: "#ced4da", borderWidth: 1, borderStyle: "solid", fontSize: ".875rem", color: "#495057" }} />
+												<input placeholder="  場所" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode5" />
 											</div>
 										)}
 									/>

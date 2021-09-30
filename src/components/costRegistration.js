@@ -676,8 +676,7 @@ class costRegistration extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  出発" type="text" {...params.inputProps} className="auto" id="stationCode1"
-													style={{ width: 172, height: 31, borderColor: "#ced4da", borderWidth: 1, borderStyle: "solid", fontSize: ".875rem", color: "#495057" }} />
+												<input placeholder="  出発" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode1" />
 											</div>
 										)}
 									/>
@@ -696,8 +695,7 @@ class costRegistration extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  到着" type="text" {...params.inputProps} className="auto" id="stationCode2"
-													style={{ width: 172, height: 31, borderColor: "#ced4da", borderWidth: 1, borderStyle: "solid", fontSize: ".875rem", color: "#495057" }} />
+												<input placeholder="  到着" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode2" />
 											</div>
 										)}
 									/>

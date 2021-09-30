@@ -19,32 +19,33 @@ axios.defaults.withCredentials = true;
 class dataShare extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = this.initialState;//初期化
+		this.state = this.initialState;// 初期化
 		this.valueChange = this.valueChange.bind(this);
 	};
 	componentDidMount(){
 		this.searchData();
 	}
-	//onchange
+	// onchange
 	valueChange = event => {
 		this.setState({
 			[event.target.name]: event.target.value
 		})
 	}
-	//　初期化データ
+	// 初期化データ
 	initialState = {
 		dataShareList: [],
 		currentPage: 1,
 		rowClickFlag: true,
 		rowNo: '',
 		rowFilePath : '',
+		rowShareStatus: '',
 		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"}],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
 
   /**
-     * 作業報告書ボタン
-     */
+	 * uploadボタン
+	 */
     workRepotUpload=()=>{
 	let getfile=$("#getFile").val();
 	let fileName = getfile.split('.');
@@ -74,7 +75,7 @@ class dataShare extends React.Component {
 			.then(response => {
 				if (response.data != null) {
 					this.searchData();
-					this.setState({ "myToastShow": true });
+					this.setState({ "myToastShow": true, message: "アップロード成功！"  });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
 					alert("err")
@@ -95,8 +96,25 @@ class dataShare extends React.Component {
 				}
 			}
 			this.setState({ 
-				dataShareList: data
+				dataShareList: data,
 			})
+			this.refs.table.setState({
+				selectedRowKeys: [String(this.state.rowNo)]
+			});
+			if(this.state.rowNo !== ''){
+				if(this.state.rowNo > data.length){
+					this.setState({ 
+						rowShareStatus: data[data.length - 1].shareStatus,
+						rowFilePath: data[data.length - 1].filePath,
+					})
+				}
+				else{
+					this.setState({ 
+						rowShareStatus: data[this.state.rowNo - 1].shareStatus,
+						rowFilePath: data[this.state.rowNo - 1].filePath,
+					})
+				}
+			}
 		});
     }
     
@@ -104,18 +122,20 @@ class dataShare extends React.Component {
 		$("#getFile").click();
 	}
 	
-	//行Selectファンクション
+	// 行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
 		if (isSelected) {
 			this.setState({
 				rowNo: row.fileNo,
-				rowFilePath : row.filePath,
+				rowFilePath: row.filePath,
+				rowShareStatus: row.shareStatus,
 				rowClickFlag: false,
 			})
 		} else {
 			this.setState({
 				rowNo: '',
-				rowFilePath : '',
+				rowFilePath: '',
+				rowShareStatus: '',
 				rowClickFlag: true,
 			})
 		}
@@ -151,6 +171,7 @@ class dataShare extends React.Component {
 			currentPage: currentPage,
 			rowClickFlag: false,
 			rowNo: dataShareList.length,
+			rowShareStatus: '',
 		})
 		this.refs.table.setState({
 			selectedRowKeys: [dataShareList.length]
@@ -160,16 +181,40 @@ class dataShare extends React.Component {
 	dataShare = () => {
 		var model = {};
 		model["fileNo"] = this.state.rowNo;
+		model["shareStatus"] = this.state.rowShareStatus === "0" ? "1" : "0";
 		axios.post(this.state.serverIP + "dataShare/updateDataShare",model)
 		.then(response => {
 			if (response.data != null) {
 				this.searchData();
-				this.setState({ "myToastShow": true });
+				this.setState({ "myToastShow": true, message: "共有成功！"  });
 				setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 			} else {
 				alert("err")
 			}
 		});
+	}
+	
+	dataDelete = () => {
+        var a = window.confirm("削除していただきますか？");
+        if(a){
+			var model = {};
+			model["fileNo"] = this.state.rowNo;
+			axios.post(this.state.serverIP + "dataShare/deleteDataShare",model)
+			.then(response => {
+				if (response.data != null) {
+					this.setState({ 
+						rowNo: '',
+						rowShareStatus: '',
+					}, () => {
+						this.searchData();
+					})
+					this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
+					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+				} else {
+					alert("err")
+				}
+			});
+        }
 	}
 	
 	shareStatus(code) {
@@ -185,7 +230,7 @@ class dataShare extends React.Component {
 	
 	render() {
 		const {dataShareList} = this.state;
-		//　テーブルの行の選択
+		// テーブルの行の選択
 		const selectRow = {
 			mode: 'radio',
 			bgColor: 'pink',
@@ -194,18 +239,21 @@ class dataShare extends React.Component {
 			clickToExpand: true,// click to expand row, default is false
 			onSelect: this.handleRowSelect,
 		};
-		//　 テーブルの定義
+		// テーブルの定義
 		const options = {
 			page: this.state.currentPage, 
-			sizePerPage: 10,  // which size per page you want to locate as default
+			sizePerPage: 10,  // which size per page you want to locate as
+								// default
 			pageStartIndex: 1, // where to start counting the pages
 			paginationSize: 3,  // the pagination bar size.
 			prePage: '<', // Previous page button text
             nextPage: '>', // Next page button text
             firstPage: '<<', // First page button text
             lastPage: '>>', // Last page button text
-			paginationShowsTotal: this.renderShowsTotal,  // Accept bool or function
-			hideSizePerPage: true, //> You can hide the dropdown for sizePerPage
+			paginationShowsTotal: this.renderShowsTotal,  // Accept bool or
+															// function
+			hideSizePerPage: true, // > You can hide the dropdown for
+									// sizePerPage
 			expandRowBgColor: 'rgb(165, 165, 165)',
 			approvalBtn: this.createCustomApprovalButton,
 			onApprovalRow: this.onApprovalRow,
@@ -219,7 +267,7 @@ class dataShare extends React.Component {
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
-					<MyToast myToastShow={this.state.myToastShow} message={"アップロード成功！"} type={"success"} />
+					<MyToast myToastShow={this.state.myToastShow} message={this.state.message} type={"success"} />
 				</div>
 				<FormControl id="rowSelectCheckSection" name="rowSelectCheckSection" hidden />
 				<Form >
@@ -235,23 +283,21 @@ class dataShare extends React.Component {
 				</Form>
 				<div >
 				<Form.File id="getFile" accept="application/pdf,application/vnd.ms-excel" custom hidden="hidden" onChange={this.workRepotUpload}/>
-	                <br/>
                     <Row>
                         <Col sm={4}>
                             <div>
                                <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
 									<FontAwesomeIcon icon={faUpload} />Upload
 								</Button>{' '}
-								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP)} id="workRepotDownload" disabled={this.state.rowClickFlag}>
+								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP)} id="workRepotDownload" disabled={this.state.rowShareStatus === ""}>
 	                          		 <FontAwesomeIcon icon={faDownload} />Download
 		                        </Button>
 	 						</div>
 						</Col>
                         <Col sm={8}>
                         <div style={{ "float": "right" }}>
-							<Button variant="info" size="sm" id="revise" onClick={this.state.rowClickFlag ? this.insertRow : this.dataShare} ><FontAwesomeIcon icon={faSave}/> {this.state.rowClickFlag ? "追加" : "共有"}</Button>{' '}
-							<Button variant="info" size="sm" id="revise" disabled={this.state.rowClickFlag}><FontAwesomeIcon icon={faEdit} /> 更新</Button>{' '}
-							<Button variant="info" size="sm" id="revise" disabled={this.state.rowClickFlag}><FontAwesomeIcon icon={faTrash} /> 削除</Button>{' '}
+							<Button variant="info" size="sm" id="revise" onClick={this.state.rowClickFlag ? this.insertRow : this.dataShare} disabled={this.state.rowClickFlag ? false : this.state.rowShareStatus === ""}><FontAwesomeIcon icon={faSave}/> {this.state.rowClickFlag ? "追加" : this.state.rowShareStatus === "1" ? "解除" : "共有"}</Button>{' '}
+							<Button variant="info" size="sm" id="revise" onClick={this.dataDelete} disabled={this.state.rowClickFlag || this.state.rowShareStatus === "1"}><FontAwesomeIcon icon={faTrash} /> 削除</Button>{' '}
  						</div>
 					</Col>
                     </Row>

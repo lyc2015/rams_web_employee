@@ -53,7 +53,8 @@ import {
 	faAddressBook, faHome, faUser, faUsers, faYenSign, faPaperPlane, faBuilding, faCalendar,
 	faCalendarAlt, faThList, faCogs, faCloudUploadAlt, faSearch, faSave,faFileExcel,
 	faCommentDollar, faList, faSearchMinus, faNewspaper,faDownload,
-	faFilePowerpoint, faChartPie, faTable, faCog, faUpload, faCheckSquare, faBars, faCaretSquareLeft
+	faFilePowerpoint, faChartPie, faTable, faCog, faUpload, faCheckSquare, faBars, faCaretSquareLeft,
+	faFileContract
 } from '@fortawesome/free-solid-svg-icons';
 import '../asserts/css/subMenu.css';
 import store from './redux/store';
@@ -554,7 +555,7 @@ class SubMenu extends Component {
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"設定・共有-1")} onMouseLeave={this.toggleHover.bind(this,"設定・共有")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/dataShare'})} block>
-																	<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/dataShare"><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileExcel} /> 資料共有</Link></div>
+																	<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/dataShare"><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileContract} /> 資料共有</Link></div>
 																</ListGroup.Item>
 																<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"設定・共有-2")} onMouseLeave={this.toggleHover.bind(this,"設定・共有")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/systemSet'})} block>
 																	<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/systemSet"><FontAwesomeIcon className="fa-fw" size="lg" icon={faCog} /> システム設定</Link></div>

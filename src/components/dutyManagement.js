@@ -23,7 +23,7 @@ class dutyManagement extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = this.initialState;//初期化
-		this.valueChange = this.valueChange.bind(this);
+		this.approvalStatusChange = this.approvalStatusChange.bind(this);
 		this.searchEmployee = this.searchDutyManagement.bind(this);
 	};
 	componentDidMount(){
@@ -43,10 +43,19 @@ class dutyManagement extends React.Component {
 		this.searchDutyManagement();
 	}
 	//onchange
-	valueChange = event => {
+	approvalStatusChange = event => {
 		this.setState({
 			[event.target.name]: event.target.value
 		})
+		this.setState({
+			rowSelectEmployeeNo: "",
+		})
+		this.refs.table.setState({
+			selectedRowKeys: []
+		});
+		$("#update").attr("disabled",true);
+		$("#workRepot").attr("disabled",true);
+		$("#syounin").attr("disabled",true);
 		this.searchDutyManagement();
 	}
 	//　初期化データ
@@ -91,6 +100,7 @@ class dutyManagement extends React.Component {
 	            }
 	        }
     };
+
 	//　検索
 	searchDutyManagement = (rowNo) => {
 		const emp = {
@@ -129,6 +139,12 @@ class dutyManagement extends React.Component {
 					totalWorkingTime="";
 					minWorkingTime="";
 				}
+				if(minWorkingTime === 999)
+					minWorkingTime = "";
+				if(totalWorkingTime === 0)
+					totalWorkingTime = "";
+				if(averageWorkingTime === 0)
+					averageWorkingTime = "";
 				this.setState({
 					employeeList: response.data,
 					totalPersons: totalPersons,
@@ -137,14 +153,44 @@ class dutyManagement extends React.Component {
 					averageWorkingTime: averageWorkingTime
 				})
 				if(rowNo !== undefined){
-					this.setState({
-						rowApprovalStatus: response.data[rowNo - 1].approvalStatus,
-					})
-					if(response.data[rowNo - 1].approvalStatus === "1"){
+					if(rowNo > response.data.length){
+						this.setState({
+							rowSelectEmployeeNo: "",
+						})
+						this.refs.table.setState({
+							selectedRowKeys: []
+						});
 						$("#update").attr("disabled",true);
+						$("#workRepot").attr("disabled",true);
+						$("#syounin").attr("disabled",true);
 					}else{
-						$("#update").attr("disabled",false);
+						this.setState({
+							rowApprovalStatus: response.data[rowNo - 1].approvalStatus,
+						})
+						if(response.data[rowNo - 1].approvalStatus === "1"){
+							$("#update").attr("disabled",true);
+						}else{
+							$("#update").attr("disabled",false);
+						}
 					}
+				}
+				let flag = false;
+				for(let i in response.data){
+					if(String(response.data[i].employeeNo) === String(this.refs.table.state.selectedRowKeys)){
+						flag = true;
+						break;
+					}
+				}
+				if(!flag){
+					this.setState({
+						rowSelectEmployeeNo: "",
+					})
+					this.refs.table.setState({
+						selectedRowKeys: []
+					});
+					$("#update").attr("disabled",true);
+					$("#workRepot").attr("disabled",true);
+					$("#syounin").attr("disabled",true);
 				}
 			}
 			);
@@ -157,15 +203,15 @@ class dutyManagement extends React.Component {
 			yearAndMonth: publicUtils.formateDate(this.state.yearAndMonth, false),
 			employeeNo: this.state.rowSelectEmployeeNo,
 			checkSection: this.state.rowSelectCheckSection,
-			deductionsAndOvertimePay: publicUtils.deleteComma((this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePay).replace(/￥/, "")),
-			deductionsAndOvertimePayOfUnitPrice: publicUtils.deleteComma(this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePayOfUnitPrice.replace(/￥/, "")),
+			deductionsAndOvertimePay: publicUtils.deleteComma((this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePay)),
+			deductionsAndOvertimePayOfUnitPrice: publicUtils.deleteComma(this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePayOfUnitPrice),
 			approvalStatus: approvalStatus,
 		}
 		axios.post(this.state.serverIP + "dutyManagement/updateDutyManagement", emp)
 			.then(result => {
 				if (result.data == true) {
 					this.searchDutyManagement(this.state.rowNo);
-					this.setState({ "myToastShow": true });
+					this.setState({ "myToastShow": true, message:(approvalStatus === 2 ? "更新成功!":"承認成功!") });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else if (result.data == false) {
 					this.setState({ "myToastShow": false });
@@ -327,7 +373,7 @@ class dutyManagement extends React.Component {
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
-					<MyToast myToastShow={this.state.myToastShow} message={"承認成功！"} type={"success"} />
+					<MyToast myToastShow={this.state.myToastShow} message={this.state.message} type={"success"} />
 				</div>
 				<FormControl id="rowSelectEmployeeNo" name="rowSelectEmployeeNo" hidden />
 				<FormControl id="rowSelectCheckSection" name="rowSelectCheckSection" hidden />
@@ -363,12 +409,12 @@ class dutyManagement extends React.Component {
 										<InputGroup.Prepend>
 											<InputGroup.Text id="nineKanji">時間登録ステータス</InputGroup.Text>
 										</InputGroup.Prepend>
-										<Form.Control id="approvalStatus" as="select" size="sm" onChange={this.valueChange} style={{width:"30px"}} name="approvalStatus" value={approvalStatus} autoComplete="off" >
+										<Form.Control id="approvalStatus" as="select" size="sm" onChange={this.approvalStatusChange} style={{width:"30px"}} name="approvalStatus" value={approvalStatus} autoComplete="off" >
 											<option value="0">すべて</option>
-											<option value="1">未</option>
-											<option value="2">済み</option>
-											<option value="3">総時間のみ</option>
-											<option value="4">登録のみ</option>
+											<option value="1">未登録</option>
+											<option value="2">登録済</option>
+											<option value="3">未承認</option>
+											<option value="4">承認済</option>
 										</Form.Control>
 										<font style={{ marginLeft: "90px" }}></font>
 									</InputGroup>
@@ -427,14 +473,13 @@ class dutyManagement extends React.Component {
                                <Button variant="info" size="sm" id="syounin" onClick={this.state.rowApprovalStatus !== "1" ? this.listApproval.bind(this,1) : this.listApproval.bind(this,0)}>
 									<FontAwesomeIcon icon={faEdit} />{this.state.rowApprovalStatus !== "1" ? "承認" : "取消" }
 								</Button>{' '}
-               
 	 						</div>
 						</Col>  
                     </Row>
                     <Col>
-						<BootstrapTable data={employeeList} selectRow={selectRow} pagination={true} cellEdit={cellEdit} options={options} approvalRow headerStyle={ { background: '#5599FF'} } striped hover condensed >
-							<TableHeaderColumn width='55'　tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='rowNo' isKey>番号</TableHeaderColumn>
-							<TableHeaderColumn width='90'　tdStyle={ { padding: '.45em' } } 　dataFormat={this.greyShow.bind(this)} dataField='employeeNo' hidden>社員番号</TableHeaderColumn>
+						<BootstrapTable data={employeeList} ref='table' selectRow={selectRow} pagination={true} cellEdit={cellEdit} options={options} approvalRow headerStyle={ { background: '#5599FF'} } striped hover condensed >
+							<TableHeaderColumn width='55'　tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='rowNo'>番号</TableHeaderColumn>
+							<TableHeaderColumn width='90'　tdStyle={ { padding: '.45em' } } 　dataFormat={this.greyShow.bind(this)} dataField='employeeNo' isKey hidden>社員番号</TableHeaderColumn>
 							<TableHeaderColumn width='120' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='employeeName' editable={false}>氏名</TableHeaderColumn>
 							<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='customerName' editable={false}>お客様</TableHeaderColumn>
 							<TableHeaderColumn width='90' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='stationName' editable={false}>場所</TableHeaderColumn>
