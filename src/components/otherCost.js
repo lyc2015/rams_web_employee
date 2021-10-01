@@ -79,6 +79,9 @@ class otherCost extends React.Component {
 		if (this.state.round.length > 3) {
 			this.roundSet();
 		}
+		
+		this.setState({ yearMonth: this.props.yearMonth, });
+
 		if (this.props.changeData1) {
 			if (this.props.costClassification == 1) {
 				this.setState({
@@ -303,6 +306,7 @@ class otherCost extends React.Component {
 				return;
 			}
 			const emp = {
+				yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 				costClassificationName: this.costClassificationCode(this.state.costClassificationCode),
 				costClassificationCode: this.state.costClassificationCode,
 				oldCostClassificationName: this.costClassificationCode(this.state.oldCostClassification),
@@ -335,6 +339,7 @@ class otherCost extends React.Component {
 				return;
 			}
 			const emp = {
+				yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 				costClassificationName: this.costClassificationCode(this.state.costClassificationCode),
 				costClassificationCode: this.state.costClassificationCode,
 				happendDate: publicUtils.formateDate(this.state.yearAndMonth4, true),

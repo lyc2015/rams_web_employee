@@ -69,6 +69,8 @@ class costRegistration extends React.Component {
 		showOtherCostModal: false,//他の費用
 		otherCostModel: null,//他の費用データ
 		changeData: false,//insert:false
+		yearMonth: new Date(),
+		regularStatus: "0",
 		station: store.getState().dropDown[14],
 		costClassification: store.getState().dropDown[30],
 		transportation: store.getState().dropDown[31],
@@ -108,7 +110,7 @@ class costRegistration extends React.Component {
 						if (data[i].costFile != null) {
 							data[i].costFileForShow = (data[i].costFile).split("\\")[(data[i].costFile).split("\\").length - 1];
 						}
-						if (data[i].costClassificationCode == 0) {
+						if (data[i].costClassificationCode == 0 && data[i].regularStatus == 0) {
 							data[i].happendDate = data[i].happendDate + "～" + data[i].dueDate;
 						}
 					}
@@ -155,8 +157,10 @@ class costRegistration extends React.Component {
 		const emp = {
 			costClassificationCode: 0,
 			costClassificationName:this.costClassificationCode(0),
-			happendDate: publicUtils.formateDate(this.state.yearAndMonth1, true),
-			dueDate: publicUtils.formateDate(this.state.yearAndMonth2, true),
+			regularStatus: this.state.regularStatus,
+			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
+			happendDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth1, true) : (publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01"),
+			dueDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth2, true) : null,
 			transportationCode: this.state.stationCode1,
 			destinationCode: this.state.stationCode2,
 			detailedNameOrLine: this.state.detailedNameOrLine,
@@ -258,6 +262,7 @@ class costRegistration extends React.Component {
 			oldCostClassificationCode: this.state.rowSelectCostClassificationCode,
 			oldHappendDate: splDate[0],
 			oldCostFile: this.state.rowSelectCostFile,
+			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 		};
 		axios.post(this.state.serverIP + "costRegistration/deleteCostRegistration", emp)
 			.then(result => {
@@ -292,6 +297,7 @@ class costRegistration extends React.Component {
 	};
 	//リセット　reset
 	resetStates = {
+		yearMonth: new Date(),regularStatus: "0",
 		yearAndMonth1: null, yearAndMonth2: null, stationCode1: null, stationCode2: null, detailedNameOrLine: '',
 		cost: '', costRegistrationFile: null, changeData: false,oldCostClassification1: null,oldHappendDate1: null,
 		changeFile: false, costRegistrationFileFlag: false, costClassification1: null,rowSelectHappendDate: '',
@@ -492,14 +498,28 @@ class costRegistration extends React.Component {
 		}
 	};
 
-	costClassificationCode(code) {
-		let costClassificationCode = this.state.costClassification;
-		for (var i in costClassificationCode) {
-			if (costClassificationCode[i].code != "") {
-				if (code == costClassificationCode[i].code) {
-					return costClassificationCode[i].name;
+	costClassificationCode(code,row) {
+		if(code === "0"){
+			if(row.regularStatus === "0")
+				return "定期";
+			else 
+				return "非定期";
+		}else{
+			let costClassificationCode = this.state.costClassification;
+			for (var i in costClassificationCode) {
+				if (costClassificationCode[i].code != "") {
+					if (code == costClassificationCode[i].code) {
+						return costClassificationCode[i].name;
+					}
 				}
 			}
+		}
+	};
+	detailedNameOrLine(cell,row) {
+		if(row.costClassificationCode === "0" && row.regularStatus === "1"){
+			return "非定期通勤";
+		}else{
+			return cell
 		}
 	};
 	cost(cost) {
@@ -530,6 +550,14 @@ class costRegistration extends React.Component {
 			}
 		}
 	};
+	
+	// 年月変更後、レコ＾ド再取る
+	setEndDate = (date) => {
+		this.setState({
+			yearMonth: date,
+		});
+	}
+	
 	render() {
 		const {employeeList} = this.state;
 		const station = this.state.station;
@@ -575,6 +603,7 @@ class costRegistration extends React.Component {
 					</Modal.Header>
 					<Modal.Body size="sm">
 						<OtherCostModel
+							yearMonth={this.state.yearMonth}
 							yearAndMonth3={this.state.yearAndMonth3}
 							transportationCode={this.state.transportationCode}
 							stationCode3={this.state.stationCode3}
@@ -624,13 +653,44 @@ class costRegistration extends React.Component {
 						</Col>
 						<Col sm={8}></Col>
 					</Row>	
-					<br />
-					<Row>
-						<Col sm={2}>
-							<font style={{ whiteSpace: 'nowrap' }}><b>定期</b></font>
-						</Col>	
+                    <Row>
+						<Col  sm={4}>
+						<InputGroup size="sm" className="mb-3">
+							<InputGroup.Prepend>
+								<InputGroup.Text id="inputGroup-sizing-sm">年月</InputGroup.Text>
+							</InputGroup.Prepend>
+							<InputGroup.Append>
+								<DatePicker
+									selected={this.state.yearMonth}
+									onChange={this.setEndDate}
+									autoComplete="off"
+									locale="ja"
+									showMonthYearPicker
+									showFullMonthYearPicker
+									className="form-control form-control-sm"
+									dateFormat="yyyy/MM"
+									id="datePicker"
+								/>
+							</InputGroup.Append>
+								
+						<font style={{ marginRight: "30px" }}></font>
+						
+							<InputGroup.Prepend>
+								<InputGroup.Text id="inputGroup-sizing-sm">区分</InputGroup.Text>
+							</InputGroup.Prepend>
+							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.valueChange} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
+								<option value="0">定期</option>
+								<option value="1">非定期</option>
+							</Form.Control>
+						</InputGroup>
+						</Col>
 					</Row>	
 					<Row>
+						<Col sm={2}>
+							<font style={{ whiteSpace: 'nowrap' }}><b>{this.state.regularStatus === "0" ? "定期券通勤" : "非定期券通勤"}</b></font>
+						</Col>	
+					</Row>	
+					<Row hidden={!(this.state.regularStatus === "0")}>
 						<Col sm={5}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
@@ -704,9 +764,9 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
-									<InputGroup.Text id="inputGroup-sizing-sm">線路</InputGroup.Text>
+									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} name="detailedNameOrLine" autoComplete="off" size="sm" onChange={this.valueChange} placeholder="線路" />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} name="detailedNameOrLine" autoComplete="off" size="sm" onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>
@@ -769,7 +829,7 @@ class costRegistration extends React.Component {
 							<TableHeaderColumn  row='0' rowSpan='2' width='5%'　tdStyle={ { padding: '.45em' } } dataField='rowNo'  isKey>番号</TableHeaderColumn>
 							<TableHeaderColumn  row='0' rowSpan='2' width='10%'　tdStyle={ {padding: '.45em' } } dataField='happendDate' >日付</TableHeaderColumn>
 							<TableHeaderColumn row='0' rowSpan='2' width='10%' tdStyle={{ padding: '.45em' }} dataField='costClassificationCode' dataFormat={this.costClassificationCode.bind(this)}>区分</TableHeaderColumn>
-							<TableHeaderColumn row='0' rowSpan='2' width='15%' tdStyle={{ padding: '.45em' }} dataField='detailedNameOrLine' >名称（線路）</TableHeaderColumn>
+							<TableHeaderColumn row='0' rowSpan='2' width='15%' tdStyle={{ padding: '.45em' }} dataField='detailedNameOrLine' dataFormat={this.detailedNameOrLine.bind(this)}>名称（線路）</TableHeaderColumn>
 							<TableHeaderColumn row='0' colSpan='1' width='20%' headerAlign='center' dataAlign='center' >場所</TableHeaderColumn>
 							<TableHeaderColumn row='1' width='20%' dataField='stationCode' dataAlign='center' dataFormat={this.testSpan}>
 								<th style={{ textAlign: "center", border: 'none', width: '10%', padding: '0px' }}>出発地</th>
