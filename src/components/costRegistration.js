@@ -71,6 +71,7 @@ class costRegistration extends React.Component {
 		changeData: false,//insert:false
 		yearMonth: new Date(),
 		regularStatus: "0",
+		disabledFlag: false,
 		station: store.getState().dropDown[14],
 		costClassification: store.getState().dropDown[30],
 		transportation: store.getState().dropDown[31],
@@ -100,7 +101,9 @@ class costRegistration extends React.Component {
 			changeFile: '',
 			costRegistrationFileFlag: '',
 		})
-		axios.post(this.state.serverIP + "costRegistration/selectCostRegistration")
+		var model = {};
+		model["yearMonth"] = publicUtils.formateDate(this.state.yearMonth, true).substring(0,6);
+		axios.post(this.state.serverIP + "costRegistration/selectCostRegistration",model)
 			.then(response => response.data)
 			.then((data) => {
 				var sumCost = 0;
@@ -109,9 +112,6 @@ class costRegistration extends React.Component {
 						sumCost = sumCost + (data[i].cost * 1);
 						if (data[i].costFile != null) {
 							data[i].costFileForShow = (data[i].costFile).split("\\")[(data[i].costFile).split("\\").length - 1];
-						}
-						if (data[i].costClassificationCode == 0 && data[i].regularStatus == 0) {
-							data[i].happendDate = data[i].happendDate + "～" + data[i].dueDate;
 						}
 					}
 				} else {
@@ -139,13 +139,10 @@ class costRegistration extends React.Component {
 			return;
         }*/
 		const formData = new FormData()
-		if (this.state.yearAndMonth1 == "" ||
-			this.state.yearAndMonth2 == "" ||
-			isNaN(utils.deleteComma(this.state.cost)) ||
+		if (isNaN(utils.deleteComma(this.state.cost)) ||
 			this.state.stationCode1 == "" ||
 			this.state.stationCode2 == "" ||
-			this.state.detailedNameOrLine == "" ||
-			this.state.yearAndMonth1 > this.state.yearAndMonth2) {
+			this.state.detailedNameOrLine == "") {
 			this.setState({ "errorsMessageShow": true, "method": "put", "message": "全項目入力してください" });
 			return;
 		}
@@ -159,8 +156,10 @@ class costRegistration extends React.Component {
 			costClassificationName:this.costClassificationCode(0),
 			regularStatus: this.state.regularStatus,
 			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
-			happendDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth1, true) : (publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01"),
-			dueDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth2, true) : null,
+			//happendDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth1, true) : (publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01"),
+			//dueDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth2, true) : null,
+			happendDate: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01",
+			dueDate: null,
 			transportationCode: this.state.stationCode1,
 			destinationCode: this.state.stationCode2,
 			detailedNameOrLine: this.state.detailedNameOrLine,
@@ -497,6 +496,10 @@ class costRegistration extends React.Component {
 			}
 		}
 	};
+	
+	happendDate(cell,row) {
+		return row.costClassificationCode === "0" ? (cell.substring(0,4) + "/" + cell.substring(4,6)) : (cell.substring(0,4) + "/" + cell.substring(4,6) + "/" + cell.substring(6,8));
+	};
 
 	costClassificationCode(code,row) {
 		if(code === "0"){
@@ -553,8 +556,20 @@ class costRegistration extends React.Component {
 	
 	// 年月変更後、レコ＾ド再取る
 	setEndDate = (date) => {
+		if(date < new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1)).getTime()){
+			this.setState({
+				disabledFlag: true,
+			});
+		}else{
+			this.setState({
+				disabledFlag: false,
+			});
+		}
+
 		this.setState({
 			yearMonth: date,
+		},()=>{
+			this.searchCostRegistration();
 		});
 	}
 	
@@ -645,13 +660,11 @@ class costRegistration extends React.Component {
 						</Form.Group>
 					</div>
 				</Form>
-				<div >
+				<div disabled={true}>
                     <Row>
 						<Col sm={2}>
 							<font style={{ whiteSpace: 'nowrap' }}>氏名：{this.state.employeeName}</font>
-							{"        "}
 						</Col>
-						<Col sm={8}></Col>
 					</Row>	
                     <Row>
 						<Col  sm={4}>
@@ -678,7 +691,7 @@ class costRegistration extends React.Component {
 							<InputGroup.Prepend>
 								<InputGroup.Text id="inputGroup-sizing-sm">区分</InputGroup.Text>
 							</InputGroup.Prepend>
-							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.valueChange} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
+							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.valueChange} disabled={this.state.disabledFlag} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
 								<option value="0">定期</option>
 								<option value="1">非定期</option>
 							</Form.Control>
@@ -690,7 +703,7 @@ class costRegistration extends React.Component {
 							<font style={{ whiteSpace: 'nowrap' }}><b>{this.state.regularStatus === "0" ? "定期券通勤" : "非定期券通勤"}</b></font>
 						</Col>	
 					</Row>	
-					<Row hidden={!(this.state.regularStatus === "0")}>
+					<Row hidden>
 						<Col sm={5}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
@@ -704,9 +717,9 @@ class costRegistration extends React.Component {
 										locale="ja"
 										minDate={this.state.minDate}
 										dateFormat="yyyy/MM/dd"
-										id="datePicker"
+										id={this.state.disabledFlag ? "datePickerReadonlyDefault" : "datePicker"}
 										className="form-control form-control-sm"
-										
+										disabled={this.state.disabledFlag} 
 									/>～
 									<DatePicker
 										selected={this.state.yearAndMonth2}
@@ -715,8 +728,9 @@ class costRegistration extends React.Component {
 										locale="ja"
 										minDate={this.state.minDate}
 										dateFormat="yyyy/MM/dd"
-										id="datePicker"
+										id={this.state.disabledFlag ? "datePickerReadonlyDefault" : "datePicker"}
 										className="form-control form-control-sm"
+										disabled={this.state.disabledFlag} 
 									/>
 								</InputGroup.Prepend>
 							</InputGroup>	
@@ -731,6 +745,7 @@ class costRegistration extends React.Component {
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode1)) || {}}
 										options={this.state.station}
+									 	disabled={this.state.disabledFlag} 
 										name="station"
 										getOptionLabel={(option) => option.name}
 										onSelect={(event) => this.handleTag(event, 'station')}
@@ -750,6 +765,7 @@ class costRegistration extends React.Component {
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode2)) || {}}
 										options={this.state.station}
+									 	disabled={this.state.disabledFlag} 
 										name="station"
 										getOptionLabel={(option) => option.name}
 										onSelect={(event) => this.handleTag(event, 'station')}
@@ -766,7 +782,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} name="detailedNameOrLine" autoComplete="off" size="sm" onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag} onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>
@@ -774,14 +790,14 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">料金</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.cost} name='cost' autoComplete="off" size="sm" maxLength='7' onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
+								<Form.Control type="text" value={this.state.cost} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
 							</InputGroup>
 						</Col>
 						<Col sm={4}>
 							<InputGroup size="sm" className="mb-3">
-								<Button size="sm" onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 添付済み"}</Button>
+								<Button size="sm" disabled={this.state.disabledFlag} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 添付済み"}</Button>
 									<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
-								<Button variant="info" size="sm" onClick={this.handleShowModal.bind(this)}>
+								<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.handleShowModal.bind(this)}>
 									<FontAwesomeIcon /> {" 他の費用"}
 								</Button>
 							</InputGroup>
@@ -792,10 +808,10 @@ class costRegistration extends React.Component {
 						 <Col sm={4}>
 							<div style={{ "position": "relative", "left": "100%" }}>
 								<div style={{ "textAlign": "center" }}>
-									<Button size="sm" variant="info" onClick={this.InsertCost} type="button" on>
+									<Button size="sm" variant="info" disabled={this.state.disabledFlag} onClick={this.InsertCost} type="button" on>
 										<FontAwesomeIcon icon={faSave} /> {" 登録"}
 									</Button>{' '}
-									<Button size="sm" variant="info" type="reset" onClick={this.resetBook}>
+									<Button size="sm" variant="info" disabled={this.state.disabledFlag} type="reset" onClick={this.resetBook}>
 										<FontAwesomeIcon icon={faUndo} /> Reset
 									</Button>
 								</div>
@@ -814,10 +830,10 @@ class costRegistration extends React.Component {
 							
 							<Col sm={2}>
 								<div style={{ "float": "right" }}>
-										<Button variant="info" size="sm" onClick={this.listChange} id="costRegistrationChange">
+										<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.listChange} id="costRegistrationChange">
 											<FontAwesomeIcon icon={faEdit} /> 修正
 										</Button>{' '}
-										<Button variant="info" size="sm" onClick={this.listDel}id="costRegistrationDel">
+										<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.listDel}id="costRegistrationDel">
 											<FontAwesomeIcon icon={faTrash} /> 削除
 										</Button>
 	 							</div>
@@ -827,7 +843,7 @@ class costRegistration extends React.Component {
 					<div><Col sm={12}>
 						<BootstrapTable data={employeeList} ref='table' id="table" pagination={true} options={options} approvalRow selectRow={selectRow} headerStyle={{ background: '#5599FF' }} striped hover condensed>
 							<TableHeaderColumn  row='0' rowSpan='2' width='5%'　tdStyle={ { padding: '.45em' } } dataField='rowNo'  isKey>番号</TableHeaderColumn>
-							<TableHeaderColumn  row='0' rowSpan='2' width='10%'　tdStyle={ {padding: '.45em' } } dataField='happendDate' >日付</TableHeaderColumn>
+							<TableHeaderColumn  row='0' rowSpan='2' width='10%'　tdStyle={ {padding: '.45em' } } dataFormat={this.happendDate.bind(this)} dataField='happendDate' >日付</TableHeaderColumn>
 							<TableHeaderColumn row='0' rowSpan='2' width='10%' tdStyle={{ padding: '.45em' }} dataField='costClassificationCode' dataFormat={this.costClassificationCode.bind(this)}>区分</TableHeaderColumn>
 							<TableHeaderColumn row='0' rowSpan='2' width='15%' tdStyle={{ padding: '.45em' }} dataField='detailedNameOrLine' dataFormat={this.detailedNameOrLine.bind(this)}>名称（線路）</TableHeaderColumn>
 							<TableHeaderColumn row='0' colSpan='1' width='20%' headerAlign='center' dataAlign='center' >場所</TableHeaderColumn>

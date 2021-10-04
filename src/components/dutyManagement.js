@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Col, Row, InputGroup, FormControl } from 'react-bootstrap';
+import { Button, Form, Col, Row, InputGroup, FormControl, OverlayTrigger, Popover } from 'react-bootstrap';
 import axios from 'axios';
 import '../asserts/css/development.css';
 import '../asserts/css/style.css';
@@ -61,6 +61,7 @@ class dutyManagement extends React.Component {
 	//　初期化データ
 	initialState = {
 		yearAndMonth: new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1))).getTime(),
+		month: new Date().getMonth() + 1,
 		employeeList: [],
 		totalPersons:"",
 		averageWorkingTime:"",
@@ -70,8 +71,10 @@ class dutyManagement extends React.Component {
 		rowWorkTime: '',
 		rowApprovalStatus: '',
 		rowSelectWorkingTimeReport: '',
+		rowDownload: "",
 		approvalStatuslist: store.getState().dropDown[27],
 		checkSectionlist: store.getState().dropDown[28],
+		costClassification: store.getState().dropDown[30],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
 	checkSection(code) {
@@ -236,14 +239,22 @@ class dutyManagement extends React.Component {
     
 	//　年月
 	inactiveYearAndMonth = (date) => {
-		this.setState(
-			{
-				yearAndMonth: date,
-			}
-		);
+		this.setState({
+			yearAndMonth: date,
+			month: date.getMonth() + 1,
+		});
 		$("#datePicker").val(date);
 		this.searchDutyManagement();
 	};
+	
+	handleRowClick = (row, isSelected, e) => {
+		if (isSelected) {
+			this.setState({rowDownload: row.costFile,});
+		}else{
+			this.setState({rowDownload: "",});
+		}
+	}
+	
 	//行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
 		if (isSelected) {
@@ -335,6 +346,145 @@ class dutyManagement extends React.Component {
 				{start}から  {to}まで , 総計{total}
 			</p>
 		);
+	}
+	
+	costClassificationCodeFormat(cell,row){
+		if(cell === "0"){
+			if(row.regularStatus === "0")
+				return "定期";
+			else 
+				return "通勤費";
+		}else{
+			let costClassificationCode = this.state.costClassification;
+			for (var i in costClassificationCode) {
+				if (costClassificationCode[i].code != "") {
+					if (cell == costClassificationCode[i].code) {
+						return costClassificationCode[i].name;
+					}
+				}
+			}
+		}	
+	}
+	
+	happendDateFormat(cell,row){
+		if(row.costClassificationCode === "0"){
+			if(row.regularStatus === "0"){
+				return cell.substring(0,4) + "/" + cell.substring(4,6) + "/" + cell.substring(6,8) + "~" + row.dueDate.substring(0,4) + "/" + row.dueDate.substring(4,6) + "/" + row.dueDate.substring(6,8);
+			}else{
+				return row.detailedNameOrLine + "回";
+			}
+		}else{
+			return cell.substring(0,4) + "/" + cell.substring(4,6) + "/" + cell.substring(6,8);
+		}
+	}
+	
+	remarkFormat(cell,row){
+		if(row.costClassificationCode === "0"){
+			if(row.regularStatus === "0"){
+				return row.detailedNameOrLine + " " + cell;
+			}else{
+				return cell;
+			}
+		}else{
+			return row.detailedNameOrLine + " " + cell;
+		}
+	}
+	
+	cost(cell){
+		return publicUtils.addComma(cell);
+	}
+	
+	costTotalFormat(cell,row){
+		if(row.costClassificationCode === "0"){
+			return publicUtils.addComma(row.cost);
+		}
+		else{
+			return publicUtils.addComma(cell);
+		}
+	}
+	
+	costFileFormat(cell){
+		if(cell !== ""){
+			return "〇";
+		}
+	}
+	
+	rowClassNameFormat = (row) => {
+		return row.costClassificationCode === "0" ? "transportationExpenses" : "otherCost";
+	}
+	
+	costFormat = (cell,row) => {
+        let returnItem = cell;
+        const options = {
+            noDataText: (<i className="" style={{ 'fontSize': '20px' }}>データなし</i>),
+            expandRowBgColor: 'rgb(165, 165, 165)',
+            hideSizePerPage: true, //> You can hide the dropdown for sizePerPage
+        };
+        const selectRow = {
+                mode: 'radio',
+                bgColor: 'pink',
+                hideSelectColumn: true,
+                clickToSelect: true,
+                clickToExpand: true,
+    			onSelect: this.handleRowClick,
+            };
+        returnItem = 
+        <OverlayTrigger 
+            trigger="click"
+            placement={"left"}
+            overlay={
+            <Popover className="popoverC">
+                <Popover.Content >
+                <div >
+                    <Row>
+	                    <Col style={{"padding": "0px","marginTop": "10px"}}>
+		                	<font>{this.state.month + "月"}</font>
+						</Col>
+						<Col style={{"padding": "0px","marginTop": "10px"}}>
+							<h2>費用詳細</h2>
+						</Col>
+	                    <Col style={{"padding": "0px"}}>
+	                        <div style={{ "float": "right" }}>
+		                        <Button variant="info" size="sm" disabled={this.state.rowDownload === ""} onClick={publicUtils.handleDownload.bind(this, this.state.rowDownload, this.state.serverIP)} id="workRepot">
+		                			<FontAwesomeIcon icon={faDownload} />download
+		                		</Button>
+		                	</div>
+						</Col>
+					</Row>
+					<Row>
+		                    <BootstrapTable 
+		                        pagination={false}
+		                        options={options}
+		                        data={row.costRegistrationModel}
+		                		selectRow={selectRow}
+		                        headerStyle={{ background: '#5599FF' }}
+		                    	trClassName={this.rowClassNameFormat}
+		                        condensed>
+		                        <TableHeaderColumn isKey={true} dataField='costClassificationCode' width='10%' dataFormat={this.costClassificationCodeFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        種別</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='happendDate' width='30%' dataFormat={this.happendDateFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        日付・回数</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='cost' width='15%' dataFormat={this.cost.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        費用</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='costFile' width='10%' dataFormat={this.costFileFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        添付</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='remark' width='20%' dataFormat={this.remarkFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        備考</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='costTotal' width='15%' dataFormat={this.costTotalFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        合計</TableHeaderColumn>
+		                    </BootstrapTable>
+					</Row>
+                </div>
+                </Popover.Content>
+            </Popover>
+            }
+        >
+        <Button variant="warning" size="sm" >詳細</Button>
+      </OverlayTrigger>
+      if(row.costRegistrationModel.length > 0)
+    	  return (<div>{publicUtils.addComma(cell)}{" "}{returnItem}</div>);
+      else 
+    	  return "";
 	}
 
 	render() {
@@ -486,10 +636,10 @@ class dutyManagement extends React.Component {
 							<TableHeaderColumn width='95' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='payOffRange' editable={false}>精算範囲</TableHeaderColumn>
 							<TableHeaderColumn width='90' tdStyle={ { padding: '.45em' } }  dataField='workTime' editable={false}>稼働時間</TableHeaderColumn>
 							<TableHeaderColumn width='125' tdStyle={{ padding: '.45em' }} hidden={this.state.authorityCode==="4" ? false : true} dataField='deductionsAndOvertimePay' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null) && this.state.rowApprovalStatus !== "1"} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除</TableHeaderColumn>
-							<TableHeaderColumn width='125' tdStyle={{ padding: '.45em' }} dataField='deductionsAndOvertimePayOfUnitPrice' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null) && this.state.rowApprovalStatus !== "1"} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除(客)</TableHeaderColumn>
-							<TableHeaderColumn width='120' tdStyle={ { padding: '.45em' } }  dataFormat={this.checkSection.bind(this)} hidden dataField='checkSection' editable={false}>確認区分</TableHeaderColumn>
-							<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }  dataField='cost' editable={false}>費用(通、食)</TableHeaderColumn>
-							<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }  dataField='updateTime' editable={false}>更新日付</TableHeaderColumn>
+							<TableHeaderColumn width='110' tdStyle={{ padding: '.45em' }} dataField='deductionsAndOvertimePayOfUnitPrice' editable={!(this.state.rowWorkTime === "" || this.state.rowWorkTime === null) && this.state.rowApprovalStatus !== "1"} editColumnClassName="dutyRegistration-DataTableEditingCell" dataFormat={this.overtimePayFormat.bind(this)}>残業/控除(客)</TableHeaderColumn>
+							<TableHeaderColumn width='110' tdStyle={ { padding: '.45em' } }  dataFormat={this.checkSection.bind(this)} hidden dataField='checkSection' editable={false}>確認区分</TableHeaderColumn>
+							<TableHeaderColumn width='120' tdStyle={ { padding: '.45em' } }  dataField='cost' dataFormat={this.costFormat.bind(this)}  editable={false}>費用</TableHeaderColumn>
+							<TableHeaderColumn width='160' tdStyle={ { padding: '.45em' } }  dataField='updateTime' editable={false}>更新日付</TableHeaderColumn>
 							<TableHeaderColumn width='110' tdStyle={ { padding: '.45em' } }  dataFormat={this.approvalStatus.bind(this)} dataField='approvalStatus' editable={false}>ステータス</TableHeaderColumn>
 						</BootstrapTable>
 					</Col>  

@@ -1002,6 +1002,14 @@ body {
 	background-size: 25%;
 }
 
+.transportationExpenses{
+	background-color: #d0d0d0;
+}
+
+.otherCost{
+	background-color: #dbffff;
+}
+
 #twoKanji {
 	width: 3rem;
 }
