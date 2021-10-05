@@ -32,6 +32,7 @@ class manageSituation extends React.Component {
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 		rowNo: '',// 明細番号
 		row: [],
+		selectRow: '',
 		employeeNo: '',// 社員NO
 		lastEmpNo: '',
 		yearMonth: new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 2) : (new Date().getMonth() + 2))).getTime(),
@@ -854,6 +855,7 @@ class manageSituation extends React.Component {
 				if (isSelected) {
 					this.setCopy(row);
 					this.setState({
+						selectRow: row,
 						selectetRowIds: row.employeeNo === null ? [] : this.state.selectetRowIds.concat([row.employeeNo]),
 						rowNo: row.rowNo === null ? '' : row.rowNo,
 						salesDateUpdate: row.salesDateUpdate === null ? '' : row.salesDateUpdate,
@@ -906,6 +908,7 @@ class manageSituation extends React.Component {
 							}
 						}
 						this.setState({
+							selectRow: row,
 							selectetRowIds: row.employeeNo === null ? [] : this.state.selectetRowIds.concat([row.employeeNo]),
 							rowNo: row.rowNo === null ? '' : row.rowNo,
 							salesDateUpdate: row.salesDateUpdate === null ? '' : row.salesDateUpdate,
@@ -944,6 +947,7 @@ class manageSituation extends React.Component {
 						}
 						else{
 							this.setState({
+								selectRow: '',
 								selectetRowIds: [],
 								employeeNo: '',
 								interviewDate1: '',
@@ -1013,6 +1017,7 @@ class manageSituation extends React.Component {
 		this.setState({
 			daiologShowFlag: false,
 		})
+		this.setCopy(this.state.selectRow);
 	}
 
 	// // サブ画面表示
@@ -1248,6 +1253,7 @@ class manageSituation extends React.Component {
 			salesSituationLists: salesSituationLists,
 			unitPrice: unitPrice,
 		});
+		this.setCopy(this.state.selectRow);
     }
     
 	download = (filename, text) => {

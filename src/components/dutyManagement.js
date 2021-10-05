@@ -369,7 +369,7 @@ class dutyManagement extends React.Component {
 	happendDateFormat(cell,row){
 		if(row.costClassificationCode === "0"){
 			if(row.regularStatus === "0"){
-				return cell.substring(0,4) + "/" + cell.substring(4,6) + "/" + cell.substring(6,8) + "~" + row.dueDate.substring(0,4) + "/" + row.dueDate.substring(4,6) + "/" + row.dueDate.substring(6,8);
+				return cell.substring(0,4) + "/" + cell.substring(4,6);
 			}else{
 				return row.detailedNameOrLine + "回";
 			}

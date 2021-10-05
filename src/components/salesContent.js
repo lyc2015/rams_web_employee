@@ -210,7 +210,7 @@ class salesContent extends React.Component {
 				alert(error);
 			});
 		});
-		this.props.allState.setValue(this.state.unitPrice,this.state.yearsOfExperience);
+		setTimeout(() => this.props.allState.setValue(this.state.unitPrice,this.state.yearsOfExperience), 1000);
 	}
 	
 	getStation = (event, values) => {
@@ -292,7 +292,7 @@ class salesContent extends React.Component {
 					this.fromCodeToListLanguage(result.data[0].developLanguage6)].filter(function(s) {
 						return s; // 注：IE9(不包含IE9)以下的版本没有trim()方法
 					}),
-					disbleState: this.fromCodeToListLanguage(result.data[0].developLanguage5) === '' ? false : true,
+					disbleState: this.fromCodeToListLanguage(result.data[0].developLanguage6) === '' ? false : true,
 					developLanguage: [this.fromCodeToNameLanguage(result.data[0].developLanguage1),
 					this.fromCodeToNameLanguage(result.data[0].developLanguage2),
 					this.fromCodeToNameLanguage(result.data[0].developLanguage3),
@@ -346,7 +346,7 @@ class salesContent extends React.Component {
 	}
 	
 	onTagsChange = (event, values, fieldName) => {
-		if (values.length === 6) {
+		if (values.length >= 6) {
 			this.setState({
 				disbleState: true,
 			});
