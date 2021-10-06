@@ -83,7 +83,7 @@ class costRegistration extends React.Component {
 		let minDate = new Date();
 		minDate.setDate(1);
 		this.setState({
-			yearAndMonth3: '',
+			yearAndMonth: '',
 			transportationCode: '',
 			stationCode3: '',
 			stationCode4: '',
@@ -91,7 +91,7 @@ class costRegistration extends React.Component {
 			cost1: '',
 			oldCostClassification: '',
 			oldHappendDate1: '',
-			yearAndMonth4: '',
+			yearAndMonth: '',
 			detailedNameOrLine2: '',
 			stationCode5: '',
 			remark: '',
@@ -215,7 +215,7 @@ class costRegistration extends React.Component {
 				oldCostClassification1: this.state.rowSelectCostClassificationCode.toString(),
 				oldHappendDate1: this.state.rowSelectHappendDate,
 				costClassification1: this.state.rowSelectCostClassificationCode,
-				yearAndMonth3: publicUtils.converToLocalTime(this.state.rowSelectHappendDate, true),
+				yearAndMonth: publicUtils.converToLocalTime(this.state.rowSelectHappendDate, true),
 				transportationCode: this.state.rowSelectTransportationCode,
 				stationCode3: this.state.rowSelectTransportationCode,
 				stationCode4: this.state.rowSelectDestinationCode,
@@ -232,7 +232,7 @@ class costRegistration extends React.Component {
 				oldCostClassification1: this.state.rowSelectCostClassificationCode.toString(),
 				oldHappendDate1: this.state.rowSelectHappendDate,
 				costClassification1: this.state.rowSelectCostClassificationCode,
-				yearAndMonth4: publicUtils.converToLocalTime(this.state.rowSelectHappendDate, true),
+				yearAndMonth: publicUtils.converToLocalTime(this.state.rowSelectHappendDate, true),
 				detailedNameOrLine2: this.state.rowSelectDetailedNameOrLine,
 				stationCode5: this.state.rowSelectStationCode,
 				remark: this.state.rowSelectRemark,
@@ -312,14 +312,13 @@ class costRegistration extends React.Component {
 		oldCostClassification1: '',
 		oldHappendDate1: '',
 		costClassification1: '',
-		yearAndMonth3: '',
+		yearAndMonth: '',
 		transportationCode: '',
 		stationCode3: '',
 		stationCode4: '',
 		roundCode: '',
 		cost1: '',
 		oldCostFile: '',
-		yearAndMonth4: '',
 		detailedNameOrLine2: '',
 		stationCode5: '',
 		remark: '',
@@ -401,14 +400,13 @@ class costRegistration extends React.Component {
 					oldCostClassification1: '',
 					oldHappendDate1: '',
 					costClassification1: '',
-					yearAndMonth3: '',
+					yearAndMonth: '',
 					transportationCode: '',
 					stationCode3: '',
 					stationCode4: '',
 					roundCode: '',
 					cost1: '',
 					oldCostFile: '',
-					yearAndMonth4: '',
 					detailedNameOrLine2: '',
 					stationCode5: '',
 					remark: '',
@@ -486,16 +484,6 @@ class costRegistration extends React.Component {
 			)
 		}
 	}
-	roundCode(code) {
-		let roundCode = this.state.round;
-		for (var i in roundCode) {
-			if (roundCode[i].code != "") {
-				if (code == roundCode[i].code) {
-					return roundCode[i].name;
-				}
-			}
-		}
-	};
 	
 	happendDate(cell,row) {
 		return row.costClassificationCode === "0" ? (cell.substring(0,4) + "/" + cell.substring(4,6)) : (cell.substring(0,4) + "/" + cell.substring(4,6) + "/" + cell.substring(6,8));
@@ -619,16 +607,14 @@ class costRegistration extends React.Component {
 					<Modal.Body size="sm">
 						<OtherCostModel
 							yearMonth={this.state.yearMonth}
-							yearAndMonth3={this.state.yearAndMonth3}
+							yearAndMonth={this.state.yearAndMonth}
 							transportationCode={this.state.transportationCode}
 							stationCode3={this.state.stationCode3}
 							stationCode4={this.state.stationCode4}
-							roundCode={this.state.roundCode}
 							cost1={this.state.cost1}
 							oldCostClassification1={this.state.oldCostClassification1}
 							costClassification={this.state.oldCostClassification1}
 							oldHappendDate1={this.state.oldHappendDate1}
-							yearAndMonth4={this.state.yearAndMonth4}
 							detailedNameOrLine2={this.state.detailedNameOrLine2}
 							stationCode5={this.state.stationCode5}
 							remark={this.state.remark}
@@ -794,13 +780,11 @@ class costRegistration extends React.Component {
 							</InputGroup>
 						</Col>
 						<Col sm={4}>
-							<InputGroup size="sm" className="mb-3">
-								<Button size="sm" disabled={this.state.disabledFlag} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 添付済み"}</Button>
-									<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
-								<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.handleShowModal.bind(this)}>
-									<FontAwesomeIcon /> {" 他の費用"}
-								</Button>
-							</InputGroup>
+							<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
+							<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.handleShowModal.bind(this)}>
+								<FontAwesomeIcon /> {" 他の費用"}
+							</Button>
+							<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
 						</Col>
 
 					</Row>
@@ -853,7 +837,6 @@ class costRegistration extends React.Component {
 							</TableHeaderColumn> 
 							<TableHeaderColumn row='0' rowSpan='2' width='10%' tdStyle={{ padding: '.45em' }} dataFormat={this.cost.bind(this)} dataField='cost' >金額</TableHeaderColumn>
 							<TableHeaderColumn row='0' rowSpan='2' width='15%' tdStyle={ { padding: '.45em' } } dataField='remark' >備考</TableHeaderColumn>
-							<TableHeaderColumn row='0' rowSpan='2' width='8%' tdStyle={{ padding: '.45em' }} dataField='roundCode' dataFormat={this.roundCode.bind(this)} >片・往</TableHeaderColumn>
 							<TableHeaderColumn row='0' rowSpan='2' width='15%' tdStyle={{ padding: '.45em' }} dataField='costFileForShow' >添付</TableHeaderColumn>
 							<TableHeaderColumn hidden dataField='costFile' ></TableHeaderColumn>
 							<TableHeaderColumn dataField='transportationCode' hidden></TableHeaderColumn>

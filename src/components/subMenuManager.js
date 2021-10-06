@@ -17,6 +17,7 @@ import systemSet from './systemSet';
 import CustomerInfoSearch from './customerInfoSearch';
 import siteInfo from './siteInfo';
 import ManageSituation from './manageSituation';
+import salaryDetailSend from './salaryDetailSend';
 import SendRepot from './sendRepot';
 import siteSearch from './siteSearch';
 import salesPointSet from './salesPointSet';
@@ -344,6 +345,9 @@ class SubMenu extends Component {
 																<ListGroup.Item style={this.state.hover.search("5") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-5")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/customerSalesList'})} block>
 																	<div><Link className={this.state.hover.search("5") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/customerSalesList"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> お客様売上一覧</Link></div>
 																</ListGroup.Item>
+																<ListGroup.Item style={this.state.hover.search("6") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-6")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/salaryDetailSend'})} block>
+																	<div><Link className={this.state.hover.search("6") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/salaryDetailSend"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> 給料明細送信</Link></div>
+																</ListGroup.Item>
 															</Accordion>
 														</ListGroup>
 														</div>
@@ -605,6 +609,7 @@ class SubMenu extends Component {
 								<Route exact path={`${this.props.match.url}/workRepot`} component={workRepot} />
 								<Route exact path={`${this.props.match.url}/costRegistration`} component={costRegistration} />
 								<Route exact path={`${this.props.match.url}/monthlySalesSearch`} component={monthlySalesSearch} />
+								<Route exact path={`${this.props.match.url}/salaryDetailSend`} component={salaryDetailSend} />
 								<Route exact path={`${this.props.match.url}/salesPointSet`} component={salesPointSet} />
 								<Route exact path={`${this.props.match.url}/salesProfit`} component={salesProfit} />
 								<Route exact path={`${this.props.match.url}/salesPoint`} component={salesPoint} />

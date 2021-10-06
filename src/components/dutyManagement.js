@@ -379,15 +379,13 @@ class dutyManagement extends React.Component {
 	}
 	
 	remarkFormat(cell,row){
-		if(row.costClassificationCode === "0"){
-			if(row.regularStatus === "0"){
-				return row.detailedNameOrLine + " " + cell;
-			}else{
-				return cell;
-			}
+		let remark = "";
+		if(!(row.costClassificationCode === "0" && row.regularStatus !== "0")){
+			remark = row.detailedNameOrLine + " " + cell;
 		}else{
-			return row.detailedNameOrLine + " " + cell;
+			remark = cell;
 		}
+		return <span title={remark}>{remark}</span>;
 	}
 	
 	cost(cell){
@@ -452,7 +450,7 @@ class dutyManagement extends React.Component {
 						</Col>
 					</Row>
 					<Row>
-		                    <BootstrapTable 
+		                    <BootstrapTable
 		                        pagination={false}
 		                        options={options}
 		                        data={row.costRegistrationModel}
@@ -460,7 +458,9 @@ class dutyManagement extends React.Component {
 		                        headerStyle={{ background: '#5599FF' }}
 		                    	trClassName={this.rowClassNameFormat}
 		                        condensed>
-		                        <TableHeaderColumn isKey={true} dataField='costClassificationCode' width='10%' dataFormat={this.costClassificationCodeFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        <TableHeaderColumn isKey={true} dataField='rowNo' hidden tdStyle={{ padding: '.45em' }}>
+		                        番号</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='costClassificationCode' width='10%' dataFormat={this.costClassificationCodeFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
 		                        種別</TableHeaderColumn>
 		                        <TableHeaderColumn dataField='happendDate' width='30%' dataFormat={this.happendDateFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
 		                        日付・回数</TableHeaderColumn>
@@ -468,10 +468,10 @@ class dutyManagement extends React.Component {
 		                        費用</TableHeaderColumn>
 		                        <TableHeaderColumn dataField='costFile' width='10%' dataFormat={this.costFileFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
 		                        添付</TableHeaderColumn>
-		                        <TableHeaderColumn dataField='remark' width='20%' dataFormat={this.remarkFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
-		                        備考</TableHeaderColumn>
 		                        <TableHeaderColumn dataField='costTotal' width='15%' dataFormat={this.costTotalFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
 		                        合計</TableHeaderColumn>
+		                        <TableHeaderColumn dataField='remark' width='20%' dataFormat={this.remarkFormat.bind(this)} tdStyle={{ padding: '.45em' }}>
+		                        備考</TableHeaderColumn>
 		                    </BootstrapTable>
 					</Row>
                 </div>
