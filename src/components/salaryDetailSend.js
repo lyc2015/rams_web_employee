@@ -1,16 +1,18 @@
 import React,{Component} from 'react';
-import {Row , Col , InputGroup ,Form, Button } from 'react-bootstrap';
+import {Row , Col , InputGroup ,Form, Button, Modal } from 'react-bootstrap';
 import '../asserts/css/style.css';
 import DatePicker from "react-datepicker";
 import * as publicUtils from './utils/publicUtils.js';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ErrorsMessageToast from './errorsMessageToast';
+import $ from 'jquery';
 import axios from 'axios';
 import store from './redux/store';
 import MyToast from './myToast';
+import MailSalary from './mailSalary';
 import TableSelect from './TableSelect';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faEnvelope, faIdCard, faListOl, faBuilding, faDownload, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faEnvelope, faIdCard, faListOl, faBuilding, faDownload, faBook, faGlasses } from '@fortawesome/free-solid-svg-icons';
 axios.defaults.withCredentials = true;
 
 class salaryDetailSend extends Component {// 状況変動一覧
@@ -37,6 +39,11 @@ class salaryDetailSend extends Component {// 状況変動一覧
         serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 		modeSelect: 'radio',
 		selectetRowIds: [],
+		loginUserInfo: [],
+		rowEmployeeNo: "",
+		pdfUpdate: "",
+		pdfUpdateName: "",
+		loading: true,
 		myToastShow: false,
     }
                	// onchange
@@ -47,106 +54,126 @@ class salaryDetailSend extends Component {// 状況変動一覧
     }
 
     componentDidMount(){
-    	this.getInformation();
+    	this.getLoginUserInfo();
+    	this.getSalaryDetail();
     }
     
-    getInformation(){
-    	axios.post(this.state.serverIP + "EmployeeInformation/getEmployeeInformation")
+	getLoginUserInfo = () => {
+		axios.post(this.state.serverIP + "sendLettersConfirm/getLoginUserInfo")
+			.then(result => {
+				this.setState({
+					loginUserInfo: result.data,
+				})
+			})
+			.catch(function(error) {
+				alert(error);
+			});
+	}
+    
+    getSalaryDetail(){
+    	axios.post(this.state.serverIP + "SalaryDetailSend/getEmployee")
 		.then(response => {
 			this.setState({
-				situationInfoList:response.data.data
+				employeeList:response.data.data
 	        });   
 		}).catch((error) => {
 			console.error("Error - " + error);
 		});
     }
     
-	// 優先度表示
-    stayPeriodChange(cell,row) {
-    	if(row.stayPeriodDate <= 90 && row.dealDistinctioCode !== "2"){
-        	return (<div><font color="red">{row.stayPeriodDate === 0 ? "" : row.stayPeriodDate}</font></div>);
-    	}
-    	else{
-        	return (<div><font>{row.stayPeriodDate === 0 ? "" : row.stayPeriodDate}</font></div>);
-    	}
-	}
-    
-    birthdayChange(cell,row) {
-    	if(row.birthdayDate <= 7 && row.dealDistinctioCode !== "2"){
-        	return (<div><font color="red">{row.birthdayDate === -1 ? "" : row.birthdayDate}</font></div>);
-    	}
-    	else{
-        	return (<div><font>{row.birthdayDate === -1 ? "" : row.birthdayDate}</font></div>);
-    	}
-	}
-    
-    contractDeadlineChange(cell,row) {
-    	if(row.contractDeadlineDate <= 60 && row.dealDistinctioCode !== "2"){
-        	return (<div><font color="red">{row.contractDeadlineDate === 0 ? "" : row.contractDeadlineDate}</font></div>);
-    	}
-    	else{
-        	return (<div><font>{row.contractDeadlineDate === 0 ? "" : row.contractDeadlineDate}</font></div>);
-    	}
-	}
-    
-    passportStayPeriodChange(cell,row)  {
-        return (<div><font>{row.passportStayPeriodDate === 0 ? "" : row.passportStayPeriodDate}</font></div>);
-	}
-    
-	// レコードのステータス
-	formatType = (cell) => {
-		var statuss = this.state.salesProgressCodes;
-		for (var i in statuss) {
-			if (cell === statuss[i].code) {
-				return statuss[i].name;
-			}
-		}
-	}
-	
-	// 明細選択したSalesProgressCodeを設定する
-	getDealDistinctioCode = (no) => {
-		this.state.situationInfoList[this.state.rowNo - 1].dealDistinctioCode = no;
-		this.formatType(no);
-	}
-    
     handleRowSelect = (row, isSelected, e) => {
-		this.setState({
-			rowNo: row.rowNo === null ? '' : row.rowNo,
-			dealDistinctioCode: row.dealDistinctioCode === null ? '' : row.dealDistinctioCode,
-		});
+    	if(isSelected){
+    		this.setState({
+    			rowEmployeeNo: row.employeeNo,
+    		});
+    	}else{
+    		this.setState({
+    			rowEmployeeNo: "",
+    		});
+    	}
+
 	}
     
 	update = () => {
-		let employeeNo = [];
-		let dealDistinctioCode = [];
-		for(let i = 0; i < this.state.situationInfoList.length; i++){
-			employeeNo.push(this.state.situationInfoList[i].employeeNo);
-			dealDistinctioCode.push(this.state.situationInfoList[i].dealDistinctioCode);
-		}
-		this.setState({
-			situationInfoList:[]
-		});
 		
-    	axios.post(this.state.serverIP + "EmployeeInformation/updateEmployeeInformation",  {
-    		employeeNos : employeeNo,
-    		dealDistinctioCodes : dealDistinctioCode
-    	})
-		.then(response => { 
-		    this.getInformation();
-			this.setState({ "myToastShow": true, "errorsMessageShow": false });
-			setTimeout(() => this.setState({ "myToastShow": false }), 3000);
-		}).catch((error) => {
-			console.error("Error - " + error);
+	}
+	
+	openDaiolog = () => {
+		this.setState({
+			daiologShowFlag: true,
 		});
 	}
+	
+	closeDaiolog = () => {
+		this.setState({
+			daiologShowFlag: false,
+		})
+	}
+	
+	addFile = (event, name) => {
+		$("#" + name).click();
+	}
+	
+	changeFile = (event, name) => {
+		var filePath = event.target.value;
+		var arr = filePath.split('\\');
+		var fileName = arr[arr.length - 1];
+		this.setState({
+			pdfUpdate: filePath,
+			pdfUpdateName: fileName,
+		})
+
+		let fileNameList = [];
+		for(let i = 0;i < $('#pdfUpdate').get(0).files.length;i++){
+			this.setState({ loading: false, });
+			fileNameList.push($('#pdfUpdate').get(0).files[i].name);
+			
+			const formData = new FormData();
+			formData.append('pdfUpdate', $('#pdfUpdate').get(0).files[i]);
+			
+			axios.post(this.state.serverIP + "SalaryDetailSend/updatePDF", formData)
+			.then(result => {
+				if(i === $('#pdfUpdate').get(0).files.length - 1){
+					this.updateEmployeeList(fileNameList);
+					this.setState({ loading: true, });
+					this.setState({ "myToastShow": true, myToastShowValue: "取り込み完了" });
+					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+				}
+			}).catch((error) => {
+				this.setState({ loading: true, });
+				console.error("Error - " + error);
+				this.setState({ "errorsMessageShow": true, errorsMessageValue: "アップデートするファイル大きすぎる。" });
+				setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+			});
+		}
+	}
+	
+	updateEmployeeList = (fileNameList) => {
+		let employeeList = this.state.employeeList;
+		for(let i in employeeList){
+			for(let j in fileNameList){
+				if(fileNameList[j].search(String(employeeList[i].employeeNo)) !== -1){
+					employeeList[i].fileName = fileNameList[j];
+					employeeList[i].sendState = "0";
+					break;
+				}
+			}
+		}
+		this.setState({ employeeList: employeeList });
+	}
     
+	sendState(cell) {
+		if(cell === "0")
+			return "未送信";
+		else if(cell === "1")
+			return "送信済み";
+    };
+	
     render(){
         const  situationChanges= this.state.situationChanges;
         const  errorsMessageValue= this.state.errorsMessageValue;
-		const cellEdit = {
-				mode: 'click',
-				blurToSave: true,
-			}
+        const  myToastShowValue= this.state.myToastShowValue;
+
         const selectRow = {
 				bgColor: 'pink',
     			mode: this.state.modeSelect,
@@ -156,51 +183,63 @@ class salaryDetailSend extends Component {// 状況変動一覧
     			clickToExpand: true,
     			onSelect: this.handleRowSelect,
     		};
-		
-		const tableSelect = (onUpdate, props) => (<TableSelect dropdowns={this} flag={12} onUpdate={onUpdate} {...props} />);
-		
+				
         return(
             <div>
                 <div style={{ "display": this.state.errorsMessageShow ? "block" : "none" }}>
 					<ErrorsMessageToast errorsMessageShow={this.state.errorsMessageShow} message={errorsMessageValue} type={"danger"} />
 				</div>
 					<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
-					<MyToast myToastShow={this.state.myToastShow} message={"更新成功！"} type={"success"} />
+					<MyToast myToastShow={this.state.myToastShow} message={myToastShowValue} type={"success"} />
 				</div>
+				<Modal aria-labelledby="contained-modal-title-vcenter" centered backdrop="static"
+					onHide={this.closeDaiolog} show={this.state.daiologShowFlag} dialogClassName="modal-bankInfo">
+					<Modal.Header closeButton><Col className="text-center">
+						<h2>送信メール確認</h2>
+					</Col></Modal.Header>
+					<Modal.Body >
+						<MailSalary personalInfo={this} />
+					</Modal.Body>
+				</Modal>
                  <Row inline="true">
                      <Col  className="text-center">
-                    <h2>個人情報期限一覧</h2>
+                    <h2>給料明細送信</h2>
                     </Col> 
                 </Row>
                 <br/>
                 <Row>
                     <Col sm={12}>
-                    <div style={{ "float": "right" }}>
-					<Button size="sm" variant="info" name="clickButton"　onClick={this.update}　><FontAwesomeIcon icon={faSave} /> 更新</Button>{' '}
-                    </div>
+	                    <div style={{ "float": "left" }}>
+							<Button size="sm" variant="info" name="clickButton"　onClick={this.openDaiolog} disabled={this.state.rowEmployeeNo === ""}><FontAwesomeIcon icon={faGlasses} /> メール確認</Button>{' '}
+		                </div>
+	                    <div style={{ "float": "right" }}>
+							<Button size="sm" variant="info" name="clickButton"　onClick={(event) => this.addFile(event, 'pdfUpdate')}　><FontAwesomeIcon icon={faSave} /> 取込</Button>{' '}
+							<Button size="sm" variant="info" name="clickButton"　onClick={this.update} disabled={this.state.rowEmployeeNo === ""}><FontAwesomeIcon icon={faSave} /> 削除</Button>{' '}
+							<Button size="sm" variant="info" name="clickButton"　onClick={this.update}　><FontAwesomeIcon icon={faSave} /> 送信</Button>{' '}
+	                    </div>
+	                    <div hidden>
+							<Form.File id="pdfUpdate" data-browse="添付" multiple="multiple" value={this.state.pdfUpdate} custom onChange={(event) => this.changeFile(event, 'pdfUpdate')} />
+						</div>
                     </Col>
 				</Row>
 				<Col>
                 <div>
                     <BootstrapTable
-                    data={this.state.situationInfoList}
+                    data={this.state.employeeList}
                     pagination={true}
                     headerStyle={{ background: '#5599FF' }}
                     options={this.options}
                     selectRow={selectRow}
-					cellEdit={cellEdit}
 　					striped hover condensed>
-							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='rowNo' editable={false} dataSort >番号</TableHeaderColumn>
-							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='employeeNo' isKey editable={false}>社員番号</TableHeaderColumn>
-							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='employeeName' editable={false}>社員名</TableHeaderColumn>
-                            <TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='stayPeriodDate' dataFormat={this.stayPeriodChange} editable={false} dataSort >在留カード</TableHeaderColumn>                           
-                            <TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='birthdayDate' dataFormat={this.birthdayChange} editable={false} dataSort >誕生日</TableHeaderColumn>
-							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='contractDeadlineDate' dataFormat={this.contractDeadlineChange} editable={false} dataSort >契約</TableHeaderColumn>
-							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='passportStayPeriodDate' dataFormat={this.passportStayPeriodChange} editable={false} dataSort >パスポート</TableHeaderColumn>
-							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='12%' dataField='dealDistinctioCode' dataFormat={this.formatType.bind(this)} customEditor={{ getElement: tableSelect }} editable={true}>処理区分</TableHeaderColumn>
+							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='15%' dataField='rowNo' dataSort >番号</TableHeaderColumn>
+							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='15%' dataField='employeeNo' isKey >社員番号</TableHeaderColumn>
+							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='20%' dataField='employeeName'>氏名</TableHeaderColumn>
+							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='30%' dataField='fileName'>ファイル名</TableHeaderColumn>
+							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='20%' dataField='sendState' dataFormat={this.sendState.bind(this)}>送信ステータス</TableHeaderColumn>
 					</BootstrapTable>
                     </div>
                  </Col>
+         <div className='loadingImage' hidden={this.state.loading} style = {{"position": "absolute","top":"60%","left":"60%","margin-left":"-200px", "margin-top":"-150px",}}></div>
          </div>
         )
     }

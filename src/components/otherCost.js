@@ -120,8 +120,6 @@ class otherCost extends React.Component {
 		} else {
 			this.resetBook();
         }
-		
-
 	}
 
 	costClassificationForOtherCost = () => {

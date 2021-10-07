@@ -247,6 +247,9 @@ class SubMenu extends Component {
 														<ListGroup.Item style={this.state.hover.search("5") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"社員・BP-5")} onMouseLeave={this.toggleHover.bind(this,"社員・BP")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/envelopePrinting'})} block>
 															<div><Link className={this.state.hover.search("5") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/envelopePrinting"><FontAwesomeIcon className="fa-fw" size="lg" icon={faDownload} /> 封筒印刷</Link></div>
 														</ListGroup.Item>
+														<ListGroup.Item style={this.state.hover.search("6") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"社員・BP-6")} onMouseLeave={this.toggleHover.bind(this,"社員・BP")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/salaryDetailSend'})} block>
+															<div><Link className={this.state.hover.search("6") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/salaryDetailSend"><FontAwesomeIcon className="fa-fw" size="lg" icon={faPaperPlane} /> 給料明細送信</Link></div>
+														</ListGroup.Item>
 													</Accordion>
 												</ListGroup>
 												</div>
@@ -344,9 +347,6 @@ class SubMenu extends Component {
 																</ListGroup.Item>
 																<ListGroup.Item style={this.state.hover.search("5") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-5")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/customerSalesList'})} block>
 																	<div><Link className={this.state.hover.search("5") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/customerSalesList"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> お客様売上一覧</Link></div>
-																</ListGroup.Item>
-																<ListGroup.Item style={this.state.hover.search("6") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-6")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/salaryDetailSend'})} block>
-																	<div><Link className={this.state.hover.search("6") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/salaryDetailSend"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> 給料明細送信</Link></div>
 																</ListGroup.Item>
 															</Accordion>
 														</ListGroup>

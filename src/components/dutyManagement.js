@@ -557,7 +557,7 @@ class dutyManagement extends React.Component {
 										</InputGroup.Prepend>
 									<font style={{ marginRight: "30px" }}></font>
 										<InputGroup.Prepend>
-											<InputGroup.Text id="nineKanji">時間登録ステータス</InputGroup.Text>
+											<InputGroup.Text id="nineKanji">ステータス</InputGroup.Text>
 										</InputGroup.Prepend>
 										<Form.Control id="approvalStatus" as="select" size="sm" onChange={this.approvalStatusChange} style={{width:"30px"}} name="approvalStatus" value={approvalStatus} autoComplete="off" >
 											<option value="0">すべて</option>
