@@ -13,7 +13,9 @@ class mailSalary extends React.Component {
 	initState = ({
 				loginUserInfo: this.props.personalInfo.state.loginUserInfo,
 				employeeNo: this.props.personalInfo.state.rowEmployeeNo,
-				yearAndMonth: new Date(),
+    			employeeFristName: this.props.personalInfo.state.rowEmployeeFristName,
+    			companyMail: this.props.personalInfo.state.rowCompanyMail,
+				yearAndMonth: this.props.personalInfo.state.yearAndMonth,
 	})
 	componentDidMount() {
 	}
@@ -25,15 +27,15 @@ class mailSalary extends React.Component {
 					<textarea ref={(textarea) => this.textArea = textarea} disabled
 						style={{ height: '560px', width: '100%', resize: 'none', border: '0'}}
 					value={
-`宛先：` + "xxxxxx@xxx.xxx" + `
-タイトル：` + this.state.yearAndMonth.getFullYear() + "年" + (this.state.yearAndMonth.getMonth() + 1) + "月" + `給料明細
+`宛先：` + this.state.companyMail + `
+タイトル：` + this.state.yearAndMonth + `給料明細
 
-XXさん` + `
+` + this.state.employeeFristName + `さん` + `
 
 お疲れ様です。LYCの` + this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName + `です。
 
 表題の件につきまして、
-`+ this.state.yearAndMonth.getFullYear() + "年" + (this.state.yearAndMonth.getMonth() + 1) + "月" + `分の給料明細を添付致しました。
+`+ this.state.yearAndMonth + `分の給料明細を添付致しました。
 ご確認お願いいたします。
 
 以上です。

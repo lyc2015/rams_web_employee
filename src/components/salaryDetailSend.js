@@ -12,7 +12,7 @@ import MyToast from './myToast';
 import MailSalary from './mailSalary';
 import TableSelect from './TableSelect';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faEnvelope, faIdCard, faListOl, faBuilding, faDownload, faBook, faGlasses } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faEnvelope, faIdCard, faListOl, faBuilding, faTrash, faUpload, faGlasses } from '@fortawesome/free-solid-svg-icons';
 axios.defaults.withCredentials = true;
 
 class salaryDetailSend extends Component {// 状況変動一覧
@@ -40,9 +40,13 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		modeSelect: 'radio',
 		selectetRowIds: [],
 		loginUserInfo: [],
+		rowNo: "",
 		rowEmployeeNo: "",
+		rowEmployeeFristName: "",
+		rowCompanyMail: "",
 		pdfUpdate: "",
 		pdfUpdateName: "",
+		yearAndMonth: "",
 		loading: true,
 		myToastShow: false,
     }
@@ -56,6 +60,11 @@ class salaryDetailSend extends Component {// 状況変動一覧
     componentDidMount(){
     	this.getLoginUserInfo();
     	this.getSalaryDetail();
+    	
+    	var yearAndMonth = this.getLastMonth();
+		this.setState({
+			yearAndMonth: yearAndMonth,
+        });   
     }
     
 	getLoginUserInfo = () => {
@@ -81,21 +90,54 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		});
     }
     
+    getLastMonth = () => {
+    	var date = new Date();
+    	var year = date.getFullYear();
+    	var month = date.getMonth();
+    	if(month === 0){
+    		year = year - 1;
+    		month = 12;
+    	}
+    	return year + "年" + month + "月";
+    }
+    
     handleRowSelect = (row, isSelected, e) => {
     	if(isSelected){
     		this.setState({
+    			rowNo: row.rowNo,
     			rowEmployeeNo: row.employeeNo,
+    			rowEmployeeFristName: row.employeeFristName,
+    			rowCompanyMail: row.companyMail,
     		});
     	}else{
     		this.setState({
+    			rowNo: "",
     			rowEmployeeNo: "",
+    			rowEmployeeFristName: "",
+    			rowCompanyMail: "",
     		});
     	}
 
 	}
     
-	update = () => {
-		
+	deleteRow = () => {
+		let employeeList = this.state.employeeList;
+		for(let i in employeeList){
+			if(employeeList[i].rowNo === this.state.rowNo){
+				employeeList.splice(i,1);
+				break;
+			}
+		}
+		for(let i in employeeList){
+			employeeList[i].rowNo = Number(i) + 1;
+		}
+		this.setState({
+			employeeList: employeeList,
+			rowNo: "",
+			rowEmployeeNo: "",
+			rowEmployeeFristName: "",
+			rowCompanyMail: "",
+		});
 	}
 	
 	openDaiolog = () => {
@@ -115,6 +157,8 @@ class salaryDetailSend extends Component {// 状況変動一覧
 	}
 	
 	changeFile = (event, name) => {
+		this.setState({ loading: false, });
+
 		var filePath = event.target.value;
 		var arr = filePath.split('\\');
 		var fileName = arr[arr.length - 1];
@@ -125,12 +169,15 @@ class salaryDetailSend extends Component {// 状況変動一覧
 
 		let fileNameList = [];
 		for(let i = 0;i < $('#pdfUpdate').get(0).files.length;i++){
-			this.setState({ loading: false, });
-			fileNameList.push($('#pdfUpdate').get(0).files[i].name);
-			
 			const formData = new FormData();
-			formData.append('pdfUpdate', $('#pdfUpdate').get(0).files[i]);
-			
+			let employeeList = this.state.employeeList;
+			for(let j in employeeList){
+				if($('#pdfUpdate').get(0).files[i].name.search(String(employeeList[j].employeeNo)) !== -1){
+					fileNameList.push($('#pdfUpdate').get(0).files[i].name);
+					formData.append('pdfUpdate', $('#pdfUpdate').get(0).files[i]);
+					break;
+				}
+			}
 			axios.post(this.state.serverIP + "SalaryDetailSend/updatePDF", formData)
 			.then(result => {
 				if(i === $('#pdfUpdate').get(0).files.length - 1){
@@ -168,6 +215,105 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		else if(cell === "1")
 			return "送信済み";
     };
+
+	// 送信チェック
+	beforeSendMail = () => {
+		let list = [];
+		let employeeList = this.state.employeeList;
+		for(let i in employeeList){
+			if(employeeList[i].fileName === undefined || employeeList[i].fileName === null || employeeList[i].fileName === "" ){
+				list.push(employeeList[i].employeeNo);
+			}
+		}
+		if(list.length > 0){
+			let message = "";
+			for(let i in list){
+				message += list[i] + " ";
+			}
+			message += "ファイル存在していません、チェックしてください。";
+			this.setState({ "errorsMessageShow": true, errorsMessageValue: message });
+			setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+		}else{
+			this.sendMailWithFile();
+		}
+	}
+
+	// 送信処理
+	sendMailWithFile = () => {
+		let yearAndMonth = this.getLastMonth();
+		let employeeList = this.state.employeeList;
+		for(let i in employeeList){
+			if(employeeList[i].companyMail !== undefined && employeeList[i].companyMail !== null && employeeList[i].companyMail !== "" && employeeList[i].sendState !== "1"){
+				//	普通邮箱送信
+				var mailConfirmContont = employeeList[i].employeeFristName + `さん<br/>
+				<br/>
+				お疲れ様です。LYCの`+ this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName + `です。<br/>
+				<br/>` +
+				`表題の件につきまして、<br/>` +
+				yearAndMonth + `分の給料明細を添付致しました。<br/>
+				ご確認お願いいたします。<br/>
+				<br/>
+				以上です。<br/>
+				<br/>
+				----------------------------------------------------------------------------<br/>
+				LYC株式会社<br/>` + 
+				`事務担当 ` + this.state.loginUserInfo[0].employeeFristName + ` ` + this.state.loginUserInfo[0].employeeLastName + `<br/>
+				〒101-0032 東京都千代田区岩本町3-3-3サザンビル3F<br/> 
+				URL：http://www.lyc.co.jp/<br/>
+				TEL：03-6908-5796<br/>
+				E-mail：`+ this.state.loginUserInfo[0].companyMail + ` 共通mail：eigyou@lyc.co.jp<br/>
+				P-mark：第21004525(02)号<br/>
+				労働者派遣事業許可番号　派13-306371<br/>`;
+				
+				//	@lyc.co.jp邮箱送信（　<br/>无法转换　）
+				var mailConfirmContontNoBr = employeeList[i].employeeFristName + `さん
+				
+				お疲れ様です。LYCの`+ this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName + `です。
+				` +`
+				表題の件につきまして、
+				` + yearAndMonth + `分の給料明細を添付致しました。
+				ご確認お願いいたします。
+				
+				以上です。
+				
+				----------------------------------------------------------------------------
+				LYC株式会社` + `
+				事務担当 ` + this.state.loginUserInfo[0].employeeFristName + ` ` + this.state.loginUserInfo[0].employeeLastName + `
+				〒101-0032 東京都千代田区岩本町3-3-3サザンビル3F
+				URL：http://www.lyc.co.jp/
+				TEL：03-6908-5796
+				E-mail：`+ this.state.loginUserInfo[0].companyMail + ` 共通mail：eigyou@lyc.co.jp
+				P-mark：第21004525(02)号
+				労働者派遣事業許可番号　派13-306371`;
+				
+				var model = {};
+				
+				model["mailTitle"] = yearAndMonth + "給料明細";
+				if(employeeList[i].companyMail.search("@lyc.co.jp") !== -1)
+					model["mailConfirmContont"] = mailConfirmContontNoBr;
+				else
+					model["mailConfirmContont"] = mailConfirmContont;
+				model["selectedmail"] = employeeList[i].companyMail;
+				model["resumePath"] = employeeList[i].fileName;
+				model["mailFrom"] = this.state.loginUserInfo[0].companyMail;
+				
+				axios.post(this.state.serverIP + "SalaryDetailSend/sendMailWithFile", model)
+				.then(result => {
+					if (result.data.errorsMessage != null) {
+						this.setState({ "errorsMessageShow": true, errorsMessageValue: result.data.errorsMessage });
+						setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+					} 								
+					else{
+						employeeList[i].sendState = "1";
+						this.setState({ employeeList: employeeList });
+					}
+				})
+				.catch(function(error) {
+					alert(error);
+				});
+			}
+		}
+	}
 	
     render(){
         const  situationChanges= this.state.situationChanges;
@@ -213,9 +359,9 @@ class salaryDetailSend extends Component {// 状況変動一覧
 							<Button size="sm" variant="info" name="clickButton"　onClick={this.openDaiolog} disabled={this.state.rowEmployeeNo === ""}><FontAwesomeIcon icon={faGlasses} /> メール確認</Button>{' '}
 		                </div>
 	                    <div style={{ "float": "right" }}>
-							<Button size="sm" variant="info" name="clickButton"　onClick={(event) => this.addFile(event, 'pdfUpdate')}　><FontAwesomeIcon icon={faSave} /> 取込</Button>{' '}
-							<Button size="sm" variant="info" name="clickButton"　onClick={this.update} disabled={this.state.rowEmployeeNo === ""}><FontAwesomeIcon icon={faSave} /> 削除</Button>{' '}
-							<Button size="sm" variant="info" name="clickButton"　onClick={this.update}　><FontAwesomeIcon icon={faSave} /> 送信</Button>{' '}
+							<Button size="sm" variant="info" name="clickButton"　onClick={(event) => this.addFile(event, 'pdfUpdate')}　><FontAwesomeIcon icon={faUpload} /> 取込</Button>{' '}
+							<Button size="sm" variant="info" name="clickButton"　onClick={this.deleteRow} disabled={this.state.rowEmployeeNo === ""}><FontAwesomeIcon icon={faTrash} /> 削除</Button>{' '}
+							<Button size="sm" variant="info" name="clickButton"　onClick={this.beforeSendMail}　><FontAwesomeIcon icon={faEnvelope} /> 送信</Button>{' '}
 	                    </div>
 	                    <div hidden>
 							<Form.File id="pdfUpdate" data-browse="添付" multiple="multiple" value={this.state.pdfUpdate} custom onChange={(event) => this.changeFile(event, 'pdfUpdate')} />
