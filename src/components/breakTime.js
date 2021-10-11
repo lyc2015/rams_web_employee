@@ -56,19 +56,13 @@ class BreakTime extends Component {
      * 画面の初期化
      */
     componentDidMount() {
-        /*         var actionType = this.props.actionType;//父画面のパラメータ（処理区分）
-                var topCustomerNo = this.props.topCustomerNo;//父画面のパラメータ（画面既存上位お客様情報）
-                $("#breakTimeUser").val(sessionStorage.getItem("employeeName"));
-                this.calculateTime();
-                console.log(sessionStorage);
-                var topCustomerInfo = this.props.topCustomerInfo; */
         let postData = {
             yearMonth: this.state.year + this.state.month,
         }
         axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
             .then(resultMap => {
                 if (resultMap.data) {
-                    $("#employeeNo").val(resultMap.data.breakTime.employeeNo);
+                    /*$("#employeeNo").val(resultMap.data.breakTime.employeeNo);
                     $("#breakTimeDayHourStart").val(Number(resultMap.data.breakTime.lunchBreakStartTime.toString().substring(0, 2)));
                     $("#breakTimeDayMinuteStart").val(Number(resultMap.data.breakTime.lunchBreakStartTime.toString().substring(2)));
                     $("#breakTimeDayHourEnd").val(Number(resultMap.data.breakTime.lunchBreakFinshTime.toString().substring(0, 2)));
@@ -80,7 +74,7 @@ class BreakTime extends Component {
                     this.setState({
                         breakTimeUser: resultMap.data.employeeName, breakTimeDaybreakTimeHour: resultMap.data.breakTime.lunchBreakTime,
                         breakTimeNightbreakTimeHour: resultMap.data.breakTime.nightBreakTime, breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
-                    });
+                    });*/
                 } else {
                     alert("fail");
                 }

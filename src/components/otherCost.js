@@ -322,7 +322,7 @@ class otherCost extends React.Component {
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 					this.props.otherCostToroku();
 				} else {
-					this.setState({ "errorsMessageShow": true, "message": "データはすでに存在している"});
+					this.setState({ "errorsMessageShow": true, "message": this.costClassificationCode(this.state.costClassificationCode) + "データはすでに存在している"});
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				}
 				

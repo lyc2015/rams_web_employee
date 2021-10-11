@@ -109,7 +109,7 @@ class PasswordSetManager extends Component {
 						<Col >
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
-									<InputGroup.Text id="passwordSetText" style={{ "width": this.props.actionType === "update" ? "8rem" : "7.5rem" }}>パスワード設定</InputGroup.Text>
+									<InputGroup.Text id="passwordSetText" style={{ "width": "8.5rem" }}>パスワード設定</InputGroup.Text>
 								</InputGroup.Prepend>
 								<Form.Control type="password" id="newPassword" name="newPassword" maxlength="12"/>
 							</InputGroup>

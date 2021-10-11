@@ -95,6 +95,7 @@ class costRegistration extends React.Component {
 			detailedNameOrLine2: '',
 			stationCode5: '',
 			remark: '',
+			rowRemark: '',
 			cost2: '',
 			oldCostFile: '',
 			changeData: '',
@@ -168,6 +169,7 @@ class costRegistration extends React.Component {
 			oldCostClassificationCode: 0,
 			oldCostFile: this.state.oldCostFile,
 			changeFile: this.state.changeFile,
+			remark: this.state.remark,
 		}
 		formData.append('emp', JSON.stringify(emp))
 		formData.append('costFile', publicUtils.nullToEmpty($('#costRegistrationFile').get(0).files[0]))
@@ -180,7 +182,7 @@ class costRegistration extends React.Component {
 					this.resetBook();
 					this.searchCostRegistration();
 				} else {
-					this.setState({ "errorsMessageShow": true, "method": "put", "message": "データはすでに存在している" });
+					this.setState({ "errorsMessageShow": true, "method": "put", "message": (this.state.regularStatus === "0" ? "定期通勤":"非定期通勤") + "データはすでに存在している" });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				}
 			}).catch((error) => {
@@ -209,6 +211,7 @@ class costRegistration extends React.Component {
 				changeData: true,
 				changeFile: false,
 				costRegistrationFileFlag: (this.state.rowSelectCostFile == ""?false:true),
+				remark: this.state.rowRemark,
 			})
 		} else if (this.state.rowSelectCostClassificationCode == 1) {
 			this.setState({
@@ -226,6 +229,7 @@ class costRegistration extends React.Component {
 				changeFile1: false,
 				costRegistrationFileFlag1: (this.state.rowSelectCostFile == "" ? false : true),
 				showOtherCostModal:true,
+				remark: '',
 			});
 		} else if(this.state.rowSelectCostClassificationCode > 1){
 			this.setState({
@@ -235,13 +239,14 @@ class costRegistration extends React.Component {
 				yearAndMonth: publicUtils.converToLocalTime(this.state.rowSelectHappendDate, true),
 				detailedNameOrLine2: this.state.rowSelectDetailedNameOrLine,
 				stationCode5: this.state.rowSelectStationCode,
-				remark: this.state.rowSelectRemark,
+				rowRemark: this.state.rowSelectRemark,
 				cost2: this.state.rowSelectCost,
 				oldCostFile: this.state.rowSelectCostFile,
 				changeData1: true,
 				changeFile1: false,
 				costRegistrationFileFlag1: (this.state.rowSelectCostFile == "" ? false : true),
 				showOtherCostModal: true,
+				remark: '',
 			});
         }		
 	}
@@ -322,6 +327,7 @@ class costRegistration extends React.Component {
 		detailedNameOrLine2: '',
 		stationCode5: '',
 		remark: '',
+		rowRemark: '',
 		cost2: '',
 		changeData: false,
 		changeFile: false,
@@ -384,6 +390,11 @@ class costRegistration extends React.Component {
 					rowSelectRoundCode: row.roundCode,
 					rowSelectCostFile: row.costFile,
 				});
+			if(row.costClassificationCode === "0"){
+				this.setState({rowRemark: row.remark,});
+			}else{
+				this.setState({rowRemark: '',});
+			}
 		} else {
 			this.setState(
 				{
@@ -397,6 +408,7 @@ class costRegistration extends React.Component {
 					rowSelectRemark: '',
 					rowSelectRoundCode: '',
 					rowSelectCostFile: '',
+					rowRemark: '',
 					oldCostClassification1: '',
 					oldHappendDate1: '',
 					costClassification1: '',
@@ -410,6 +422,7 @@ class costRegistration extends React.Component {
 					detailedNameOrLine2: '',
 					stationCode5: '',
 					remark: '',
+					rowRemark: '',
 					cost2: '',
 				}
 			);
@@ -477,10 +490,20 @@ class costRegistration extends React.Component {
 			return transportationCode(row.stationCode, this.state.station)
 			
 		} else {
-			return (<div style={{ padding: '0px', width: "100%"}}>
-				<td style={{ border: 'none', width: "150px", padding: '0px', textAlign: "center", height: '20px' }} >{transportationCode(row.transportationCode, this.state.station)}</td>
-
-				<td style={{ textAlign: "center", border: "1px solid #ddd", borderTop: '0', borderBottom: '0', borderRight: '0', width: "150px", padding: '0px' }} >{transportationCode(row.destinationCode, this.state.station)}</td></div>
+			return (
+			<div style={{ "textAlign": "center" }}>
+				<Row>
+					<Col>
+						{transportationCode(row.transportationCode, this.state.station)}
+					</Col>
+					<Col  sm={1}>
+						<td style={{"borderTop": "0","borderRight": "0","borderBottom": "0"}}></td>
+					</Col>
+					<Col>
+						{transportationCode(row.destinationCode, this.state.station)}
+					</Col>
+				</Row>
+			</div>
 			)
 		}
 	}
@@ -617,7 +640,7 @@ class costRegistration extends React.Component {
 							oldHappendDate1={this.state.oldHappendDate1}
 							detailedNameOrLine2={this.state.detailedNameOrLine2}
 							stationCode5={this.state.stationCode5}
-							remark={this.state.remark}
+							remark={this.state.rowRemark}
 							cost2={this.state.cost2}
 							oldCostFile1={this.state.oldCostFile}
 							changeData1={this.state.changeData1}
@@ -647,11 +670,6 @@ class costRegistration extends React.Component {
 					</div>
 				</Form>
 				<div disabled={true}>
-                    <Row>
-						<Col sm={2}>
-							<font style={{ whiteSpace: 'nowrap' }}>氏名：{this.state.employeeName}</font>
-						</Col>
-					</Row>	
                     <Row>
 						<Col  sm={4}>
 						<InputGroup size="sm" className="mb-3">
@@ -780,25 +798,28 @@ class costRegistration extends React.Component {
 							</InputGroup>
 						</Col>
 						<Col sm={4}>
-							<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
-							<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.handleShowModal.bind(this)}>
-								<FontAwesomeIcon /> {" 他の費用"}
-							</Button>
-							<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
+							<InputGroup size="sm" className="mb-3">
+								<InputGroup.Prepend>
+									<InputGroup.Text id="inputGroup-sizing-sm">備考</InputGroup.Text>
+								</InputGroup.Prepend>
+								<Form.Control type="text" value={this.state.remark} name='remark' autoComplete="off" size="sm" maxLength='20' disabled={this.state.disabledFlag} onChange={this.valueChange}  placeholder="備考" />
+							</InputGroup>
 						</Col>
-
 					</Row>
 					<Row>
-						 <Col sm={4}>
-							<div style={{ "position": "relative", "left": "100%" }}>
-								<div style={{ "textAlign": "center" }}>
-									<Button size="sm" variant="info" disabled={this.state.disabledFlag} onClick={this.InsertCost} type="button" on>
-										<FontAwesomeIcon icon={faSave} /> {" 登録"}
-									</Button>{' '}
-									<Button size="sm" variant="info" disabled={this.state.disabledFlag} type="reset" onClick={this.resetBook}>
-										<FontAwesomeIcon icon={faUndo} /> Reset
-									</Button>
-								</div>
+						 <Col>
+							<div style={{ "textAlign": "center" }}>
+								<Button size="sm" variant="info" disabled={this.state.disabledFlag} onClick={this.InsertCost} type="button" on>
+									<FontAwesomeIcon icon={faSave} /> {" 登録"}
+								</Button>{' '}
+								<Button size="sm" variant="info" disabled={this.state.disabledFlag} type="reset" onClick={this.resetBook}>
+									<FontAwesomeIcon icon={faUndo} /> Reset
+								</Button>{' '}
+								<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.handleShowModal.bind(this)}>
+									<FontAwesomeIcon /> {" 他の費用"}
+								</Button>{' '}
+								<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
+								<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
 							</div>
 						 </Col>
 					</Row>

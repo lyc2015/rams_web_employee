@@ -120,6 +120,7 @@ class PasswordSetEmployee extends Component {
                             <FontAwesomeIcon icon={faUndo} />リセット
                                 </Button>
                     </div>
+                    <br />
                 </Form>
                 <input type="hidden" id="actionType" name="actionType" />
             </div>

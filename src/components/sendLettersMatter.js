@@ -321,7 +321,7 @@ class sendLettersMatter extends React.Component {
 	beforeSendMailWithFile = () => {
 		this.setSelectedCusInfos("○");
 		var mailText = this.state.matterText;
-		mailText = mailText.replace(/\n/g,"<br>");        // i9及以上
+		mailText = mailText.replace(/\n/g,"\n\t");        // i9及以上
 		this.sendMailWithFile(mailText);
 
 		// this.sendMailWithFile();
@@ -331,25 +331,26 @@ class sendLettersMatter extends React.Component {
 	sendMailWithFile = (mailText) => {
 		for(let i = 0; i < this.state.selectedCusInfos.length; i++){
 			let selectedCustomer = this.state.selectedCusInfos[i].customerNo;
-			const mailConfirmContont = this.state.selectedCusInfos[i].customerName.split("(")[0].replace("株式会社","") + `株式会社<br/>
-				`+ (this.state.selectedCusInfos[i].purchasingManagers === "" ? "ご担当者" : this.state.selectedCusInfos[i].purchasingManagers.split("　")[0]) + `様<br/>
-				<br/>
-				お世話になっております、LYC`+ this.state.loginUserInfo[0].employeeFristName + `です。<br/>
-				<br/>`
-				+ this.state.greetinTtext.replace(/\n/g,"<br>") +
-				`<br/><br/>`
-				+ mailText +`<br/><br/>
-				以上、よろしくお願いいたします。<br/>
-				<br/>
-				******************************************************************<br/>
-				LYC株式会社 `+ this.state.loginUserInfo[0].employeeFristName + ` ` + this.state.loginUserInfo[0].employeeLastName + `<br/>
-				〒:101-0032 東京都千代田区岩本町3-3-3サザンビル3F <br/> 
-				http://www.lyc.co.jp/   <br/>
-				TEL：03-6908-5796  携帯：`+ this.state.loginUserInfo[0].phoneNo + `(優先）<br/>
-				Email：`+ this.state.loginUserInfo[0].companyMail + ` 営業共通：eigyou@lyc.co.jp <br/>
-				労働者派遣事業許可番号　派遣許可番号　派13-306371<br/>
-				ＩＳＭＳ：MSA-IS-385<br/>
-				*****************************************************************`;
+			const mailConfirmContont = this.state.selectedCusInfos[i].customerName.split("(")[0].replace("株式会社","") + `株式会社
+`+ (this.state.selectedCusInfos[i].purchasingManagers === "" ? "ご担当者" : this.state.selectedCusInfos[i].purchasingManagers.split("　")[0]) + `様
+
+お世話になっております、LYC`+ this.state.loginUserInfo[0].employeeFristName + `です。
+`
++ this.state.greetinTtext.replace(/\n/g,"\n\t") +`
+
+` + mailText +`
+
+以上、よろしくお願いいたします。
+
+******************************************************************
+LYC株式会社 `+ this.state.loginUserInfo[0].employeeFristName + ` ` + this.state.loginUserInfo[0].employeeLastName + `
+〒:101-0032 東京都千代田区岩本町3-3-3サザンビル3F
+http://www.lyc.co.jp/
+TEL：03-6908-5796  携帯：`+ this.state.loginUserInfo[0].phoneNo + `(優先）
+Email：`+ this.state.loginUserInfo[0].companyMail + ` 営業共通：eigyou@lyc.co.jp
+労働者派遣事業許可番号　派遣許可番号　派13-306371
+ＩＳＭＳ：MSA-IS-385
+*****************************************************************`;
 						const { resumeName, mailTitle, resumePath, selectedmail } = this.state;
 						selectedmail = this.state.selectedCusInfos[i].purchasingManagersMail/*
 																							 * +

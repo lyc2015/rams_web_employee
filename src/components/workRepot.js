@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faUpload,faDownload } from '@fortawesome/free-solid-svg-icons';
+import {faUpload, faDownload, faMoneyCheckAlt } from '@fortawesome/free-solid-svg-icons';
 import * as publicUtils from './utils/publicUtils.js';
 import store from './redux/store';
 import MyToast from './myToast';
@@ -192,6 +192,26 @@ if($("#getFile").get(0).files[0].size>1048576){
 			</p>
 		);
 	}
+	
+	shuseiTo = (actionType) => {
+		var path = {};
+		const sendValue = {
+		};
+		switch (actionType) {
+			case "costRegistration":
+				path = {
+					pathname: '/subMenuEmployee/costRegistration',
+					state: {
+						backPage: "workRepot",
+						sendValue: sendValue,
+					},
+				}
+				break;
+			default:
+		}
+		this.props.history.push(path);
+	}
+	
 	render() {
 		const {employeeList} = this.state;
 		//　テーブルの行の選択
@@ -246,17 +266,18 @@ if($("#getFile").get(0).files[0].size>1048576){
 				<Form.File id="getFile" accept="application/pdf,application/vnd.ms-excel" custom hidden="hidden" onChange={this.workRepotUpload}/>
 	                <br/>
                     <Row>
-						<Col sm={2}>
-							<font style={{ whiteSpace: 'nowrap' }}></font>
-						</Col>
-  						<Col sm={6}></Col>
-                        <Col sm={4}>
+  						<Col sm={6}>
+	  						<Button variant="info" size="sm" onClick={this.shuseiTo.bind(this, "costRegistration")} >
+								<FontAwesomeIcon icon={faMoneyCheckAlt} /> 費用登録
+							</Button>
+  						</Col>
+                        <Col sm={6}>
                             <div style={{ "float": "right" }}>
                                <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload">
-									<FontAwesomeIcon icon={faUpload} />Upload
+									<FontAwesomeIcon icon={faUpload} /> Upload
 								</Button>{' '}
 								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowSelectWorkingTimeReport, this.state.serverIP)}id="workRepotDownload">
-	                          		 <FontAwesomeIcon icon={faDownload} />Download
+	                          		 <FontAwesomeIcon icon={faDownload} /> Download
 		                        </Button>
 	 						</div>
 						</Col>

@@ -144,9 +144,9 @@ shuseiTo = (actionType) => {
 	switch (actionType) {
 		case "detail":
 			path = {
-				pathname: '/subMenuManager/employeeDetailNew',
+				pathname: '/subMenuManager/employeeUpdateNew',
 				state: {
-					actionType: 'detail',
+					actionType: 'update',
 					id: this.state.rowSelectEmployeeNo,
 					backPage: "situationChange",
 					sendValue: sendValue,
