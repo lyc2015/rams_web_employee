@@ -8,7 +8,7 @@ import DataShareEmployee from './dataShareEmployee';
 import WorkTimeSearch from './workTimeSearch';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faFile, faUser, faFileExcel, faFileWord, faSearch, faSave, faThList , faCaretSquareLeft ,
+import { faHistory, faFile, faUser, faFileExcel, faFileWord, faSearch, faSave, faThList , faCaretSquareLeft , faCogs,
 faAddressCard, faFolderOpen, faFileContract, faFileAlt, faMoneyCheckAlt, faUserEdit , faUserClock} from '@fortawesome/free-solid-svg-icons';
 import '../asserts/css/subMenu.css';
 import DutyRegistration from './dutyRegistration';
@@ -120,23 +120,6 @@ class SubMenu extends Component {
                             <Col>
                             <ListGroup >
 							<Accordion className="menuCol">
-							
-									<ListGroup.Item style={this.state.hover.search("PWリセット") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="PWリセット" data-class="my-tabcolor" data-effect="solid"
-										onMouseEnter={this.toggleHover.bind(this,"PWリセット")} onMouseLeave={this.toggleHover.bind(this,"")}>
-										<Accordion.Toggle as={Button} variant="link" eventKey="0"><font
-										className={this.state.hover.search("PWリセット") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faHistory} /> PWリセット</font></Accordion.Toggle>
-										<ReactTooltip id="PWリセット"  delayUpdate={1000} getContent={() => {
-											return <div>
-											<ListGroup>
-												<Accordion className="menuCol">
-													<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"PWリセット-1")} onMouseLeave={this.toggleHover.bind(this,"PWリセット")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/passwordSetEmployee'})} block>
-														<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/passwordSetEmployee', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faHistory}/> PWリセット</Link></div>
-													</ListGroup.Item>
-												</Accordion>
-											</ListGroup>
-											</div>
-											}}/>
-									</ListGroup.Item>
 									
 									<ListGroup.Item style={this.state.hover.search("勤務登録") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="勤務登録" data-class="my-tabcolor" data-effect="solid"
 										onMouseEnter={this.toggleHover.bind(this,"勤務登録")} onMouseLeave={this.toggleHover.bind(this,"")}>
@@ -146,8 +129,11 @@ class SubMenu extends Component {
 											return <div>
 											<ListGroup>
 												<Accordion className="menuCol">
-													<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-1")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/breakTime'})} block>
+													{/*<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-1")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/breakTime'})} block>
 														<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/breakTime', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faUserClock}/> 休憩時間</Link></div>
+													</ListGroup.Item>*/}
+													<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-1")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workRepot'})} block>
+														<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/workRepot', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileExcel}/> 作業報告書</Link></div>
 													</ListGroup.Item>
 													<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-2")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/dutyRegistration'})} block>
 														<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/dutyRegistration', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faUserEdit}/> 勤務時間入力</Link></div>
@@ -155,8 +141,8 @@ class SubMenu extends Component {
 													<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-3")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/costRegistration'})} block>
 														<div><Link className={this.state.hover.search("3") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/costRegistration', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faMoneyCheckAlt}/> 費用登録</Link></div>
 													</ListGroup.Item>
-													<ListGroup.Item style={this.state.hover.search("4") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-4")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/'})} block>
-														<div><Link className={this.state.hover.search("4") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearch}/> 履歴検索</Link></div>
+													<ListGroup.Item style={this.state.hover.search("4") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-4")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workTimeSearch'})} block>
+														<div><Link className={this.state.hover.search("4") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/workTimeSearch', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileAlt}/> 作業時間検索</Link></div>
 													</ListGroup.Item>
 												</Accordion>
 											</ListGroup>
@@ -172,31 +158,43 @@ class SubMenu extends Component {
 												return <div>
 												<ListGroup>
 													<Accordion className="menuCol">
-														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-1")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workRepot'})} block>
-															<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/workRepot', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileExcel}/> 作業報告書</Link></div>
+														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-1")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/dataShareEmployee'})} block>
+															<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/dataShareEmployee', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileContract}/> 事務共有</Link></div>
 														</ListGroup.Item>
 														<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-2")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/resume'})} block>
 															<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/resume', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileWord}/> 履歴書</Link></div>
 														</ListGroup.Item>
-														<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-3")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workTimeSearch'})} block>
-															<div><Link className={this.state.hover.search("3") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/workTimeSearch', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileAlt}/> 作業時間検索</Link></div>
-														</ListGroup.Item>
-														<ListGroup.Item style={this.state.hover.search("4") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-4")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/dataShareEmployee'})} block>
-															<div><Link className={this.state.hover.search("4") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/dataShareEmployee', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileContract}/> 共有ファイル</Link></div>
-														</ListGroup.Item>
+
+
 													</Accordion>
 												</ListGroup>
 												</div>
 												}}/>
 										</ListGroup.Item>
 											
+										<ListGroup.Item style={this.state.hover.search("ほかの設定") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="ほかの設定" data-class="my-tabcolor" data-effect="solid"
+											onMouseEnter={this.toggleHover.bind(this,"ほかの設定")} onMouseLeave={this.toggleHover.bind(this,"")}>
+											<Accordion.Toggle as={Button} variant="link" eventKey="0"><font
+											className={this.state.hover.search("ほかの設定") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> ほかの設定</font></Accordion.Toggle>
+											<ReactTooltip id="ほかの設定"  delayUpdate={1000} getContent={() => {
+												return <div>
+												<ListGroup>
+													<Accordion className="menuCol">
+														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ほかの設定-1")} onMouseLeave={this.toggleHover.bind(this,"ほかの設定")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/passwordSetEmployee'})} block>
+															<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/passwordSetEmployee', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faHistory}/> PWリセット</Link></div>
+														</ListGroup.Item>
+													</Accordion>
+												</ListGroup>
+												</div>
+												}}/>
+										</ListGroup.Item>
 								</Accordion>
 								</ListGroup>
                                 {/*<ListGroup >
                                     <Accordion className="menuCol">
                                         <ListGroup.Item style={{ "backgroundColor": "#17a2b8" }} block>
                                             <Accordion.Toggle as={Link} to="/subMenuEmployee/passwordSetEmployee" style={{ "marginLeft": "6%" }}>
-                                                <font className="linkFont"><FontAwesomeIcon className="fa-fw" size="lg" icon={faHistory} />PWリセット</font></Accordion.Toggle>
+                                                <font className="linkFont"><FontAwesomeIcon className="fa-fw" size="lg" icon={faHistory} />ほかの設定</font></Accordion.Toggle>
                                         </ListGroup.Item>
                                         <ListGroup.Item style={{ "backgroundColor": "#1a94a8" }}>
                                             <Accordion.Toggle as={Button} variant="link" eventKey="0">

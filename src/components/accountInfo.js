@@ -265,11 +265,6 @@ class BankInfo extends Component {
                     <ErrorsMessageToast errorsMessageShow={this.state.errorsMessageShow} message={errorsMessageValue} type={"danger"} />
                 </div>
                 <div  >
-                    <Row inline="true">
-                        <Col className="text-center">
-                            <h2>口座情報</h2>
-                        </Col>
-                    </Row>
                     <Form id="bankForm">
                         <Row>
                             <Col>

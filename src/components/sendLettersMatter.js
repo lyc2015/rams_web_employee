@@ -2,7 +2,7 @@ import React from 'react';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {Form, Button, Col, Row, InputGroup, Modal, FormControl} from 'react-bootstrap';
-import { faGlasses, faEnvelope, faUserPlus , faLevelUpAlt, faTrash, faFile} from '@fortawesome/free-solid-svg-icons';
+import { faGlasses, faEnvelope, faUserPlus , faLevelUpAlt, faTrash, faFile, faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import * as publicUtils from './utils/publicUtils.js';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -471,9 +471,12 @@ Email：`+ this.state.loginUserInfo[0].companyMail + ` 営業共通：eigyou@lyc
 	}
 	
 	sendOverFormat = (cell) => {
-		if(cell === "○"){
+		if(cell === "○")
 			return <div class='donut'></div>;
-		}
+		else if(cell === "X")
+			return (<FontAwesomeIcon icon={faTimes} style={{color:"red"}} />);
+		else if(cell === "済み")
+			return (<FontAwesomeIcon icon={faCheck} style={{color:"green"}} />);
 		return cell;
 	}
 

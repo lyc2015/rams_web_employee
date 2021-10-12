@@ -422,7 +422,9 @@ class EmployeeDetailNew extends React.Component {
 				{/* 口座情報 */}
 				<Modal aria-labelledby="contained-modal-title-vcenter" centered backdrop="static"
 					onHide={this.handleHideModal.bind(this, "bankInfo")} show={this.state.showBankInfoModalFlag} dialogClassName="modal-bankInfo">
-					<Modal.Header closeButton>
+					<Modal.Header closeButton><Col className="text-center">
+						<h2>口座情報</h2>
+					</Col>
 					</Modal.Header>
 					<Modal.Body >
 						<BankInfo accountInfo={accountInfo} actionType={this.state.actionType} employeeNo={this.state.employeeNo} accountTokuro={this.accountInfoGet} employeeFristName={this.state.employeeFristName} employeeLastName={this.state.employeeLastName} />
@@ -431,7 +433,9 @@ class EmployeeDetailNew extends React.Component {
 				{/* PW設定 */}
 				<Modal aria-labelledby="contained-modal-title-vcenter" centered backdrop="static"
 					onHide={this.handleHideModal.bind(this, "passwordSet")} show={this.state.showpasswordSetModalFlag} dialogClassName="modal-passwordSet">
-					<Modal.Header closeButton>
+					<Modal.Header closeButton><Col className="text-center">
+						<h2>パースワード設定</h2>
+					</Col>
 					</Modal.Header>
 					<Modal.Body >
 						<PasswordSet passwordSetInfo={passwordSetInfo} actionType={this.state.actionType} employeeNo={this.state.employeeNo} employeeFristName={this.state.employeeFristName} employeeLastName={this.state.employeeLastName} passwordToroku={this.passwordSetInfoGet} /></Modal.Body>

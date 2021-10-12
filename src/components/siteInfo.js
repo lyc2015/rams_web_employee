@@ -998,7 +998,9 @@ class siteInfo extends Component {
 				{/* bp情報 */}
 				<Modal aria-labelledby="contained-modal-title-vcenter" centered backdrop="static"
 					onHide={this.handleHideModal.bind(this, "bpInfoModel")} show={this.state.showBpInfoModalFlag} dialogClassName="modal-pbinfoSet">
-					<Modal.Header closeButton>
+					<Modal.Header closeButton><Col className="text-center">
+						<h2>BP情報入力</h2>
+					</Col>
 					</Modal.Header>
 					<Modal.Body >
 						<BpInfoModel /*bpInfoModel={bpInfoModel}*/ customer={this.state.customer} actionType={"update"} employeeNo={this.state.employeeName} employeeFristName={this.state.employeeFristName} employeeLastName={this.state.employeeLastName} pbInfoTokuro={this.pbInfoGet} /></Modal.Body>

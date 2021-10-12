@@ -52,7 +52,7 @@ class PasswordSetManager extends Component {
 	 * パスワード登録
 	 */
 	passwordToroku = () => {
-		var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[$@!%*#?&])[A-Za-z\d$@!%*#?&]{8,}$/;
+		var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 		var actionType = this.props.actionType;
 		if ($("#newPassword").val() == "") {
 			this.setState({ "errorsMessageShow": true, errorsMessageValue: "パスワード入力してください" });
@@ -61,7 +61,7 @@ class PasswordSetManager extends Component {
 			this.setState({ "errorsMessageShow": true, errorsMessageValue: "パスワード再確認入力してください" });
 		}
 		else if (!reg.test($("#newPassword").val())) {
-			this.setState({ "errorsMessageShow": true, errorsMessageValue: "8桁以上、大文字、小文字、数字、記号を含めてパスワードを入力してください" });
+			this.setState({ "errorsMessageShow": true, errorsMessageValue: "8桁以上、大文字、小文字、数字を含めてパスワードを入力してください" });
 		}
 		else {
 			if ($("#newPassword").val() === $("#passwordCheck").val()) {
@@ -84,12 +84,6 @@ class PasswordSetManager extends Component {
 				<div style={{ "display": this.state.errorsMessageShow ? "block" : "none" }}>
 					<ErrorsMessageToast errorsMessageShow={this.state.errorsMessageShow} message={errorsMessageValue} type={"danger"} />
 				</div>
-				<Row inline="true">
-					<Col className="text-center" >
-						<h2>パースワード設定</h2>
-					</Col>
-				</Row>
-				<br />
 				<Form id="passwordSetForm">
 					<Row>
 						<Col >
@@ -98,7 +92,7 @@ class PasswordSetManager extends Component {
 							</InputGroup>
 						</Col>
 					</Row>
-					<Row>
+					<Row hidden>
 						<Col >
 							<InputGroup size="sm" className="mb-3">
 								社員番号： <a id="passwordEmployeeNo" name="passwordEmployeeNo"></a>

@@ -16,6 +16,8 @@ class mailSalary extends React.Component {
     			employeeFristName: this.props.personalInfo.state.rowEmployeeFristName,
     			companyMail: this.props.personalInfo.state.rowCompanyMail,
 				yearAndMonth: this.props.personalInfo.state.yearAndMonth,
+				letterStatus: this.props.personalInfo.state.letterStatus,
+				letterYearAndMonth: this.props.personalInfo.state.letterYearAndMonth === "0" ? new Date().getFullYear() : new Date().getFullYear() - 1,
 	})
 	componentDidMount() {
 	}
@@ -28,14 +30,14 @@ class mailSalary extends React.Component {
 						style={{ height: '560px', width: '100%', resize: 'none', border: '0'}}
 					value={
 `宛先：` + this.state.companyMail + `
-タイトル：` + this.state.yearAndMonth + `給料明細
+タイトル：` + (this.state.letterStatus === "0" ? (this.state.yearAndMonth + "給料明細") : ("給与所得の源泉徴収票_" + this.state.letterYearAndMonth + "年分")) +`
 
 ` + this.state.employeeFristName + `さん` + `
 
 お疲れ様です。LYCの` + this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName + `です。
 
 表題の件につきまして、
-`+ this.state.yearAndMonth + `分の給料明細を添付致しました。
+`+ (this.state.letterStatus === "0" ? (this.state.yearAndMonth + "分の給料明細") : (this.state.letterYearAndMonth + "年の給与所得の源泉徴収票")) + `を添付致しました。
 ご確認お願いいたします。
 
 以上です。

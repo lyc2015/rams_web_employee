@@ -252,12 +252,6 @@ class bpInfo extends React.Component {
 		};
 		return (
 			<div>
-				<Row inline="true">
-					<Col className="text-center">
-						<h2>BP情報入力</h2>
-					</Col>
-				</Row>
-				<br />
 				<Form >
 					<Form.Group>
 					<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
