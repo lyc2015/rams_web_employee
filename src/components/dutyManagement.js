@@ -411,6 +411,13 @@ class dutyManagement extends React.Component {
 		return row.costClassificationCode === "0" ? "transportationExpenses" : "otherCost";
 	}
 	
+	test = () => {
+		/*this.refs.table.store.selected = ["LYC001"]
+		this.refs.table.setState({
+			selectedRowKeys: ["LYC001"]
+		});*/
+	}
+	
 	costFormat = (cell,row) => {
         let returnItem = cell;
         const options = {
@@ -427,13 +434,13 @@ class dutyManagement extends React.Component {
     			onSelect: this.handleRowClick,
             };
         returnItem = 
-        <OverlayTrigger 
+        <OverlayTrigger
             trigger="click"
             placement={"left"}
             overlay={
             <Popover className="popoverC">
                 <Popover.Content >
-                <div >
+                <div onClick={this.test}>
                     <Row>
 	                    <Col style={{"padding": "0px","marginTop": "10px"}}>
 		                	<font>{this.state.month + "月"}</font>
@@ -479,7 +486,9 @@ class dutyManagement extends React.Component {
             </Popover>
             }
         >
-        <Button variant="warning" size="sm" >詳細</Button>
+        <div style={{ "float": "right" }}>
+        	<Button variant="warning" size="sm" >詳細</Button>
+        </div>
       </OverlayTrigger>
       if(row.costRegistrationModel.length > 0)
     	  return (<div>{publicUtils.addComma(cell)}{" "}{returnItem}</div>);

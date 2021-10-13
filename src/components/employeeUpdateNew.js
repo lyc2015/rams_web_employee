@@ -259,7 +259,7 @@ class employeeUpdateNew extends React.Component {
 			}).catch((error) => {
 				this.setState({ loading: true, });
 				console.error("Error - " + error);
-				this.setState({ "errorsMessageShow": true, errorsMessageValue: "アップデートするファイル大きすぎる。" });
+				this.setState({ "errorsMessageShow": true, errorsMessageValue: "ファイルアップデートエラー発生" });
 				setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 			});
 		/*}*/	

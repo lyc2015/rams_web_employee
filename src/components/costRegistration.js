@@ -37,6 +37,7 @@ class costRegistration extends React.Component {
 		super(props);
 		this.state = this.initialState;//初期化
 		this.valueChange = this.valueChange.bind(this);
+		this.regularStatusChange = this.regularStatusChange.bind(this);
 		this.handleShowModal = this.handleShowModal.bind(this);
 		this.searchCostRegistration = this.searchCostRegistration.bind(this);
 		this.searchEmployeeName = this.searchEmployeeName.bind(this);
@@ -47,10 +48,18 @@ class costRegistration extends React.Component {
 		this.searchEmployeeName();
 		this.setState({ "errorsMessageShow": false, "myToastShow": false, });
 	}
+	
 	//onchange
 	valueChange = event => {
 		this.setState({
 			[event.target.name]: event.target.value
+		})
+	}
+	
+	regularStatusChange = event => {
+		this.setState({
+			[event.target.name]: event.target.value,
+			detailedNameOrLine: "",
 		})
 	}
 	costValueChange = (e) => {
@@ -66,6 +75,7 @@ class costRegistration extends React.Component {
 		approvalStatuslist: [],
 		stationCode1: '',　// 出発
 		stationCode2: '',　// 到着
+		rowSelectCostClassificationCode: '',
 		showOtherCostModal: false,//他の費用
 		otherCostModel: null,//他の費用データ
 		changeData: false,//insert:false
@@ -144,17 +154,17 @@ class costRegistration extends React.Component {
 			this.state.stationCode1 == "" ||
 			this.state.stationCode2 == "" ||
 			this.state.detailedNameOrLine == "") {
-			this.setState({ "errorsMessageShow": true, "method": "put", "message": "全項目入力してください" });
+			this.setState({ "errorsMessageShow": true, "method": "put", "message": (this.state.regularStatus === "0" ? "定期通勤":"非定期通勤") + "関連の項目入力してください" });
 			return;
 		}
-		if (this.state.changeData) {
+		if (this.state.rowSelectCostClassificationCode === "0") {
 			var theUrl = "costRegistration/updateCostRegistration"
 		} else {
 			var theUrl = "costRegistration/insertCostRegistration"
 		}
 		const emp = {
 			costClassificationCode: 0,
-			costClassificationName:this.costClassificationCode(0),
+			costClassificationName: this.state.regularStatus === "0" ? "定期" : "非定期",
 			regularStatus: this.state.regularStatus,
 			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 			//happendDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth1, true) : (publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01"),
@@ -165,9 +175,9 @@ class costRegistration extends React.Component {
 			destinationCode: this.state.stationCode2,
 			detailedNameOrLine: this.state.detailedNameOrLine,
 			cost: utils.deleteComma(this.state.cost),
-			oldHappendDate: this.state.oldHappendDate,
+			oldHappendDate: this.state.rowSelectHappendDate,
 			oldCostClassificationCode: 0,
-			oldCostFile: this.state.oldCostFile,
+			oldCostFile: this.state.rowSelectCostFile,
 			changeFile: this.state.changeFile,
 			remark: this.state.remark,
 		}
@@ -230,6 +240,7 @@ class costRegistration extends React.Component {
 				costRegistrationFileFlag1: (this.state.rowSelectCostFile == "" ? false : true),
 				showOtherCostModal:true,
 				remark: '',
+				rowRemark: this.state.rowSelectRemark,
 			});
 		} else if(this.state.rowSelectCostClassificationCode > 1){
 			this.setState({
@@ -391,9 +402,29 @@ class costRegistration extends React.Component {
 					rowSelectCostFile: row.costFile,
 				});
 			if(row.costClassificationCode === "0"){
-				this.setState({rowRemark: row.remark,});
+				this.setState(
+						{
+							rowRemark: row.remark,
+							regularStatus: row.regularStatus,
+							stationCode1: row.transportationCode,
+							stationCode2: row.destinationCode,
+							detailedNameOrLine: row.detailedNameOrLine,
+							cost: utils.addComma(row.cost),
+							remark: row.remark,
+							costRegistrationFileFlag: (this.state.rowSelectCostFile == ""?false:true),
+						});
 			}else{
-				this.setState({rowRemark: '',});
+				this.setState(
+						{
+							rowRemark: '',
+							regularStatus: '',
+							stationCode1: '',
+							stationCode2: '',
+							detailedNameOrLine: '',
+							cost: '',
+							remark: '',
+							costRegistrationFileFlag: false,
+						});
 			}
 		} else {
 			this.setState(
@@ -424,6 +455,11 @@ class costRegistration extends React.Component {
 					remark: '',
 					rowRemark: '',
 					cost2: '',
+					stationCode1: '',
+					stationCode2: '',
+					detailedNameOrLine: '',
+					cost: '',
+					costRegistrationFileFlag: false,
 				}
 			);
 		}
@@ -576,9 +612,18 @@ class costRegistration extends React.Component {
 				disabledFlag: false,
 			});
 		}
-
+		this.refs.table.setState({
+			selectedRowKeys: [],
+		});
 		this.setState({
 			yearMonth: date,
+			rowRemark: '',
+			stationCode1: '',
+			stationCode2: '',
+			detailedNameOrLine: '',
+			cost: '',
+			remark: '',
+			costRegistrationFileFlag: false,
 		},()=>{
 			this.searchCostRegistration();
 		});
@@ -648,6 +693,7 @@ class costRegistration extends React.Component {
 							costRegistrationFileFlag1={this.state.costRegistrationFileFlag1}
 							otherCostToroku={this.otherCostGet} 
 							minDate={this.state.minDate}
+							otherCostFile={this.state.oldCostFile}
 						/></Modal.Body>
 				</Modal>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -695,7 +741,7 @@ class costRegistration extends React.Component {
 							<InputGroup.Prepend>
 								<InputGroup.Text id="inputGroup-sizing-sm">区分</InputGroup.Text>
 							</InputGroup.Prepend>
-							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.valueChange} disabled={this.state.disabledFlag} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
+							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.regularStatusChange} disabled={this.state.disabledFlag} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
 								<option value="0">定期</option>
 								<option value="1">非定期</option>
 							</Form.Control>
@@ -810,7 +856,7 @@ class costRegistration extends React.Component {
 						 <Col>
 							<div style={{ "textAlign": "center" }}>
 								<Button size="sm" variant="info" disabled={this.state.disabledFlag} onClick={this.InsertCost} type="button" on>
-									<FontAwesomeIcon icon={faSave} /> {" 登録"}
+									<FontAwesomeIcon icon={this.state.rowSelectCostClassificationCode !== "0" ? faSave : faEdit} /> {this.state.rowSelectCostClassificationCode !== "0" ? " 登録" : " 修正"}
 								</Button>{' '}
 								<Button size="sm" variant="info" disabled={this.state.disabledFlag} type="reset" onClick={this.resetBook}>
 									<FontAwesomeIcon icon={faUndo} /> Reset
@@ -835,7 +881,7 @@ class costRegistration extends React.Component {
 							
 							<Col sm={2}>
 								<div style={{ "float": "right" }}>
-										<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.listChange} id="costRegistrationChange">
+										<Button variant="info" size="sm" disabled={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={this.listChange} id="costRegistrationChange">
 											<FontAwesomeIcon icon={faEdit} /> 修正
 										</Button>{' '}
 										<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.listDel}id="costRegistrationDel">

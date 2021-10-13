@@ -194,11 +194,12 @@ class employeeInsertNew extends React.Component {
 					store.dispatch({type:"UPDATE_STATE",dropName:"getEmployeeNameNoBP"});
 					store.dispatch({type:"UPDATE_STATE",dropName:"getEmployeeNameByOccupationName"});
 					//this.getNO(this.state.empNoHead);// 採番番号
+					setTimeout(() => this.changePage(), 3000);
 				}
 			}).catch((error) => {
 				this.setState({ loading: true, });
 				console.error("Error - " + error);
-				this.setState({ "errorsMessageShow": true, errorsMessageValue: "アップデートするファイル大きすぎる。" });
+				this.setState({ "errorsMessageShow": true, errorsMessageValue: "ファイルアップデートエラー発生" });
 				setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 			});
 	};
@@ -776,6 +777,21 @@ class employeeInsertNew extends React.Component {
 	
 	sendOverFormat = (cell) => {
 		return <div class='donut'></div>;
+	}
+	
+	changePage = () => {
+		var path = {
+				pathname: '/subMenuManager/employeeUpdateNew',
+				state: {
+					actionType: 'update',
+					id: this.state.employeeNo,
+					backPage: "employeeInsertNew",
+					sendValue: sendValue,
+				},
+			};
+		const sendValue = {
+		};
+		this.props.history.push(path);
 	}
 	
 	render() {

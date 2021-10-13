@@ -5,7 +5,7 @@ import $ from 'jquery';
 import axios from 'axios';
 import * as utils from './utils/publicUtils.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faUndo, faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
 import store from './redux/store';
 
 import '../asserts/css/style.css';
@@ -56,6 +56,13 @@ class BreakTime extends Component {
      * 画面の初期化
      */
     componentDidMount() {
+		const { location } = this.props
+		this.setState(
+				{
+					backPage: location.state.backPage,
+					sendValue: location.state.sendValue,
+				}
+			);
         let postData = {
             yearMonth: this.state.year + this.state.month,
         }
@@ -155,6 +162,20 @@ class BreakTime extends Component {
         $("#breakTimeNightMinuteEnd").prop("disabled", isDisable);
         $("#toroku").prop("disabled", isDisable);
     }
+    
+	back = () => {
+		let backPage = this.state.backPage
+		if (backPage !== null && backPage !== undefined && backPage !== '') {
+	        var path = {};
+	        path = {
+	            pathname: "/subMenuEmployee/" + backPage,
+	            state: { sendValue: this.state.sendValue,
+	            },
+	        }
+			return this.props.history.push(path);
+		}
+	};
+    
     render() {
         const { actionType } = this.state;
         return (
@@ -356,6 +377,10 @@ class BreakTime extends Component {
 										<Button size="sm" className="btn btn-info btn-sm" onClick={TopCustomerInfoJs.reset} >
                                         <FontAwesomeIcon icon={faUndo} /> リセット
 										</Button>
+										&nbsp;&nbsp;
+                                        <Button size="sm" variant="info" type="button" onClick={this.back}>
+        								<FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
+        								</Button>
                                 </div>
                             </Col>
                         </Row>

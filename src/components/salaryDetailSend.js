@@ -282,8 +282,14 @@ class salaryDetailSend extends Component {// 状況変動一覧
 				if(i === $('#pdfUpdate').get(0).files.length - 1){
 					this.updateEmployeeList(fileNameList);
 					this.setState({ loading: true, });
-					this.setState({ "myToastShow": true, myToastShowValue: "取り込み完了" });
-					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					if(this.state.fileCount > 0){
+						this.setState({ "myToastShow": true, myToastShowValue: "取り込み完了" });
+						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					}
+					else{
+						this.setState({ "errorsMessageShow": true, errorsMessageValue: "取り込み失敗" });
+						setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+					}
 				}
 			}).catch((error) => {
 				this.setState({ loading: true, });

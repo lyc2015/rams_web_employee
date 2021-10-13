@@ -100,6 +100,8 @@ class otherCost extends React.Component {
 					changeData: this.props.changeData1,
 					changeFile: this.props.changeFile1,
 					costRegistrationFileFlag2: this.props.costRegistrationFileFlag1,
+					remark: this.props.remark,
+					otherCostFilePath: this.props.otherCostFile,
 				})
 			} else {
 				this.setState({
@@ -115,6 +117,7 @@ class otherCost extends React.Component {
 					changeData: this.props.changeData1,
 					changeFile: this.props.changeFile1,
 					costRegistrationFileFlag3: this.props.costRegistrationFileFlag1,
+					otherCostFilePath: this.props.otherCostFile,
 				})
 			}
 		} else {
@@ -152,6 +155,7 @@ class otherCost extends React.Component {
 		if (name === "otherCostFile") {
 			this.setState({
 				otherCostFile: filePath,
+				otherCostFilePath: filePath,
 				otherCostFileName: fileName,
 				changeFile: true,
 				costRegistrationFileFlag: true,
@@ -174,6 +178,7 @@ class otherCost extends React.Component {
 		stationCode3: '', stationCode4: '', stationCode5: '', detailedNameOrLine2: '',
 		cost1: '', cost2: '', transportationCode: '', costRegistrationFileFlag2: '',
 		costRegistrationFileFlag3: '', remark: '', oldCostFile: '', otherCostFile: '',
+		otherCostFilePath: '',
 	};
 	resetBook2 = () => {
 		this.setState(() => this.changeCostClassificationCode);
@@ -266,7 +271,7 @@ class otherCost extends React.Component {
 			this.state.stationCode3 == "" ||
 			this.state.stationCode4 == "" ||
 			isNaN(utils.deleteComma(this.state.cost1))) {
-				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": "全項目入力してください" });
+				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": this.costClassificationCode(this.state.costClassificationCode) + "関連の項目入力してください" });
 				return;
 			}
 			const emp = {
@@ -291,9 +296,8 @@ class otherCost extends React.Component {
 		} else if (this.state.costClassificationCode > 1) {
 			if (this.state.detailedNameOrLine2 == "" ||
 				this.state.stationCode5 == "" ||
-				this.state.remark == "" ||
 				isNaN(utils.deleteComma(this.state.cost2))) {
-				this.setState({ "errorsMessageShow": true, "method": "put", "message": "全項目入力してください"  });
+				this.setState({ "errorsMessageShow": true, "method": "put", "message": this.costClassificationCode(this.state.costClassificationCode) + "関連の項目入力してください"  });
 				return;
 			}
 			const emp = {
@@ -533,13 +537,13 @@ class otherCost extends React.Component {
 					</Form.Group>
 					<div style={{ "textAlign": "center" }}>
 						<Button size="sm" variant="info" onClick={this.InsertCost} type="button" on>
-							<FontAwesomeIcon icon={faSave} /> {"登録"}
+							<FontAwesomeIcon icon={faSave} /> {this.props.changeData1 ? "更新" : "登録"}
 						</Button>{' '}
 						<Button size="sm" variant="info" type="reset" onClick={this.resetBook}>
 							<FontAwesomeIcon icon={faUndo} /> Reset
 						</Button>{' '}
 						<Button size="sm" variant="info" type="reset" onClick={(event) => this.addFile(event, 'otherCostFile')} disabled={this.state.costClassificationCode === ""}>
-							<FontAwesomeIcon icon={faFile} /> {this.state.otherCostFile === "" ? "添付" : "済み"}
+							<FontAwesomeIcon icon={faFile} /> {this.state.otherCostFilePath === "" ? "添付" : "済み"}
 						</Button>{' '}
 					</div>
 					<div>

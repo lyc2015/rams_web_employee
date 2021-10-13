@@ -429,6 +429,25 @@ class DutyRegistration extends React.Component {
 		}
 		return returnItem;
 	}
+	
+    shuseiTo = (actionType) => {
+        var path = {};
+        var sendValue = {
+        };
+		switch (actionType) {
+			case "breakTime":
+				path = {
+					pathname: '/subMenuEmployee/breakTime',
+					state: {
+						backPage: "dutyRegistration",
+						sendValue: sendValue,
+					},
+				}
+				break;
+			default:
+		}
+        this.props.history.push(path);
+    }
 
 	render() {
 		return (
@@ -498,6 +517,7 @@ class DutyRegistration extends React.Component {
 						</Row>
 						<Row>
 							<Col sm={12}>
+                        		<Button size="sm" variant="info" name="clickButton" title="月に一回のみ登録してください" onClick={this.shuseiTo.bind(this, "breakTime")} variant="info" id="employeeInfo">休憩時間登録</Button>
 								<div style={{ "float": "right" }}>
 									<Link className="btn btn-info btn-sm" onClick={this.downloadPDF.bind(this)} id="downloadPDF"><FontAwesomeIcon icon={faDownload} /> PDF</Link>
 								</div>
