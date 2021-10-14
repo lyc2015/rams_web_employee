@@ -6,12 +6,12 @@ import * as publicUtils from './publicUtils.js';
 export function getMessage(key, option, isNextLine) {
 	let returnMessage = "";
 	let message = {};
-	message["E0001"] = "day {{{0}}} work content is null";
-	message["E0002"] = "day {{{0}}} startTime >= endTime";
-	message["E0003"] = "day {{{0}}} startTime is null";
-	message["E0004"] = "day {{{0}}} endTime is null";
-	message["E0005"] = "day {{{0}}} startTime is be not normative";
-	message["E0006"] = "day {{{0}}} endTime is be not normative";
+	message["E0001"] = "{{{0}}}日作業内容を入力してください。";
+	message["E0002"] = "{{{0}}}日開始時間は終了時間以後になっています。";
+	message["E0003"] = "{{{0}}}日開始時間を入力してください。";
+	message["E0004"] = "{{{0}}}日終了時間を入力してください。";
+	//message["E0005"] = "{{{0}}}日 startTime is be not normative";
+	//message["E0006"] = "{{{0}}}日 endTime is be not normative";
 	returnMessage = message[key];
 	if (!publicUtils.isNull(option)) {
 		if (Array.isArray(option)) {

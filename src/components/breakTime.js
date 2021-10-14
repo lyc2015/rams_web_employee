@@ -68,8 +68,12 @@ class BreakTime extends Component {
         }
         axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
             .then(resultMap => {
-                if (resultMap.data) {
-                    /*$("#employeeNo").val(resultMap.data.breakTime.employeeNo);
+                this.setState({
+                    breakTimeUser: resultMap.data.employeeName,
+                });
+                $("#employeeNo").val(resultMap.data.employeeNo);
+
+                if (resultMap.data.breakTime !== null) {
                     $("#breakTimeDayHourStart").val(Number(resultMap.data.breakTime.lunchBreakStartTime.toString().substring(0, 2)));
                     $("#breakTimeDayMinuteStart").val(Number(resultMap.data.breakTime.lunchBreakStartTime.toString().substring(2)));
                     $("#breakTimeDayHourEnd").val(Number(resultMap.data.breakTime.lunchBreakFinshTime.toString().substring(0, 2)));
@@ -79,11 +83,9 @@ class BreakTime extends Component {
                     $("#breakTimeNightHourEnd").val(Number(resultMap.data.breakTime.nightBreakfinshTime.toString().substring(0, 2)));
                     $("#breakTimeNightMinuteEnd").val(Number(resultMap.data.breakTime.nightBreakfinshTime.toString().substring(2)));
                     this.setState({
-                        breakTimeUser: resultMap.data.employeeName, breakTimeDaybreakTimeHour: resultMap.data.breakTime.lunchBreakTime,
+                        breakTimeDaybreakTimeHour: resultMap.data.breakTime.lunchBreakTime,
                         breakTimeNightbreakTimeHour: resultMap.data.breakTime.nightBreakTime, breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
-                    });*/
-                } else {
-                    alert("fail");
+                    });
                 }
             })
             .catch(function (e) {
@@ -202,7 +204,9 @@ class BreakTime extends Component {
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm={3}>
+                        	<Col sm={2}>
+                        	</Col>
+                            <Col sm={2}>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="inputGroup-sizing-sm">氏名</InputGroup.Text>
@@ -210,7 +214,7 @@ class BreakTime extends Component {
                                     <Form.Control readOnly id="breakTimeUser" value={this.state.breakTimeUser} name="breakTimeUser" />
                                 </InputGroup>
                             </Col>
-                            <Col sm={4}>
+                            <Col sm={3}>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="inputGroup-sizing-sm">年月</InputGroup.Text>
@@ -222,7 +226,7 @@ class BreakTime extends Component {
                                             locale="ja"
                                             dateFormat="yyyy/MM"
                                             showMonthYearPicker
-                                            id="breakTimeDate"
+                                            id="datePicker"
                                             className="form-control form-control-sm"
                                             autoComplete="off"
                                         />
@@ -231,6 +235,8 @@ class BreakTime extends Component {
                             </Col>
                         </Row>
                         <Row>
+	                        <Col sm={2}>
+	                        </Col>
                             <Col>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
@@ -279,18 +285,14 @@ class BreakTime extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="inputGroup-sizing-sm">分</InputGroup.Text>
                                     </InputGroup.Prepend>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-                            <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">休憩時間</InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                    <Form.Control readOnly id="breakTimeDaybreakTimeHour" value={this.state.breakTimeDaybreakTimeHour} name="breakTimeDaybreakTimeHour" />
-                                    <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
-                                    </InputGroup.Prepend>
                                 </InputGroup>
+                            </Col>
+                            <Col sm={2}>
                             </Col>
                         </Row>
                         <Row>
+	                        <Col sm={2}>
+	                        </Col>
                             <Col>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
@@ -339,31 +341,43 @@ class BreakTime extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="inputGroup-sizing-sm">分</InputGroup.Text>
                                     </InputGroup.Prepend>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-                            <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">休憩時間</InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                    <Form.Control readOnly id="breakTimeNightbreakTimeHour" value={this.state.breakTimeNightbreakTimeHour} name="breakTimeNightbreakTimeHour" />
-                                    <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                </InputGroup>
+                                    </InputGroup>
+                            </Col>
+                            <Col sm={2}>
                             </Col>
                         </Row>
                         <Row>
-                            <Col sm={9}>
+                        	<Col sm={2}>
                             </Col>
-                            <Col sm={3}>
+
+                            <Col>
                                 <InputGroup size="sm" className="mb-3">
-                                    &nbsp;&nbsp;&nbsp;
+                                	<InputGroup.Prepend>
+                                		<InputGroup.Text id="fiveKanji">昼休憩時間</InputGroup.Text>
+                                	</InputGroup.Prepend>
+                                	<Form.Control readOnly id="breakTimeDaybreakTimeHour" value={this.state.breakTimeDaybreakTimeHour} name="breakTimeDaybreakTimeHour" />
+                                </InputGroup>
+                            </Col>
+                            
+                            <Col>
+                            <InputGroup size="sm" className="mb-3">
+                                   <InputGroup.Prepend>
+                                    	<InputGroup.Text id="fiveKanji">夜休憩時間</InputGroup.Text>
+                                    </InputGroup.Prepend>
+                                    <Form.Control readOnly id="breakTimeNightbreakTimeHour" value={this.state.breakTimeNightbreakTimeHour} name="breakTimeNightbreakTimeHour" />
+                                </InputGroup>
+                             </Col>
+                             
+                             <Col>
+                             <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="inputGroup-sizing-sm">合計</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <Form.Control readOnly id="breakTimeSumHour" value={this.state.breakTimeSumHour} name="breakTimeSumHour" />
-                                    <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
-                                    </InputGroup.Prepend>
                                 </InputGroup>
+                            </Col>
+                            
+                            <Col sm={2}>
                             </Col>
                         </Row>
                         <Row>

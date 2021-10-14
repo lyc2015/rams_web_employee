@@ -24,7 +24,7 @@ axios.defaults.withCredentials = true;
 class workTimeSearch extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = this.initialState;//初期化
+		this.state = this.initialState;// 初期化
 		this.valueChange = this.valueChange.bind(this);
 		this.searchWorkTime = this.searchWorkTime.bind(this);
 
@@ -36,18 +36,18 @@ class workTimeSearch extends React.Component {
 		this.setYearAndMonth();
 		this.searchWorkTime(publicUtils.converToLocalTime(ThisYear + "01", false), publicUtils.converToLocalTime(ThisYear + "12", false));
 	}
-	//onchange
+	// onchange
 	valueChange = event => {
 		this.setState({
 			[event.target.name]: event.target.value
 		})
 	}
-	//　初期化データ
+	// 初期化データ
 	initialState = {
 		station: store.getState().dropDown[14],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
-	//日付設定
+	// 日付設定
 	setYearAndMonth = () => {
 		let ThisYear = new Date();
 		ThisYear = ThisYear.getFullYear();
@@ -57,7 +57,7 @@ class workTimeSearch extends React.Component {
 		})
 		
 	};
-	//　検索
+	// 検索
 	searchWorkTime = (yearAndMonth1, yearAndMonth2) => {
 			let workTimeModel = {
 				yearAndMonth1: yearAndMonth1 == "" ? publicUtils.formateDate(this.state.yearAndMonth1, false) : publicUtils.formateDate(yearAndMonth1, false),
@@ -77,7 +77,7 @@ class workTimeSearch extends React.Component {
 				})
 			});
 	};
-		//　年月1
+		// 年月1
 	inactiveYearAndMonth1 = (date) => {
 		this.setState(
 			{
@@ -87,7 +87,7 @@ class workTimeSearch extends React.Component {
 		);
 		this.searchWorkTime(date, "");
 	};
-			//　年月2
+			// 年月2
 	inactiveYearAndMonth2 = (date) => {
 		this.setState(
 			{
@@ -117,7 +117,7 @@ class workTimeSearch extends React.Component {
 		const {employeeList} = this.state;
 		const station = this.state.station;
 
-		//　テーブルの行の選択
+		// テーブルの行の選択
 		const selectRow = {
 			mode: 'radio',
 			bgColor: 'pink',
@@ -126,18 +126,21 @@ class workTimeSearch extends React.Component {
 			clickToExpand: true,// click to expand row, default is false
 			onSelect: this.handleRowSelect,
 		};
-		//　 テーブルの定義
+		// テーブルの定義
 		const options = {
 			page: 1, 
-			sizePerPage: 15,  // which size per page you want to locate as default
+			sizePerPage: 15,  // which size per page you want to locate as
+								// default
 			pageStartIndex: 1, // where to start counting the pages
 			paginationSize: 3,  // the pagination bar size.
 			prePage: '<', // Previous page button text
             nextPage: '>', // Next page button text
             firstPage: '<<', // First page button text
             lastPage: '>>', // Last page button text
-			paginationShowsTotal: this.renderShowsTotal,  // Accept bool or function
-			hideSizePerPage: true, //> You can hide the dropdown for sizePerPage
+			paginationShowsTotal: this.renderShowsTotal,  // Accept bool or
+															// function
+			hideSizePerPage: true, // > You can hide the dropdown for
+									// sizePerPage
 			expandRowBgColor: 'rgb(165, 165, 165)',
 			approvalBtn: this.createCustomApprovalButton,
 			onApprovalRow: this.onApprovalRow,
@@ -206,7 +209,7 @@ class workTimeSearch extends React.Component {
 							<TableHeaderColumn width='5%' tdStyle={{ padding: '.45em' }} dataField='attendanceDays' hidden >出勤日数</TableHeaderColumn>
 							<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='sumWorkTime' >出勤時間</TableHeaderColumn>
 							<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='averageSumWorkTime' >平均稼働</TableHeaderColumn>
-							<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='workTimeRank' >稼動ランキング</TableHeaderColumn>
+							<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='workTimeRank' >稼働ranking</TableHeaderColumn>
 							<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='carCost' dataFormat={publicUtils.addComma.bind(this)}>交通費用</TableHeaderColumn>
 							<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='otherCost' dataFormat={publicUtils.addComma.bind(this)}>他の費用</TableHeaderColumn>
 						</BootstrapTable>

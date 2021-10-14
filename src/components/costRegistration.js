@@ -741,7 +741,7 @@ class costRegistration extends React.Component {
 							<InputGroup.Prepend>
 								<InputGroup.Text id="inputGroup-sizing-sm">区分</InputGroup.Text>
 							</InputGroup.Prepend>
-							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.regularStatusChange} disabled={this.state.disabledFlag} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
+							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.regularStatusChange} disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
 								<option value="0">定期</option>
 								<option value="1">非定期</option>
 							</Form.Control>
@@ -752,39 +752,6 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 							<font style={{ whiteSpace: 'nowrap' }}><b>{this.state.regularStatus === "0" ? "定期券通勤" : "非定期券通勤"}</b></font>
 						</Col>	
-					</Row>	
-					<Row hidden>
-						<Col sm={5}>
-							<InputGroup size="sm" className="mb-3">
-								<InputGroup.Prepend>
-									<InputGroup.Text id="inputGroup-sizing-sm">期間</InputGroup.Text>
-								</InputGroup.Prepend>
-								<InputGroup.Prepend>
-									<DatePicker
-										selected={this.state.yearAndMonth1}
-										onChange={this.inactiveYearAndMonth1}
-										autoComplete="off"
-										locale="ja"
-										minDate={this.state.minDate}
-										dateFormat="yyyy/MM/dd"
-										id={this.state.disabledFlag ? "datePickerReadonlyDefault" : "datePicker"}
-										className="form-control form-control-sm"
-										disabled={this.state.disabledFlag} 
-									/>～
-									<DatePicker
-										selected={this.state.yearAndMonth2}
-										onChange={this.inactiveYearAndMonth2}
-										autoComplete="off"
-										locale="ja"
-										minDate={this.state.minDate}
-										dateFormat="yyyy/MM/dd"
-										id={this.state.disabledFlag ? "datePickerReadonlyDefault" : "datePicker"}
-										className="form-control form-control-sm"
-										disabled={this.state.disabledFlag} 
-									/>
-								</InputGroup.Prepend>
-							</InputGroup>	
-						</Col>
 					</Row>
 					<Row>
 						<Col sm={2}>
@@ -795,7 +762,7 @@ class costRegistration extends React.Component {
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode1)) || {}}
 										options={this.state.station}
-									 	disabled={this.state.disabledFlag} 
+									 	disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} 
 										name="station"
 										getOptionLabel={(option) => option.name}
 										onSelect={(event) => this.handleTag(event, 'station')}
@@ -815,7 +782,7 @@ class costRegistration extends React.Component {
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode2)) || {}}
 										options={this.state.station}
-									 	disabled={this.state.disabledFlag} 
+									 	disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} 
 										name="station"
 										getOptionLabel={(option) => option.name}
 										onSelect={(event) => this.handleTag(event, 'station')}
@@ -832,7 +799,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag} onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>
@@ -840,7 +807,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">料金</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.cost} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
+								<Form.Control type="text" value={this.state.cost} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
 							</InputGroup>
 						</Col>
 						<Col sm={4}>
@@ -848,23 +815,23 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">備考</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.remark} name='remark' autoComplete="off" size="sm" maxLength='20' disabled={this.state.disabledFlag} onChange={this.valueChange}  placeholder="備考" />
+								<Form.Control type="text" value={this.state.remark} name='remark' autoComplete="off" size="sm" maxLength='20' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.valueChange}  placeholder="備考" />
 							</InputGroup>
 						</Col>
 					</Row>
 					<Row>
 						 <Col>
 							<div style={{ "textAlign": "center" }}>
-								<Button size="sm" variant="info" disabled={this.state.disabledFlag} onClick={this.InsertCost} type="button" on>
+								<Button size="sm" variant="info" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={this.InsertCost} type="button" on>
 									<FontAwesomeIcon icon={this.state.rowSelectCostClassificationCode !== "0" ? faSave : faEdit} /> {this.state.rowSelectCostClassificationCode !== "0" ? " 登録" : " 修正"}
 								</Button>{' '}
-								<Button size="sm" variant="info" disabled={this.state.disabledFlag} type="reset" onClick={this.resetBook}>
+								<Button size="sm" variant="info" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} type="reset" onClick={this.resetBook}>
 									<FontAwesomeIcon icon={faUndo} /> Reset
 								</Button>{' '}
-								<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.handleShowModal.bind(this)}>
+								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={this.handleShowModal.bind(this)}>
 									<FontAwesomeIcon /> {" 他の費用"}
 								</Button>{' '}
-								<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
+								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
 								<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
 							</div>
 						 </Col>

@@ -29,7 +29,9 @@ class DutyRegistration extends React.Component {
 		super(props);
 		this.state = {
 			weekDay: { 0: "日", 1: "月", 2: "火", 3: "水", 4: "木", 5: "金", 6: "土" },
-			hasWork: ["休憩", "出勤"],
+			hasWork: ["休日", "出勤"],
+			hours: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
+			minutes: ["00", "15", "30", "45"],
 			dateData: [],
 			dateDataTemp: [],
 			year: new Date().getFullYear(),
@@ -72,9 +74,13 @@ class DutyRegistration extends React.Component {
 				} */
 		dataData[row.id][event.target.name] = event.target.value;
 
-		if (dataData[row.id]["hasWork"] === "休憩") {
+		if (dataData[row.id]["hasWork"] === "休日") {
 			row.startTime = "";
+			row.startTimeHours = "";
+			row.startTimeMinutes = "";
 			row.endTime = "";
+			row.endTimeHours = "";
+			row.endTimeMinutes = "";
 			dataData[row.id]["workContent"] = "";
 			dataData[row.id]["remark"] = "";
 			dataData[row.id]["workHour"] = "";
@@ -89,27 +95,18 @@ class DutyRegistration extends React.Component {
 	}
 	//onChangeAfter
 	tableValueChangeAfter = (event, cell, row) => {
-		//var regExp = /.*/;
-		/* 		switch (event.target.name) {
-					case "startTime":
-					case "endTime":
-						regExp = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
-						break;
-					default:
-						break;
-				}
-				cell = publicUtils.nullToEmpty(cell);
-				if (!cell.toString().match(regExp)) {
-					event.target.value = publicUtils.nullToEmpty(event.target.dataset["beforevalue"]);
-					return;
-				}
-				event.target.dataset["beforevalue"] = cell; */
 
 		this.setTableStyle(row.id);
 
 		let dataData = this.state.dateData;
-		dataData[row.id]["workHour"] = Number(publicUtils.nullToEmpty(publicUtils.timeDiff(row.startTime, row.endTime) - Number(row.sleepHour))) > 0 ?
-			publicUtils.nullToEmpty(publicUtils.timeDiff(row.startTime, row.endTime) - Number(row.sleepHour)) : "";
+
+		let startTime = (row.startTimeHours === undefined ? "00" : row.startTimeHours) + ":" + (row.startTimeMinutes === undefined ? "00" : row.startTimeMinutes);
+		let endTime = (row.endTimeHours === undefined ? "00" : row.endTimeHours) + ":" + (row.endTimeMinutes === undefined ? "00" : row.endTimeMinutes);
+		row.startTime = startTime;
+		row.endTime = endTime;
+
+		dataData[row.id]["workHour"] = Number(publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime) - Number(row.sleepHour))) > 0 ?
+			publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime) - Number(row.sleepHour)) : "";
 		this.setState({
 			dateData: dataData
 		})
@@ -186,7 +183,7 @@ class DutyRegistration extends React.Component {
 		}
 		axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
 			.then(resultMap => {
-				if (resultMap.data) {
+				if (resultMap.data.breakTime !== null) {
 					let dateData = [];
 					let defaultDateData = [];
 					let workDays = 0;
@@ -223,9 +220,8 @@ class DutyRegistration extends React.Component {
 						siteResponsiblePerson: resultMap.data.siteResponsiblePerson, systemName: resultMap.data.systemName,
 						employeeName: resultMap.data.employeeName, sleepHour: sleepHour
 					});
-					//					console.log(resultMap.data);
 				} else {
-					alert("fail");
+					alert("休憩時間を登録してください。");
 				}
 				this.setTableStyle();
 			})
@@ -309,6 +305,9 @@ class DutyRegistration extends React.Component {
 		let errorMessage = "";
 		let nowDay = new Date().getDate();
 		for (let i = 0; i < this.state.dateData.length; i++) {
+			if (nowDay < this.state.dateData[i]["day"]) {
+				break;
+			}
 			if (this.state.dateData[i]["hasWork"] == this.state.hasWork[1]) {
 				if (publicUtils.isEmpty(this.state.dateData[i]["startTime"])) {
 					errorMessage += messageUtils.getMessage("E0003", this.state.dateData[i]["day"], true);
@@ -325,16 +324,16 @@ class DutyRegistration extends React.Component {
 					}
 				}
 			}
-			if (!publicUtils.isEmpty(this.state.dateData[i]["startTime"]) && !this.state.dateData[i]["startTime"].toString().match(/^((0[0-9]|1[0-9]|2[0-3]):(0[0]|1[5]|3[0]|4[5])|24:00)$/)) {
+			/*if (!publicUtils.isEmpty(this.state.dateData[i]["startTime"]) && !this.state.dateData[i]["startTime"].toString().match(/^((0[0-9]|1[0-9]|2[0-3]):(0[0]|1[5]|3[0]|4[5])|24:00)$/)) {
 				errorMessage += messageUtils.getMessage("E0005", this.state.dateData[i]["day"], true);
 				break;
 			}
 			if (!publicUtils.isEmpty(this.state.dateData[i]["endTime"]) && !this.state.dateData[i]["endTime"].toString().match(/^((0[0-9]|1[0-9]|2[0-3]):(0[0]|1[5]|3[0]|4[5])|24:00)$/)) {
 				errorMessage += messageUtils.getMessage("E0006", this.state.dateData[i]["day"], true);
 				break;
-			}
+			}*/
 			if (!publicUtils.isEmpty(this.state.dateData[i]["startTime"]) && !publicUtils.isEmpty(this.state.dateData[i]["endTime"])) {
-				if (this.state.dateData[i]["startTime"] >= this.state.dateData[i]["endTime"]) {
+				if (this.state.dateData[i]["startTime"] > this.state.dateData[i]["endTime"]) {
 					errorMessage += messageUtils.getMessage("E0002", this.state.dateData[i]["day"], true);
 					break;
 				}
@@ -394,10 +393,66 @@ class DutyRegistration extends React.Component {
 	startTimeFormatter = (cell, row) => {
 		let returnItem = cell;
 		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
-			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="startTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+			//returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="startTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+			returnItem = (
+			<div>
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="startTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.hours.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+				
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="startTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.minutes.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+			</div>
+			)
 		}
 		return returnItem;
 	}
+	
+	startTimeHoursFormatter = (cell, row) => {
+		let returnItem = cell;
+		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+			returnItem = (
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="startTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.hours.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+			)
+		}
+		return returnItem;
+	}
+	
+	startTimeMinutesFormatter = (cell, row) => {
+		let returnItem = cell;
+		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+			returnItem = (
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="startTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.minutes.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+			)
+		}
+		return returnItem;
+	}
+	
 	endTimeFormatter = (cell, row) => {
 		let returnItem = cell;
 		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
@@ -405,6 +460,42 @@ class DutyRegistration extends React.Component {
 		}
 		return returnItem;
 	}
+	
+	endTimeHoursFormatter = (cell, row) => {
+		let returnItem = cell;
+		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+			returnItem = (
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="endTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.hours.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+			)
+		}
+		return returnItem;
+	}
+	
+	endTimeMinutesFormatter = (cell, row) => {
+		let returnItem = cell;
+		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+			returnItem = (
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="endTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.minutes.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+			)
+		}
+		return returnItem;
+	}
+	
+	
 	sleepHourFormatter = (cell, row) => {
 		let returnItem = cell;
 		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1] && this.state.breakTime.breakTimeFixedStatus == 0) {
@@ -475,16 +566,34 @@ class DutyRegistration extends React.Component {
 				<div>
 					<Form.Group>
 						<Row>
-							<Col sm={3}>
+							{/*<Col sm={3} hidden>
 								<InputGroup size="sm" className="mb-3">
 									<input style={{ width: "150px" }} value={this.state.siteCustomer} name="siteCustomer" onChange={this.valueChange} className="inputWithoutBorder" />
 									&nbsp;御中
 								</InputGroup>
 							</Col>
-							<Col sm={3} md={{ span: 3, offset: 6 }}>
+							<Col sm={3} md={{ span: 3, offset: 6 }} hidden>
 								<InputGroup size="sm" className="mb-3">
 									会社名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									<input style={{ width: "150px" }} value={this.state.customer} name="customer" onChange={this.valueChange} className="inputWithoutBorder" />
+								</InputGroup>
+							</Col>*/}
+							<Col sm={3}>
+								<InputGroup size="sm" className="mb-3">
+									<Form.Control type="text" value={this.state.siteCustomer} name="siteCustomer" autoComplete="off" size="sm" onChange={this.valueChange} />
+									<InputGroup.Prepend>
+										<InputGroup.Text id="inputGroup-sizing-sm">御中</InputGroup.Text>
+									</InputGroup.Prepend>
+								</InputGroup>
+							</Col>
+							<Col sm={6}>
+							</Col>
+							<Col sm={3}>
+								<InputGroup size="sm" className="mb-3">
+									<InputGroup.Prepend>
+										<InputGroup.Text id="inputGroup-sizing-sm">会社名</InputGroup.Text>
+									</InputGroup.Prepend>
+									<Form.Control type="text" value={this.state.customer} name="customer" autoComplete="off" size="sm" onChange={this.valueChange} />
 								</InputGroup>
 							</Col>
 						</Row>
@@ -494,24 +603,52 @@ class DutyRegistration extends React.Component {
 									<h3 >{this.state.year}年{this.state.month}月　作業報告書</h3>
 								</span>
 							</Col>
-							<Col sm={3} md={{ span: 3, offset: 1 }}>
+							<Col sm={3} md={{ span: 3, offset: 1 }} hidden>
 								<InputGroup size="sm" className="mb-3">
 									責任者名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 									<input style={{ width: "150px" }} value={this.state.siteResponsiblePerson} name="siteResponsiblePerson" onChange={this.valueChange} className="inputWithoutBorder" />
 								</InputGroup>
 							</Col>
+							<Col sm={1}>
+							</Col>
+							<Col sm={3}>
+								<InputGroup size="sm" className="mb-3">
+									<InputGroup.Prepend>
+										<InputGroup.Text id="inputGroup-sizing-sm">責任者名</InputGroup.Text>
+									</InputGroup.Prepend>
+									<Form.Control type="text" value={this.state.siteResponsiblePerson} name="siteResponsiblePerson" autoComplete="off" size="sm" onChange={this.valueChange} />
+								</InputGroup>
+							</Col>
 						</Row>
 						<Row>
-							<Col sm={3}>
+							{/*<Col sm={3} hidden>
 								<InputGroup size="sm" className="mb-3">
 									業務名称&nbsp;
 									<input style={{ width: "120px" }} value={this.state.systemName} name="systemName" onChange={this.valueChange} className="inputWithoutBorder" />
 								</InputGroup>
 							</Col>
-							<Col sm={3} md={{ span: 3, offset: 6 }}>
+							<Col sm={3} md={{ span: 3, offset: 6 }} hidden>
 								<InputGroup size="sm" className="mb-3">
 									作業担当者&nbsp;
 									<input style={{ width: "150px" }} value={this.state.employeeName} name="employeeName" onChange={this.valueChange} className="inputWithoutBorder" disabled />
+								</InputGroup>
+							</Col>*/}
+							<Col sm={3}>
+								<InputGroup size="sm" className="mb-3">
+									<InputGroup.Prepend>
+										<InputGroup.Text id="inputGroup-sizing-sm">業務名称</InputGroup.Text>
+									</InputGroup.Prepend>
+									<Form.Control type="text" value={this.state.systemName} name="systemName" autoComplete="off" size="sm" onChange={this.valueChange} />
+								</InputGroup>
+							</Col>
+							<Col sm={6}>
+							</Col>
+							<Col sm={3}>
+								<InputGroup size="sm" className="mb-3">
+									<InputGroup.Prepend>
+										<InputGroup.Text id="fiveKanji">作業担当者</InputGroup.Text>
+									</InputGroup.Prepend>
+									<Form.Control type="text" value={this.state.employeeName} name="employeeName" autoComplete="off" size="sm" onChange={this.valueChange} />
 								</InputGroup>
 							</Col>
 						</Row>
@@ -527,14 +664,19 @@ class DutyRegistration extends React.Component {
 							<Col sm={12}>
 								<BootstrapTable className={"bg-white text-dark"} data={this.state.dateData} pagination={false} options={this.options} headerStyle={{ background: '#5599FF' }} >
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='day' dataSort={true} isKey>日</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='week' >曜日</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} >作業開始時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} >作業終了時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} >休憩時間</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='70' dataField='workHour' >作業時間</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='200' dataField='workContent' dataFormat={this.workContentFormatter} >作業内容</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='200' dataField='remark' dataFormat={this.remarkFormatter} >備考</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='40' dataField='week' >曜日</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} hidden>作業開始時刻</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} hidden>作業終了時刻</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
+
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} hidden >休憩時間</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='60' dataField='workHour' >作業時間</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='220' dataField='workContent' dataFormat={this.workContentFormatter} >作業内容</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='220' dataField='remark' dataFormat={this.remarkFormatter} >備考</TableHeaderColumn>
 								</BootstrapTable>
 							</Col>
 						</Row>
