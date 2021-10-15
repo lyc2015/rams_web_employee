@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faUpload, faDownload, faMoneyCheckAlt } from '@fortawesome/free-solid-svg-icons';
+import {faUpload, faDownload, faMoneyCheckAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import * as publicUtils from './utils/publicUtils.js';
 import store from './redux/store';
 import MyToast from './myToast';
@@ -27,6 +27,7 @@ class workRepot extends React.Component {
 	componentDidMount(){
 		$("#workRepotUpload").attr("disabled",true);
 		$("#workRepotDownload").attr("disabled",true);
+		$("#workRepotClear").attr("disabled",true);
 		this.searchWorkRepot();
 	}
 	//onchange
@@ -38,6 +39,7 @@ class workRepot extends React.Component {
 	//　初期化データ
 	initialState = {
 		employeeList: [],
+		rowApprovalStatus: '',
 		approvalStatuslist: store.getState().dropDown[27],
 		costClassificationCode: store.getState().dropDown[30],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
@@ -100,7 +102,7 @@ class workRepot extends React.Component {
 			.then(response => {
 				if (response.data != null) {
 					this.searchWorkRepot();
-					this.setState({ "myToastShow": true });
+					this.setState({ "myToastShow": true, message: "アップロード成功！", });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
 					alert("err")
@@ -142,7 +144,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 			.then(response => {
 				if (response.data != null) {
 					this.searchWorkRepot();
-					this.setState({ "myToastShow": true });
+					this.setState({ "myToastShow": true, message: "アップロード成功！",  });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
 					alert("err")
@@ -157,6 +159,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 		if (isSelected) {
 			$("#workRepotUpload").attr("disabled",true);
 			$("#workRepotDownload").attr("disabled",false);
+			$("#workRepotClear").attr("disabled",false);
 			var TheYearMonth=publicUtils.setFullYearMonth(new Date())-1;
 			this.setState(
 				{
@@ -164,6 +167,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 					rowSelectWorkingTimeReport: row.workingTimeReport,
 					rowSelectSumWorkTime: row.sumWorkTime,
 					rowSelectapproval:row.attendanceYearAndMonth-0>=TheYearMonth && row.approvalStatus !== "1"?true:false,
+					rowApprovalStatus: row.approvalStatus,
 				}
 			);
 			if(row.attendanceYearAndMonth-0>=TheYearMonth && row.approvalStatus !== "1"){
@@ -175,12 +179,14 @@ if($("#getFile").get(0).files[0].size>1048576){
 		} else {
 			$("#workRepotUpload").attr("disabled",true);
 			$("#workRepotDownload").attr("disabled",true);
+			$("#workRepotClear").attr("disabled",true);
 			this.setState(
 				{	
 					rowSelectWorkingTimeReport:'',
 					rowSelectAttendanceYearAndMonth:'',
 					rowSelectSumWorkTime: '',
 					rowSelectapproval: '',
+					rowApprovalStatus: '',
 				}
 			);
 		}
@@ -191,6 +197,30 @@ if($("#getFile").get(0).files[0].size>1048576){
 				{start}から  {to}まで , 総計{total}
 			</p>
 		);
+	}
+	
+	clear = () => {
+		if(this.state.rowApprovalStatus === "1"){
+			alert("承認済みのため、クリアできません。")
+		}
+		else{
+			var a = window.confirm("ファイルをクリアしていただきますか？");
+			if(a){
+				const emp = {
+						attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
+					};
+					axios.post(this.state.serverIP + "workRepot/clearworkRepot",emp)
+						.then(response => {
+							if (response.data != null) {
+								this.searchWorkRepot();
+								this.setState({ "myToastShow": true, message: "クリア完成！",  });
+								setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+							} else {
+								alert("err")
+							}
+						});
+			}
+		}
 	}
 	
 	shuseiTo = (actionType) => {
@@ -248,7 +278,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
-					<MyToast myToastShow={this.state.myToastShow} message={"アップロード成功！"} type={"success"} />
+					<MyToast myToastShow={this.state.myToastShow} message={this.state.message} type={"success"} />
 				</div>
 				<FormControl id="rowSelectCheckSection" name="rowSelectCheckSection" hidden />
 				<Form >
@@ -278,6 +308,9 @@ if($("#getFile").get(0).files[0].size>1048576){
 								</Button>{' '}
 								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowSelectWorkingTimeReport, this.state.serverIP)}id="workRepotDownload">
 	                          		 <FontAwesomeIcon icon={faDownload} /> Download
+		                        </Button>{' '}
+	                          	<Button variant="info" size="sm" onClick={this.clear} id="workRepotClear">
+	                          		 <FontAwesomeIcon icon={faTrash} /> クリア
 		                        </Button>
 	 						</div>
 						</Col>

@@ -117,7 +117,7 @@ class BreakTime extends Component {
         var actionType = this.state.actionType;
         breakTimeInfo["employeeNo"] = $("#employeeNo").val();
         breakTimeInfo["breakTimeIsConst"] = $("#isConst").val();
-        breakTimeInfo["breakTimeYearMonth"] = utils.formateDate($("#breakTimeDate").val(), false);
+        breakTimeInfo["breakTimeYearMonth"] = utils.formateDate(this.state.breakTimeDate, false);
         breakTimeInfo["breakTimeDayStart"] = $("#breakTimeDayHourStart").val().padStart(2, "0") + $("#breakTimeDayMinuteStart").val().padEnd(2, "0");
         breakTimeInfo["breakTimeDayEnd"] = $("#breakTimeDayHourEnd").val().padStart(2, "0") + $("#breakTimeDayMinuteEnd").val().padEnd(2, "0");
         breakTimeInfo["breakTimeNightStart"] = $("#breakTimeNightHourStart").val().padStart(2, "0") + $("#breakTimeNightMinuteStart").val().padEnd(2, "0");
@@ -137,7 +137,7 @@ class BreakTime extends Component {
                     } else {
                         alert("更新失败");
                     }
-                    window.location.reload();
+                    //window.location.reload();
                 })
                 .catch(function () {
                     alert("更新错误，请检查程序");

@@ -24,9 +24,7 @@ class passwordReset extends Component {
         pswMod["passwordResetId"] = passwordResetId;
         axios.post(this.state.serverIP + "passwordReset/init" , pswMod)
 		.then(resultMap =>{
-			if(!resultMap.data){
-				this.props.history.push("/login2");
-			}
+
 		})
     }
     passwordReset=()=>{

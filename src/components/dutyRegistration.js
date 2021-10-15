@@ -86,6 +86,14 @@ class DutyRegistration extends React.Component {
 			dataData[row.id]["workHour"] = "";
 			dataData[row.id]["sleepHour"] = "";
 		} else {
+			if(row.startTimeHours === "")
+				row.startTimeHours = "00";
+			if(row.startTimeMinutes === "")
+				row.startTimeMinutes = "00";
+			if(row.endTimeHours === "")
+				row.endTimeHours = "00";
+			if(row.endTimeMinutes === "")
+				row.endTimeMinutes = "00";
 			dataData[row.id]["sleepHour"] = this.state.sleepHour;
 		}
 		row['isChanged'] = true;
@@ -159,7 +167,11 @@ class DutyRegistration extends React.Component {
 			dateData[i]['day'] = i + 1;
 			dateData[i]['week'] = this.state.weekDay[new Date(this.state.year + "/" + this.state.month + "/" + (i + 1)).getDay()];
 			dateData[i]['startTime'] = "";
+			dateData[i]['startTimeHours'] = "";
+			dateData[i]['startTimeMinutes'] = "";
 			dateData[i]['endTime'] = "";
+			dateData[i]['endTimeHours'] = "";
+			dateData[i]['endTimeMinutes'] = "";
 			dateData[i]['sleepHour'] = "";
 			dateData[i]['workHour'] = "";
 			dateData[i]['workContent'] = "";
@@ -204,7 +216,11 @@ class DutyRegistration extends React.Component {
 						dateData[dayIndex].hasWork = this.state.hasWork[defaultDateData[i].isWork];
 						if (defaultDateData[i].isWork == 1) {
 							dateData[dayIndex].startTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].startTime));
+							dateData[dayIndex].startTimeHours = publicUtils.nullToEmpty(defaultDateData[i].startTime) === "" ? "" : defaultDateData[i].startTime.substring(0,2);
+							dateData[dayIndex].startTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].startTime) === "" ? "" : defaultDateData[i].startTime.substring(2,4);
 							dateData[dayIndex].endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
+							dateData[dayIndex].endTimeHours = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(0,2);
+							dateData[dayIndex].endTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(2,4);
 							dateData[dayIndex].sleepHour = sleepHour;
 							dateData[dayIndex].workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(dateData[dayIndex].startTime, dateData[dayIndex].endTime) - Number(dateData[dayIndex].sleepHour));
 							workDays++;
@@ -495,6 +511,10 @@ class DutyRegistration extends React.Component {
 		return returnItem;
 	}
 	
+	workHourFormatter = (cell) => {
+		if(Number(cell) > 0)
+			return cell;
+	}
 	
 	sleepHourFormatter = (cell, row) => {
 		let returnItem = cell;
@@ -674,7 +694,7 @@ class DutyRegistration extends React.Component {
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
 
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} hidden >休憩時間</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='60' dataField='workHour' >作業時間</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='60' dataField='workHour'  dataFormat={this.workHourFormatter}>作業時間</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='220' dataField='workContent' dataFormat={this.workContentFormatter} >作業内容</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='220' dataField='remark' dataFormat={this.remarkFormatter} >備考</TableHeaderColumn>
 								</BootstrapTable>

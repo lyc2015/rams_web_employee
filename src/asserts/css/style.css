@@ -600,6 +600,8 @@ body {
 }
 
 .dutyRegistration-DataTableEditingCell select {
+	border: 0;
+	background: #F5F5F5;
 	height: 20px;
 	padding: 0px 0px 0px 0px;
 	font-size: 14px;
