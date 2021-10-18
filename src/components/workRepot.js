@@ -103,6 +103,7 @@ class workRepot extends React.Component {
 				if (response.data != null) {
 					this.searchWorkRepot();
 					this.setState({ "myToastShow": true, message: "アップロード成功！", });
+					this.setState({ rowSelectSumWorkTime: e.sumWorkTime, });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
 					alert("err")
@@ -152,7 +153,10 @@ if($("#getFile").get(0).files[0].size>1048576){
 			});
     }
 	getFile=()=>{
-		$("#getFile").click();
+		if(this.state.rowSelectSumWorkTime === undefined || this.state.rowSelectSumWorkTime === null || this.state.rowSelectSumWorkTime === "")
+			alert("稼働時間を入力してください。")
+		else
+			$("#getFile").click();
 	}
 	//行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
@@ -204,7 +208,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 			alert("承認済みのため、クリアできません。")
 		}
 		else{
-			var a = window.confirm("ファイルをクリアしていただきますか？");
+			var a = window.confirm("データをクリアしてよろしいでしょうか？");
 			if(a){
 				const emp = {
 						attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
@@ -240,6 +244,13 @@ if($("#getFile").get(0).files[0].size>1048576){
 			default:
 		}
 		this.props.history.push(path);
+	}
+	
+	updateTimeFormatter = (cell,row) => {
+		if(row.updateUser === "")
+			return "";
+		else
+			return cell;
 	}
 	
 	render() {
@@ -321,9 +332,9 @@ if($("#getFile").get(0).files[0].size>1048576){
 						<TableHeaderColumn width='0'hidden={true}  tdStyle={ { padding: '.0em' } }   dataField='workingTimeReport'></TableHeaderColumn>
 						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth' editable={false} isKey>年月</TableHeaderColumn>
 						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' editable={false}>ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } } onChange={this.sumWorkTimeChange}  dataField='sumWorkTime' editable={this.state.rowSelectapproval} editColumnClassName="dutyRegistration-DataTableEditingCell" >稼働時間</TableHeaderColumn>
+						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } } onChange={this.sumWorkTimeChange}  dataField='sumWorkTime' editable={this.state.rowSelectapproval} editColumnClassName="dutyRegistration-DataTableEditingCell" >稼働時間（必）</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' editable={false}>登録者</TableHeaderColumn>
-						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false}>更新日</TableHeaderColumn>
+						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false} dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus' editable={false} dataFormat={this.approvalStatus.bind(this)}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>

@@ -36,11 +36,11 @@ class BreakTime extends Component {
             month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         };
 
-        for (var i = 0; i <= 14; i++) {
+        for (var i = 0; i <= 13; i++) {
             this.state.breakTimeDayHourStart[i] = i.toString();
             this.state.breakTimeDayHourEnd[i] = i.toString();
         }
-        for (var j = 15; j < 24; j++) {
+        for (var j = 17; j < 24; j++) {
             this.state.breakTimeNightHourStart[j] = j.toString();
             this.state.breakTimeNightHourEnd[j] = j.toString();
         }
@@ -190,7 +190,7 @@ class BreakTime extends Component {
                     </Row>
                     <br />
                     <Form id="topCustomerInfoForm">
-                        <Row inline="true" className="justify-content-md-center">
+                        <Row inline="true" className="justify-content-md-center" hidden>
                             <Col xs lg="2" className="text-center">
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>

@@ -626,24 +626,34 @@ body {
 	background-color: #eb5959;
 }
 
-.dutyRegistration-Work2Work {
+.dutyRegistration-Work {
 	background-color: #f5f5f5;
 	color: black;
 }
 
-.dutyRegistration-Work2Sleep {
+.dutyRegistration-Sleep {
 	background-color: #f5f5f5;
 	color: #ff0000;
 }
 
-.dutyRegistration-Sleep2Sleep {
-	background-color: #f5f5f5;
-	color: #ff0000;
-}
-
-.dutyRegistration-Sleep2Work {
-	background-color: #f5f5f5;
+.dutyRegistration-WorkConfirmation {
+	background-color: #d9d9d9;
 	color: black;
+}
+
+.dutyRegistration-SleepConfirmation {
+	background-color: #d9d9d9;
+	color: #ff0000;
+}
+
+.dutyRegistration-WorkSelect {
+	background-color: pink;
+	color: black;
+}
+
+.dutyRegistration-SleepSelect {
+	background-color: pink;
+	color: #ff0000;
 }
 
 .custom-file {

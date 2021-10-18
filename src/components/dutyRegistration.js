@@ -34,6 +34,7 @@ class DutyRegistration extends React.Component {
 			minutes: ["00", "15", "30", "45"],
 			dateData: [],
 			dateDataTemp: [],
+			rowNo: [],
 			year: new Date().getFullYear(),
 			month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
 			//			status: {sleep2sleep: 0 ,work2work: 1, sleep2work: 2, work2sleep: 3},
@@ -43,6 +44,7 @@ class DutyRegistration extends React.Component {
 			breakTime: {},
 			serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],//劉林涛　テスト
 			sleepHour: 0,
+			loading: true,
 		}
 		this.options = {
 			defaultSortName: 'day',
@@ -113,13 +115,59 @@ class DutyRegistration extends React.Component {
 		row.startTime = startTime;
 		row.endTime = endTime;
 
-		dataData[row.id]["workHour"] = Number(publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime) - Number(row.sleepHour))) > 0 ?
-			publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime) - Number(row.sleepHour)) : "";
+		let workHour = this.getWorkHour(startTime,endTime,
+		this.state.lunchBreakStartTime,this.state.lunchBreakFinshTime,this.state.lunchBreakTime,this.state.nightBreakStartTime,this.state.nightBreakfinshTime,this.state.nightBreakTime);
+		
+		dataData[row.id]["workHour"] = workHour;
 		this.setState({
 			dateData: dataData
 		})
 	}
-	setTableStyle = (rowId) => {
+	
+	getWorkHour = (startTime,endTime,lunchBreakStartTime,lunchBreakFinshTime,lunchBreakTime,nightBreakStartTime,nightBreakfinshTime,nightBreakTime) => {
+		let workHour = "";
+		
+		if(startTime === "" || endTime === "")
+			return workHour;
+		
+		let startTimeNum = Number(startTime.replace(":",""));
+		let endTimeNum = Number(endTime.replace(":",""));
+
+		if(startTimeNum <= lunchBreakStartTime && endTimeNum <= lunchBreakStartTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime));
+		else if(lunchBreakStartTime <= startTimeNum && startTimeNum <= lunchBreakFinshTime && lunchBreakStartTime <= endTimeNum && endTimeNum <= lunchBreakFinshTime )
+			workHour = "";
+		else if(lunchBreakFinshTime <= startTimeNum && startTimeNum <= nightBreakStartTime && lunchBreakFinshTime <= endTimeNum && endTimeNum <= nightBreakStartTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime));
+		else if(nightBreakStartTime <= startTimeNum && startTimeNum <= nightBreakfinshTime && nightBreakStartTime <= endTimeNum && endTimeNum <= nightBreakfinshTime )
+			workHour = "";
+		else if(startTimeNum >= nightBreakfinshTime && endTimeNum >= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime));
+		else if(startTimeNum <= lunchBreakStartTime && lunchBreakStartTime <= endTimeNum && endTimeNum <= lunchBreakFinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, (lunchBreakStartTime.substring(0,2) + ":" + lunchBreakStartTime.substring(2,4))));
+		else if(startTimeNum <= lunchBreakStartTime && lunchBreakFinshTime <= endTimeNum && endTimeNum <= nightBreakStartTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime)) - lunchBreakTime;
+		else if(startTimeNum <= lunchBreakStartTime && nightBreakStartTime <= endTimeNum && endTimeNum <= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, (nightBreakStartTime.substring(0,2) + ":" + nightBreakStartTime.substring(2,4)))) - lunchBreakTime;
+		else if(startTimeNum <= lunchBreakStartTime && endTimeNum >= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime)) - lunchBreakTime - nightBreakTime;
+		else if(lunchBreakStartTime <= startTimeNum && startTimeNum <= lunchBreakFinshTime && lunchBreakFinshTime <= endTimeNum && endTimeNum <= nightBreakStartTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff((lunchBreakFinshTime.substring(0,2) + ":" + lunchBreakFinshTime.substring(2,4)), endTime));
+		else if(lunchBreakStartTime <= startTimeNum && startTimeNum <= lunchBreakFinshTime && nightBreakStartTime <= endTimeNum && endTimeNum <= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff((lunchBreakFinshTime.substring(0,2) + ":" + lunchBreakFinshTime.substring(2,4)), (nightBreakStartTime.substring(0,2) + ":" + nightBreakStartTime.substring(2,4))));
+		else if(lunchBreakStartTime <= startTimeNum && startTimeNum <= lunchBreakFinshTime && endTimeNum >= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff((lunchBreakFinshTime.substring(0,2) + ":" + lunchBreakFinshTime.substring(2,4)), endTime)) - nightBreakTime;
+		else if(lunchBreakFinshTime <= startTimeNum && startTimeNum <= nightBreakStartTime && nightBreakStartTime <= endTimeNum && endTimeNum <= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, (nightBreakStartTime.substring(0,2) + ":" + nightBreakStartTime.substring(2,4))));
+		else if (lunchBreakFinshTime <= startTimeNum && startTimeNum <= nightBreakStartTime && endTimeNum >= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime)) - nightBreakTime;
+		else if (nightBreakStartTime <= startTimeNum && startTimeNum <= nightBreakfinshTime && endTimeNum >= nightBreakfinshTime)
+			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff((nightBreakfinshTime.substring(0,2) + ":" + nightBreakfinshTime.substring(2,4)), endTime));
+
+		return workHour;
+	}
+	
+	setTableStyle = (rowId,day) => {
 		if (publicUtils.isNull(rowId)) {
 			for (let i = 0; i < this.state.dateData.length; i++) {
 				this.setTableStyle(this.state.dateData[i].id);
@@ -135,17 +183,31 @@ class DutyRegistration extends React.Component {
 				DutyRegistrationJs.addRowClass(target, "dutyRegistration-IsChanged");
 			}
 			else {
-				if (dateData[i].isWork == 1 && dateData[i].hasWork == this.state.hasWork[1]) {
-					DutyRegistrationJs.addRowClass(target, "dutyRegistration-Work2Work");
+				if(dateData[i].confirmFlag === "1"){
+					if(day !== undefined && day !== null && dateData[i].day === day){
+						if (dateData[i].hasWork == this.state.hasWork[1]) {
+							DutyRegistrationJs.addRowClass(target, "dutyRegistration-WorkSelect");
+						}
+						else if (dateData[i].hasWork == this.state.hasWork[0]) {
+							DutyRegistrationJs.addRowClass(target, "dutyRegistration-SleepSelect");
+						}
+					}
+					else{
+						if (dateData[i].hasWork == this.state.hasWork[1]) {
+							DutyRegistrationJs.addRowClass(target, "dutyRegistration-WorkConfirmation");
+						}
+						else if (dateData[i].hasWork == this.state.hasWork[0]) {
+							DutyRegistrationJs.addRowClass(target, "dutyRegistration-SleepConfirmation");
+						}
+					}
 				}
-				else if (dateData[i].isWork == 0 && dateData[i].hasWork == this.state.hasWork[1]) {
-					DutyRegistrationJs.addRowClass(target, "dutyRegistration-Sleep2Work");
-				}
-				else if (dateData[i].isWork == 1 && dateData[i].hasWork == this.state.hasWork[0]) {
-					DutyRegistrationJs.addRowClass(target, "dutyRegistration-Work2Sleep");
-				}
-				else if (dateData[i].isWork == 0 && dateData[i].hasWork == this.state.hasWork[0]) {
-					DutyRegistrationJs.addRowClass(target, "dutyRegistration-Sleep2Sleep");
+				else{
+					if (dateData[i].hasWork == this.state.hasWork[1]) {
+						DutyRegistrationJs.addRowClass(target, "dutyRegistration-Work");
+					}
+					else if (dateData[i].hasWork == this.state.hasWork[0]) {
+						DutyRegistrationJs.addRowClass(target, "dutyRegistration-Sleep");
+					}
 				}
 			}
 		}
@@ -211,6 +273,14 @@ class DutyRegistration extends React.Component {
 						sleepHour = resultMap.data.breakTime["totalBreakTime"];
 					}
 					let dayIndex = -1;
+					
+					let lunchBreakStartTime = resultMap.data.breakTime.lunchBreakStartTime;
+					let lunchBreakFinshTime = resultMap.data.breakTime.lunchBreakFinshTime;
+					let lunchBreakTime = resultMap.data.breakTime.lunchBreakTime;
+					let nightBreakStartTime = resultMap.data.breakTime.nightBreakStartTime;
+					let nightBreakfinshTime = resultMap.data.breakTime.nightBreakfinshTime;
+					let nightBreakTime = resultMap.data.breakTime.nightBreakTime;
+					
 					for (let i = 0; i < defaultDateData.length; i++) {
 						dayIndex = defaultDateData[i].day - 1;
 						dateData[dayIndex].hasWork = this.state.hasWork[defaultDateData[i].isWork];
@@ -222,19 +292,28 @@ class DutyRegistration extends React.Component {
 							dateData[dayIndex].endTimeHours = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(0,2);
 							dateData[dayIndex].endTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(2,4);
 							dateData[dayIndex].sleepHour = sleepHour;
-							dateData[dayIndex].workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(dateData[dayIndex].startTime, dateData[dayIndex].endTime) - Number(dateData[dayIndex].sleepHour));
+							let startTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].startTime));
+							let endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
+							dateData[dayIndex].workHour = this.getWorkHour(startTime,endTime,lunchBreakStartTime,lunchBreakFinshTime,lunchBreakTime,nightBreakStartTime,nightBreakfinshTime,nightBreakTime);
 							workDays++;
 							workHours += Number(dateData[dayIndex].workHour);
 							dateData[dayIndex].endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
 							dateData[dayIndex]['workContent'] = publicUtils.nullToEmpty(defaultDateData[i].workContent);
 							dateData[dayIndex]['remark'] = publicUtils.nullToEmpty(defaultDateData[i].remark);
 						} else { dateData[dayIndex].sleepHour = ""; }
+						dateData[dayIndex].confirmFlag = publicUtils.nullToEmpty(defaultDateData[i].confirmFlag) === "" ? "" : defaultDateData[i].confirmFlag;
 					}
 					this.setState({
 						breakTime: resultMap.data.breakTime, dateData: dateData, workDays: workDays, workHours: workHours,
 						employeeNo: resultMap.data.employeeNo, siteCustomer: resultMap.data.siteCustomer, customer: resultMap.data.customer,
 						siteResponsiblePerson: resultMap.data.siteResponsiblePerson, systemName: resultMap.data.systemName,
-						employeeName: resultMap.data.employeeName, sleepHour: sleepHour
+						employeeName: resultMap.data.employeeName, sleepHour: sleepHour,
+						lunchBreakStartTime: lunchBreakStartTime,
+						lunchBreakFinshTime: lunchBreakFinshTime,
+						lunchBreakTime: lunchBreakTime,
+						nightBreakStartTime: nightBreakStartTime,
+						nightBreakfinshTime: nightBreakfinshTime,
+						nightBreakTime: nightBreakTime,
 					});
 				} else {
 					alert("休憩時間を登録してください。");
@@ -279,6 +358,7 @@ class DutyRegistration extends React.Component {
 		this.setState({ workHours: workHours });
 	}
 	onSubmit = (event) => {
+		this.setState({ loading: false, });
 		var dataInfo = {};
 		var actionType = "insert";
 		dataInfo["actionType"] = actionType;
@@ -290,8 +370,12 @@ class DutyRegistration extends React.Component {
 		dataInfo["systemName"] = this.state.systemName;
 		let submitData = [];
 /* 		let j = 0; */
+		let nowDay = new Date().getDate();
 		for (let i = 0; i < dataInfo["dateData"].length; i++) {
 			dataInfo["dateData"][i]["isWork"] = (dataInfo["dateData"][i]["hasWork"] == this.state.hasWork[0]) ? 0 : 1;
+			if(nowDay >= dataInfo["dateData"][i]["day"]){
+				dataInfo["dateData"][i]["confirmFlag"] = "1";
+			}
 			/* if (dataInfo["dateData"][i]["isChanged"]) { */
 				submitData[i] = JSON.parse(JSON.stringify(dataInfo["dateData"][i]));
 /* 				j++;
@@ -302,15 +386,17 @@ class DutyRegistration extends React.Component {
 		if (actionType === "insert") {
 			axios.post(this.state.serverIP + "dutyRegistration/dutyInsert", dataInfo)
 				.then(resultMap => {
+					this.setState({ loading: true, });
 					if (resultMap.data) {
 						alert("更新成功");
 					} else {
 						alert("更新失败");
 					}
-					window.location.reload();
+					//window.location.reload();
 					this.onBack();
 				})
 				.catch(function () {
+					this.setState({ loading: true, });
 					alert("更新错误，请检查程序");
 				})
 		}
@@ -391,7 +477,7 @@ class DutyRegistration extends React.Component {
 		let returnItem = (
 			<span id={"dutyDataRowNumber-" + row.id}>{cell}</span>
 		)
-		if (!this.state.isConfirmedPage) {
+		if (/*!this.state.isConfirmedPage*/row.confirmFlag !== "1") {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
 					<select class=" form-control editor edit-select" name="hasWork" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -403,6 +489,8 @@ class DutyRegistration extends React.Component {
 					</select>
 				</span>
 			)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
@@ -437,7 +525,7 @@ class DutyRegistration extends React.Component {
 	
 	startTimeHoursFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
 					<select class=" form-control editor edit-select" name="startTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -448,13 +536,15 @@ class DutyRegistration extends React.Component {
 					</select>
 				</span>
 			)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
 	
 	startTimeMinutesFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
 					<select class=" form-control editor edit-select" name="startTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -465,6 +555,8 @@ class DutyRegistration extends React.Component {
 					</select>
 				</span>
 			)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
@@ -479,7 +571,7 @@ class DutyRegistration extends React.Component {
 	
 	endTimeHoursFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
 					<select class=" form-control editor edit-select" name="endTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -490,13 +582,15 @@ class DutyRegistration extends React.Component {
 					</select>
 				</span>
 			)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
 	
 	endTimeMinutesFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
 					<select class=" form-control editor edit-select" name="endTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -507,6 +601,8 @@ class DutyRegistration extends React.Component {
 					</select>
 				</span>
 			)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
@@ -528,39 +624,101 @@ class DutyRegistration extends React.Component {
 	}
 	workContentFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="workContent" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
 	remarkFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (row.confirmFlag !== "1"  && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="remark" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
 		return returnItem;
 	}
 	
-    shuseiTo = (actionType) => {
-        var path = {};
-        var sendValue = {
-        };
-		switch (actionType) {
-			case "breakTime":
-				path = {
-					pathname: '/subMenuEmployee/breakTime',
-					state: {
-						backPage: "dutyRegistration",
-						sendValue: sendValue,
-					},
+	release = () => {
+		let dateData = this.state.dateData;
+		for(let i in dateData){
+			for(let j in this.state.rowNo){
+				if(dateData[i].day === this.state.rowNo[j]){
+					dateData[i].confirmFlag = "0";
 				}
-				break;
-			default:
+			}
 		}
+		this.setState({
+			dateData: dateData,
+		});
+		this.setTableStyle();
+	}
+	
+	beferShuseiTo = (actionType) => {
+    	let flag = false;
+    	for(let i in this.state.dateData){
+    		if(this.state.dateData[i].workContent !== null || this.state.dateData[i].workContent !== ""){
+    			flag = true;
+    			break;
+    		}
+    	}
+    	if(flag){
+			var a = window.confirm("休憩時間更新すると、作業時間再計算します、よろしいでしょうか？");
+			if(a){
+				this.shuseiTo(actionType);
+			}
+    	}else{
+    		this.shuseiTo(actionType);
+    	}
+	}
+	
+    shuseiTo = (actionType) => {
+    	 var path = {};
+         var sendValue = {
+         };
+ 		switch (actionType) {
+ 			case "breakTime":
+ 				path = {
+ 					pathname: '/subMenuEmployee/breakTime',
+ 					state: {
+ 						backPage: "dutyRegistration",
+ 						sendValue: sendValue,
+ 					},
+ 				}
+ 				break;
+ 			default:
+ 		}
         this.props.history.push(path);
     }
+    
+	//行Selectファンクション
+	handleRowSelect = (row, isSelected, e) => {
+		if(row.confirmFlag === "1"){
+			if (isSelected) {
+				this.setState({
+	    			rowNo: this.state.rowNo.concat([row.day]),
+	    		});
+				this.setTableStyle(row.id,row.day);
+			} else {
+	    		let index;
+				index = this.state.rowNo.findIndex(item => item === row.day);
+				this.state.rowNo.splice(index, 1);
+				this.setTableStyle(row.id);
+			}
+		}
+	}
 
 	render() {
+		const selectRow = {
+				mode: 'radio',
+				bgColor: 'pink',
+				clickToSelectAndEditCell: true,
+				hideSelectColumn: true,
+				clickToExpand: true,// click to expand row, default is false
+				onSelect: this.handleRowSelect,
+			};
 		return (
 			<div>
 				<div style={{ "display": this.state.errorsMessageShow ? "block" : "none" }}>
@@ -674,15 +832,16 @@ class DutyRegistration extends React.Component {
 						</Row>
 						<Row>
 							<Col sm={12}>
-                        		<Button size="sm" variant="info" name="clickButton" title="月に一回のみ登録してください" onClick={this.shuseiTo.bind(this, "breakTime")} variant="info" id="employeeInfo">休憩時間登録</Button>
+                        		<Button size="sm" variant="info" name="clickButton" title="月に一回のみ登録してください" onClick={this.beferShuseiTo.bind(this, "breakTime")} variant="info" id="employeeInfo">休憩時間登録</Button>
 								<div style={{ "float": "right" }}>
+                        			<Button size="sm" variant="info" name="clickButton" onClick={this.release} disabled={this.state.rowNo.length === 0} variant="info">解除</Button>{" "}
 									<Link className="btn btn-info btn-sm" onClick={this.downloadPDF.bind(this)} id="downloadPDF"><FontAwesomeIcon icon={faDownload} /> PDF</Link>
 								</div>
 							</Col>
 						</Row>
 						<Row>
 							<Col sm={12}>
-								<BootstrapTable className={"bg-white text-dark"} data={this.state.dateData} pagination={false} options={this.options} headerStyle={{ background: '#5599FF' }} >
+								<BootstrapTable className={"bg-white text-dark"} data={this.state.dateData} selectRow={selectRow} pagination={false} options={this.options} headerStyle={{ background: '#5599FF' }} >
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='40' dataField='week' >曜日</TableHeaderColumn>
@@ -709,6 +868,9 @@ class DutyRegistration extends React.Component {
 								合計時間：
 								{this.state.workHours}H
 							</Col>
+						</Row>
+						<br/>
+						<Row>
 							<Col style={{ "textAlign": "right" }} sm={3} md={{ span: 0, offset: 3 }} >
 								<div hidden={this.state.isConfirmedPage}>
 									<Button size="sm" className="btn btn-info btn-sm" onClick={this.beforeSubmit.bind(this)}>
@@ -728,6 +890,7 @@ class DutyRegistration extends React.Component {
 						</Row>
 					</Form.Group>
 				</div>
+		         <div className='loadingImage' hidden={this.state.loading} style = {{"position": "absolute","top":"60%","left":"60%","margin-left":"-200px", "margin-top":"-150px",}}></div>
 			</div >
 		);
 	}
