@@ -607,6 +607,20 @@ body {
 	font-size: 14px;
 }
 
+.dutyRegistration-DataTableEditingCellError input {
+	border-color: red;
+	height: 24px;
+	padding: 1px 1px 0px 4px;
+}
+
+.dutyRegistration-DataTableEditingCellError select {
+	border-color: red;
+	background: #F5F5F5;
+	height: 20px;
+	padding: 0px 0px 0px 0px;
+	font-size: 14px;
+}
+
 .dutyRegistration-DataTableEditingCell {
 	height: 20px;
 	padding: 0px 0px 0px 0px;

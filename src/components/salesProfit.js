@@ -465,7 +465,7 @@ class salesProfit extends React.Component {
 											 * 'nowrap' }}>入場人数：{this.state.no}</font>
 											 */}
 										<Button size="sm" onClick={this.shuseiTo.bind(this, "siteInfo")} disabled={this.state.employeeNo === '' ? true : false} className="individualSalesButtom" name="clickButton" variant="info" id="siteInfo">現場情報</Button>{' '}
-						                <Button size="sm" onClick={this.shuseiTo.bind(this, "wagesInfo")}  disabled={this.state.employeeNo === '' ? true : false} className="individualSalesButtom" name="clickButton" variant="info" id="wagesInfo">給料情報</Button>
+						                <Button size="sm" onClick={this.shuseiTo.bind(this, "wagesInfo")}  disabled={this.state.employeeNo === '' ? true : false} hidden={this.state.authorityCode !== "4"} className="individualSalesButtom" name="clickButton" variant="info" id="wagesInfo">給料情報</Button>
 									</Col>
 									<Col sm={1}>
 									</Col>

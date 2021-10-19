@@ -13,7 +13,7 @@ import * as publicUtils from './utils/publicUtils.js';
 import * as messageUtils from './utils/messageUtils.js';
 import { Link } from "react-router-dom";
 import store from './redux/store';
-
+import MyToast from './myToast';
 import BreakTime from './breakTime';
 import * as DutyRegistrationJs from './dutyRegistrationJs.js';
 import { string } from 'prop-types';
@@ -122,6 +122,9 @@ class DutyRegistration extends React.Component {
 		this.setState({
 			dateData: dataData
 		})
+		
+		this.setWorkDays();
+		this.setWorkHours();
 	}
 	
 	getWorkHour = (startTime,endTime,lunchBreakStartTime,lunchBreakFinshTime,lunchBreakTime,nightBreakStartTime,nightBreakfinshTime,nightBreakTime) => {
@@ -302,6 +305,7 @@ class DutyRegistration extends React.Component {
 							dateData[dayIndex]['remark'] = publicUtils.nullToEmpty(defaultDateData[i].remark);
 						} else { dateData[dayIndex].sleepHour = ""; }
 						dateData[dayIndex].confirmFlag = publicUtils.nullToEmpty(defaultDateData[i].confirmFlag) === "" ? "" : defaultDateData[i].confirmFlag;
+						dateData[dayIndex].errorFlag = "";
 					}
 					this.setState({
 						breakTime: resultMap.data.breakTime, dateData: dateData, workDays: workDays, workHours: workHours,
@@ -341,7 +345,7 @@ class DutyRegistration extends React.Component {
 			this.setState({ showbreakTimeModal: true })
 		}
 	}
-	setWorkDays() {
+	setWorkDays = () => {
 		let workDays = 0;
 		for (var i = 0; i < this.state.dateData.length; i++) {
 			if (this.state.dateData[i]["hasWork"] == this.state.hasWork[1]) {
@@ -350,7 +354,7 @@ class DutyRegistration extends React.Component {
 		}
 		this.setState({ workDays: workDays });
 	}
-	setWorkHours() {
+	setWorkHours = () => {
 		let workHours = 0;
 		for (var i = 0; i < this.state.dateData.length; i++) {
 			workHours += Number(this.state.dateData[i]["workHour"]);
@@ -388,9 +392,17 @@ class DutyRegistration extends React.Component {
 				.then(resultMap => {
 					this.setState({ loading: true, });
 					if (resultMap.data) {
-						alert("更新成功");
+						let dateData = this.state.dateData;
+						for (let i = 0; i < dateData.length; i++) {
+							dateData[i].isChanged = false;
+						}
+						this.setState({ dateData: dateData, });
+
+						this.setState({ "myToastShow": true, message: "更新成功！", });
+						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 					} else {
-						alert("更新失败");
+						this.setState({ "errorsMessageShow": true, errorsMessageValue: "更新失敗！", });
+						setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 					}
 					//window.location.reload();
 					this.onBack();
@@ -406,54 +418,59 @@ class DutyRegistration extends React.Component {
 		//		console.log(arrWorkContent[0].value);
 		let errorMessage = "";
 		let nowDay = new Date().getDate();
-		for (let i = 0; i < this.state.dateData.length; i++) {
-			if (nowDay < this.state.dateData[i]["day"]) {
-				break;
-			}
-			if (this.state.dateData[i]["hasWork"] == this.state.hasWork[1]) {
-				if (publicUtils.isEmpty(this.state.dateData[i]["startTime"])) {
-					errorMessage += messageUtils.getMessage("E0003", this.state.dateData[i]["day"], true);
+	
+		let dateData = this.state.dateData;
+		for (let i = 0; i < dateData.length; i++) {
+			dateData[i].errorFlag = "";
+		}
+		this.setState({
+			dateData: dateData,
+		}, () => {
+			for (let i = 0; i < dateData.length; i++) {
+				if (nowDay < dateData[i]["day"]) {
 					break;
 				}
-				if (publicUtils.isEmpty(this.state.dateData[i]["endTime"])) {
-					errorMessage += messageUtils.getMessage("E0004", this.state.dateData[i]["day"], true);
-					break;
+				if (dateData[i]["hasWork"] == this.state.hasWork[1]) {
+					if (publicUtils.isEmpty(dateData[i]["startTime"])) {
+						errorMessage += messageUtils.getMessage("E0003", dateData[i]["day"], true);
+						dateData[i].errorFlag = "Time";
+						break;
+					}
+					if (publicUtils.isEmpty(dateData[i]["endTime"])) {
+						errorMessage += messageUtils.getMessage("E0004", dateData[i]["day"], true);
+						dateData[i].errorFlag = "Time";
+						break;
+					}
+					if (nowDay >= dateData[i]["day"]) {
+						if (publicUtils.isEmpty(dateData[i]["workContent"])) {
+							errorMessage += messageUtils.getMessage("E0001", dateData[i]["day"], true);
+							dateData[i].errorFlag = "WorkContent";
+							break;
+						}
+					}
 				}
-				if (nowDay >= this.state.dateData[i]["day"]) {
-					if (publicUtils.isEmpty(this.state.dateData[i]["workContent"])) {
-						errorMessage += messageUtils.getMessage("E0001", this.state.dateData[i]["day"], true);
+				if (!publicUtils.isEmpty(dateData[i]["startTime"]) && !publicUtils.isEmpty(dateData[i]["endTime"])) {
+					if (dateData[i]["startTime"] > dateData[i]["endTime"]) {
+						errorMessage += messageUtils.getMessage("E0002", dateData[i]["day"], true);
+						dateData[i].errorFlag = "Time";
 						break;
 					}
 				}
 			}
-			/*if (!publicUtils.isEmpty(this.state.dateData[i]["startTime"]) && !this.state.dateData[i]["startTime"].toString().match(/^((0[0-9]|1[0-9]|2[0-3]):(0[0]|1[5]|3[0]|4[5])|24:00)$/)) {
-				errorMessage += messageUtils.getMessage("E0005", this.state.dateData[i]["day"], true);
-				break;
+			if (!publicUtils.isEmpty(errorMessage)) {
+				this.setState({
+					errorsMessageShow: true,
+					errorsMessageValue: errorMessage,
+				});
+				return;
 			}
-			if (!publicUtils.isEmpty(this.state.dateData[i]["endTime"]) && !this.state.dateData[i]["endTime"].toString().match(/^((0[0-9]|1[0-9]|2[0-3]):(0[0]|1[5]|3[0]|4[5])|24:00)$/)) {
-				errorMessage += messageUtils.getMessage("E0006", this.state.dateData[i]["day"], true);
-				break;
-			}*/
-			if (!publicUtils.isEmpty(this.state.dateData[i]["startTime"]) && !publicUtils.isEmpty(this.state.dateData[i]["endTime"])) {
-				if (this.state.dateData[i]["startTime"] > this.state.dateData[i]["endTime"]) {
-					errorMessage += messageUtils.getMessage("E0002", this.state.dateData[i]["day"], true);
-					break;
-				}
-			}
-		}
-		if (!publicUtils.isEmpty(errorMessage)) {
-			this.setState({
-				errorsMessageShow: true,
-				errorsMessageValue: errorMessage,
+			this.setState({ isConfirmedPage: true, errorsMessageShow: false, dateData: dateData }, () => {
+				this.setTableStyle();
 			});
-			return;
-		}
-		this.setState({ isConfirmedPage: true, errorsMessageShow: false }, () => {
-			this.setTableStyle();
 		});
 	}
 	onBack = (event) => {
-		this.setState({ isConfirmedPage: false }, () => {
+		this.setState({ isConfirmedPage: false, rowNo: [], }, () => {
 			this.setTableStyle();
 		});
 	}
@@ -527,7 +544,7 @@ class DutyRegistration extends React.Component {
 		let returnItem = cell;
 		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="startTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.hours.map(date =>
 						<option key={date} value={date}>
@@ -546,7 +563,7 @@ class DutyRegistration extends React.Component {
 		let returnItem = cell;
 		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="startTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.minutes.map(date =>
 						<option key={date} value={date}>
@@ -573,7 +590,7 @@ class DutyRegistration extends React.Component {
 		let returnItem = cell;
 		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="endTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.hours.map(date =>
 						<option key={date} value={date}>
@@ -592,7 +609,7 @@ class DutyRegistration extends React.Component {
 		let returnItem = cell;
 		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="endTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.minutes.map(date =>
 						<option key={date} value={date}>
@@ -609,7 +626,7 @@ class DutyRegistration extends React.Component {
 	
 	workHourFormatter = (cell) => {
 		if(Number(cell) > 0)
-			return cell;
+			return (cell + "H");
 	}
 	
 	sleepHourFormatter = (cell, row) => {
@@ -625,7 +642,7 @@ class DutyRegistration extends React.Component {
 	workContentFormatter = (cell, row) => {
 		let returnItem = cell;
 		if (row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
-			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="workContent" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+			returnItem = <span class={row.errorFlag === "WorkContent" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"}><input type="text" class=" form-control editor edit-text" name="workContent" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 		}else{
 			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
 		}
@@ -652,6 +669,11 @@ class DutyRegistration extends React.Component {
 		}
 		this.setState({
 			dateData: dateData,
+			rowNo: [],
+		});
+		this.refs.table.store.selected = [];
+		this.refs.table.setState({
+			selectedRowKeys: [],
 		});
 		this.setTableStyle();
 	}
@@ -704,7 +726,12 @@ class DutyRegistration extends React.Component {
 			} else {
 	    		let index;
 				index = this.state.rowNo.findIndex(item => item === row.day);
-				this.state.rowNo.splice(index, 1);
+				let rowNo = this.state.rowNo;
+				if(index !== -1)
+					rowNo.splice(index, 1);
+				this.setState({
+	    			rowNo: rowNo,
+	    		});
 				this.setTableStyle(row.id);
 			}
 		}
@@ -712,7 +739,7 @@ class DutyRegistration extends React.Component {
 
 	render() {
 		const selectRow = {
-				mode: 'radio',
+				mode: 'checkbox',
 				bgColor: 'pink',
 				clickToSelectAndEditCell: true,
 				hideSelectColumn: true,
@@ -723,6 +750,9 @@ class DutyRegistration extends React.Component {
 			<div>
 				<div style={{ "display": this.state.errorsMessageShow ? "block" : "none" }}>
 					<ErrorsMessageToast errorsMessageShow={this.state.errorsMessageShow} message={this.state.errorsMessageValue} type={"danger"} />
+				</div>
+				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
+					<MyToast myToastShow={this.state.myToastShow} message={this.state.message} type={"success"} />
 				</div>
 				<div>
 					{/*　 開始 */}
@@ -841,7 +871,7 @@ class DutyRegistration extends React.Component {
 						</Row>
 						<Row>
 							<Col sm={12}>
-								<BootstrapTable className={"bg-white text-dark"} data={this.state.dateData} selectRow={selectRow} pagination={false} options={this.options} headerStyle={{ background: '#5599FF' }} >
+								<BootstrapTable ref="table" className={"bg-white text-dark"} data={this.state.dateData} selectRow={selectRow} pagination={false} options={this.options} headerStyle={{ background: '#5599FF' }} >
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='40' dataField='week' >曜日</TableHeaderColumn>
@@ -860,13 +890,11 @@ class DutyRegistration extends React.Component {
 							</Col>
 						</Row>
 						<Row>
-							<Col sm={3}>
-								出勤日数：
-								{this.state.workDays}
+							<Col sm={4}>
+								<font>{"出勤：" + this.state.workDays + "日"}</font>
 							</Col>
-							<Col sm={3} md={{ span: 0, offset: 2 }}>
-								合計時間：
-								{this.state.workHours}H
+							<Col sm={4}>
+								<font style={{"marginLeft": "70px"}}>{"合計時間：" + this.state.workHours + "H"}</font>
 							</Col>
 						</Row>
 						<br/>

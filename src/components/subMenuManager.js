@@ -14,6 +14,7 @@ import masterInsert from './masterInsert';
 import masterUpdate from './masterUpdate';
 import dataShare from './dataShare';
 import systemSet from './systemSet';
+import profitChartist from './profitChartist';
 import CustomerInfoSearch from './customerInfoSearch';
 import siteInfo from './siteInfo';
 import ManageSituation from './manageSituation';
@@ -55,7 +56,7 @@ import {
 	faCalendarAlt, faThList, faCogs, faCloudUploadAlt, faSearch, faSave,faFileExcel,
 	faCommentDollar, faList, faSearchMinus, faNewspaper,faDownload,
 	faFilePowerpoint, faChartPie, faTable, faCog, faUpload, faCheckSquare, faBars, faCaretSquareLeft,
-	faFileContract
+	faFileContract, faChartBar
 } from '@fortawesome/free-solid-svg-icons';
 import '../asserts/css/subMenu.css';
 import store from './redux/store';
@@ -348,6 +349,9 @@ class SubMenu extends Component {
 																<ListGroup.Item style={this.state.hover.search("5") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-5")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/customerSalesList'})} block>
 																	<div><Link className={this.state.hover.search("5") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/customerSalesList"><FontAwesomeIcon className="fa-fw" size="lg" icon={faSearchMinus} /> お客様売上一覧</Link></div>
 																</ListGroup.Item>
+																<ListGroup.Item style={this.state.hover.search("6") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-6")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/profitChartist'})} block>
+																	<div><Link className={this.state.hover.search("6") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to="/subMenuManager/profitChartist"><FontAwesomeIcon className="fa-fw" size="lg" icon={faChartBar} /> 売上グラフ</Link></div>
+																</ListGroup.Item>
 															</Accordion>
 														</ListGroup>
 														</div>
@@ -628,6 +632,9 @@ class SubMenu extends Component {
 								<Route exact path={`${this.props.match.url}/customerSalesList`} component={customerSalesList} />
 								<Route exact path={`${this.props.match.url}/dataShare`} component={dataShare} />
 								<Route exact path={`${this.props.match.url}/systemSet`} component={systemSet} />
+								<Route exact path={`${this.props.match.url}/profitChartist`} component={profitChartist} />
+
+								
 								<div className="container col-8">
 									<div className="container col-10">
 										<Route exact path={`${this.props.match.url}/masterInsert`} component={masterInsert} />
