@@ -109,6 +109,7 @@ class monthlySalesSearch extends Component {//月次売上検索
                     kadou: data.kadou,
                     employeeClassification: data.employeeClassification,
                     employeeOccupation: data.employeeOccupation,
+                    rowNo: data.rowNo,
                 }, () =>
                 this.searchMonthlySales())
             }
@@ -238,7 +239,7 @@ class monthlySalesSearch extends Component {//月次売上検索
             if(this.state.monthlySalesInfoList[i].unitPrice==null||this.state.monthlySalesInfoList[i].unitPrice==""){
                 unitPirceTotal = parseInt(unitPirceTotal) + 0;
             }else{
-                if(this.state.monthlySalesInfoList[i].deductionsAndOvertimePayOfUnitPrice===null){
+                if(this.state.monthlySalesInfoList[i].deductionsAndOvertimePayOfUnitPrice===null || this.state.monthlySalesInfoList[i].deductionsAndOvertimePayOfUnitPrice===""){
                     unitPirceTotal = parseInt(unitPirceTotal)+parseInt(this.state.monthlySalesInfoList[i].unitPrice) 
                 }else{
                     unitPirceTotal = parseInt(unitPirceTotal)+parseInt(this.state.monthlySalesInfoList[i].unitPrice) +parseInt(this.state.monthlySalesInfoList[i].deductionsAndOvertimePayOfUnitPrice)
@@ -247,7 +248,7 @@ class monthlySalesSearch extends Component {//月次売上検索
             if(this.state.monthlySalesInfoList[i].salary == null||this.state.monthlySalesInfoList[i].salary == ""){
                 salaryTotal = salaryTotal + 0;
             }else{
-                if(this.state.monthlySalesInfoList[i].deductionsAndOvertimePay===null){
+                if(this.state.monthlySalesInfoList[i].deductionsAndOvertimePay===null || this.state.monthlySalesInfoList[i].deductionsAndOvertimePay===""){
                     salaryTotal = salaryTotal + parseInt(this.state.monthlySalesInfoList[i].salary)
                 }
                 else{
@@ -418,6 +419,7 @@ class monthlySalesSearch extends Component {//月次売上検索
                 employeeClassification: this.state.employeeClassification,
                 employeeOccupation: this.state.employeeOccupation,
                 rowNo: this.state.rowNo,
+                rowSelectemployeeNo: this.state.rowSelectemployeeNo,
 		};
 		
 		switch (actionType) {

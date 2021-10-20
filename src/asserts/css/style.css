@@ -1280,6 +1280,16 @@ body {
 	color: "#495057"
 }
 
+.Autocompletestyle-projitChartist {
+	width: 7.65rem;
+	height: 31px;
+	border-color: "#ced4da";
+	border-width: 1;
+	border-style: "solid";
+	font-size: ".875rem";
+	color: "#495057"
+}
+
 .Autocompletestyle-customer {
 	width: 15.19rem;
 	height: 31px;
