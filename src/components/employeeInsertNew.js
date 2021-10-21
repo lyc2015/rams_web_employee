@@ -62,6 +62,7 @@ class employeeInsertNew extends React.Component {
 		genderStatuss: store.getState().dropDown[0],
 		intoCompanyCodes: store.getState().dropDown[1],
 		employeeFormCodes: store.getState().dropDown[2],
+		employeeFormCodesAll: store.getState().dropDown[2],
 		siteMaster: store.getState().dropDown[34],
 		employeeStatusS: store.getState().dropDown[4].slice(1),
 		japaneaseLevelCodes: store.getState().dropDown[5],
@@ -531,16 +532,22 @@ class employeeInsertNew extends React.Component {
 		else if (value === '0') {
 			// this.getNO("LYC");
 			this.getNO(this.state.empNoHead);
-			this.setState({ authorityCode: "1", });
+			this.setState({ authorityCode: "1", employeeFormCodes: this.state.employeeFormCodesAll, });
 		}else if(value === '2'){
+			let employeeFormCodes = [];
+			for(let i in this.state.employeeFormCodesAll){
+				if(this.state.employeeFormCodesAll[i].code === "" || this.state.employeeFormCodesAll[i].code === "4" || this.state.employeeFormCodesAll[i].code === "5"){
+					employeeFormCodes.push(this.state.employeeFormCodesAll[i]);
+				}
+			}
 			this.setState({ companyMail: '', intoCompanyCode: '', departmentCode: '', authorityCode: "1",
-				retirementYearAndMonth: '',retirementResonClassificationCode: '',occupationCode: '3',
-				employeeFormCode:'',temporary_retirementYearAndMonth:'',retirementYearAndMonthDisabled:false,
+				retirementYearAndMonth: '',retirementResonClassificationCode: '',occupationCode: '3',employeeFormCodes: employeeFormCodes,
+				employeeFormCode: (this.state.employeeFormCode === "4" || this.state.employeeFormCode === "5" ? this.state.employeeFormCode : ''),temporary_retirementYearAndMonth:'',retirementYearAndMonthDisabled:false, 
 				occupationCode: '',socialInsuranceDate: '',employmentInsurance: '',residenceTimeDisabled: true,employmentInsuranceNo: '',socialInsuranceNo: '',socialInsurance: "0",});
 			this.getNO("SP");
 		}
 		else if(value === '3'){
-			this.setState({ authorityCode: "1",});
+			this.setState({ authorityCode: "1",employeeFormCodes: this.state.employeeFormCodesAll,});
 			this.getNO("SC");
 		}
 	}
@@ -987,7 +994,7 @@ class employeeInsertNew extends React.Component {
 									<Form.Control as="select" size="sm"
 										onChange={this.valueChangeEmployeeFormCode}
 										name="employeeFormCode" value={employeeFormCode}
-										autoComplete="off" id="Autocompletestyle-employeeInsert-employeeFormCode" disabled={employeeStatus === "0" || employeeStatus === "3" ? false : true}>
+										autoComplete="off" id="Autocompletestyle-employeeInsert-employeeFormCode" disabled={employeeStatus === "0" || employeeStatus === "2" || employeeStatus === "3" ? false : true}>
 										{this.state.employeeFormCodes.map(date =>
 											<option key={date.code} value={date.code}>
 												{date.name}

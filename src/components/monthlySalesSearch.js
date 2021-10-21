@@ -80,7 +80,7 @@ class monthlySalesSearch extends Component {//月次売上検索
             this.setState({
             	employeeStatuss: employeeStatuss,
             });
-           this.clickButtonDisabled();  
+           this.clickButtonDisabled();
            const { location } = this.props
            if (location.state) {
         	   	let data = location.state;

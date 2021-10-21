@@ -41,7 +41,8 @@ class profitChartist extends Component {
     		year: new Date().getFullYear(),
     		xAxisData:[
     			['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-    			[]
+    			[],
+    			[],
     			],
     }
     
@@ -60,11 +61,56 @@ class profitChartist extends Component {
         });
 		this.dataSearch();
     }
-    
+        
    	// onchange
 	valueChange = event => {
 		this.setState({
 			[event.target.name]: event.target.value,
+			profitData: [],
+    		grossProfitData: [],
+    		countPeoData: [],
+        }, () => {
+    		this.dataSearch();
+        });
+    }
+	
+	setXAxisData2 = (year,month) => {
+		let xAxisYearData = [];
+        for(let i = 0; i < month;i++){
+        	xAxisYearData.push((i + 1) + "月");
+        	xAxisYearData.push((i + 1) + "月");
+        	xAxisYearData.push("");
+        }
+        let xAxisData = this.state.xAxisData;
+        xAxisData[2] = xAxisYearData;
+        this.setState({
+        	xAxisData: xAxisData
+        });
+	}
+	
+	targetStatusChange = event => {
+		if(event.target.value === "2"){
+			$('#year').empty();
+			let date = new Date();
+	        var year = date.getFullYear();
+	        var month = date.getMonth() + 1;
+	        for (var i = 2021; i <= year; i++) {
+	            $('#year').append('<option value="' + i + '">' + i + '</option>');
+	        }
+	        this.setXAxisData2(year,month);
+		}
+		else{
+			$('#year').empty();
+			let date = new Date();
+	        var year = date.getFullYear();
+	        for (var i = 2020; i <= year; i++) {
+	            $('#year').append('<option value="' + i + '">' + i + '</option>');
+	        }
+		}
+		this.setState({
+			[event.target.name]: event.target.value,
+			yearStatus: event.target.value === "2" ? "0" : this.state.yearStatus,
+			year: year,
 			profitData: [],
     		grossProfitData: [],
     		countPeoData: [],
@@ -96,10 +142,8 @@ class profitChartist extends Component {
 					if(yearStatus === "0"){
 						let unitPirceTotal = [0,0,0,0,0,0,0,0,0,0,0,0];
 				        let grossProfitTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
-						let countPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
 						for(let i in response.data.data){
 							let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
-			            	countPeoData[month] = countPeoData[month] + 1;
 
 							if(response.data.data[i].unitPrice==null||response.data.data[i].unitPrice==""){
 				                unitPirceTotal[month] = parseInt(unitPirceTotal[month]) + 0;
@@ -121,25 +165,38 @@ class profitChartist extends Component {
 							unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
 							grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
 						}
-						this.setState({
-							profitData: unitPirceTotal,
-				    		grossProfitData: grossProfitTotal,
-							countPeoData: countPeoData,
-				        });
+						monthlyInfo = {
+					            employeeClassification: employeeStatus === "0" ? null : (employeeStatus === "1" ? "1" : "023"),
+					            startYandM: yearAndMonthStart,
+					            endYandM: yearAndMonthEnd,
+					            kadou: "0",
+					        };
+				        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+						.then(response => {
+							if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+								let countPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+								for(let i in response.data.data){
+									let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+					            	countPeoData[month] = countPeoData[month] + 1;
+								}
+								this.setState({
+									profitData: unitPirceTotal,
+						    		grossProfitData: grossProfitTotal,
+									countPeoData: countPeoData,
+						        });
+							}
+						});
 					}
 					else{
 						let years = (new Date().getFullYear() - 2020) + 1;
 						let unitPirceTotal = [];
 				        let grossProfitTotal= [];
-						let countPeoData = [];
 						for(let i = 0;i < years;i++){
 							unitPirceTotal.push(0);
 							grossProfitTotal.push(0);
-							countPeoData.push(0);
 						}
 						for(let i in response.data.data){
 							let year = Number(response.data.data[i].yearAndMonth.substring(0,4)) - 2020;
-			            	countPeoData[year] = countPeoData[year] + 1;
 
 							if(response.data.data[i].unitPrice==null||response.data.data[i].unitPrice==""){
 				                unitPirceTotal[year] = parseInt(unitPirceTotal[year]) + 0;
@@ -161,18 +218,39 @@ class profitChartist extends Component {
 							unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
 							grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
 						}
-						this.setState({
-							profitData: unitPirceTotal,
-				    		grossProfitData: grossProfitTotal,
-							countPeoData: countPeoData,
-				        });
+
+						
+						monthlyInfo = {
+					            employeeClassification: employeeStatus === "0" ? null : (employeeStatus === "1" ? "1" : "023"),
+					            startYandM: yearAndMonthStart,
+					            endYandM: yearAndMonthEnd,
+					            kadou: "0",
+					        };
+				        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+						.then(response => {
+							if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+								let countPeoData = [];
+								for(let i = 0;i < years;i++){
+									countPeoData.push(0);
+								}
+								for(let i in response.data.data){
+									let year = Number(response.data.data[i].yearAndMonth.substring(0,4)) - 2020;
+					            	countPeoData[year] = countPeoData[year] + 1;
+								}
+								this.setState({
+									profitData: unitPirceTotal,
+						    		grossProfitData: grossProfitTotal,
+									countPeoData: countPeoData,
+						        });
+							}
+						});
 					}
                 }
 			}).catch((error) => {
 				console.error("Error - " + error);
 			});
         }
-		else{
+		else if(targetStatus === "1"){
 	        let customerInfo = {
 	                customerName: this.state.customerNo,
 	                fiscalYear: "",
@@ -196,6 +274,8 @@ class profitChartist extends Component {
 				    		grossProfitData: grossProfitTotal,
 							countPeoData: countPeoData,
 				        });
+						
+						
 					}
 					else{
 						let years = (new Date().getFullYear() - 2020) + 1;
@@ -228,6 +308,119 @@ class profitChartist extends Component {
                 console.error("Error - " + error);
             });
 		}
+		else if(targetStatus === "2"){
+			yearAndMonthStart = ((this.state.year - 1) + "01");
+			yearAndMonthEnd = (this.state.year + "12");
+			let monthlyInfo = {
+		            employeeClassification: null,
+		            startYandM: yearAndMonthStart,
+		            endYandM: yearAndMonthEnd,
+		        };
+			axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+			.then(response => {
+				if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+					let unitPirceTotalOld = [];
+					let unitPirceTotal = [];
+			        let grossProfitTotalOld = [];
+			        let grossProfitTotal = [];
+			        let dateMonth = date.getMonth() + 1;
+			        for (let i = 0;i < dateMonth;i++){
+			        	unitPirceTotalOld.push(0);
+			        	unitPirceTotal.push(0);
+			        	grossProfitTotalOld.push(0);
+			        	grossProfitTotal.push(0);
+			        }
+					for(let i in response.data.data){
+						let year = response.data.data[i].yearAndMonth.substring(0,4);
+						let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+						if(month + 1 > dateMonth)
+							continue;
+						if(response.data.data[i].unitPrice==null||response.data.data[i].unitPrice==""){
+							if(String(year) === String(this.state.year))
+								unitPirceTotal[month] = parseInt(unitPirceTotal[month]) + 0;
+							else 
+								unitPirceTotalOld[month] = parseInt(unitPirceTotalOld[month]) + 0;
+			            }else{
+			                if(response.data.data[i].deductionsAndOvertimePayOfUnitPrice===null || response.data.data[i].deductionsAndOvertimePayOfUnitPrice===""){
+								if(String(year) === String(this.state.year))
+									unitPirceTotal[month] = parseInt(unitPirceTotal[month])+parseInt(response.data.data[i].unitPrice);
+								else 
+									unitPirceTotalOld[month] = parseInt(unitPirceTotalOld[month])+parseInt(response.data.data[i].unitPrice);
+			                }else{
+								if(String(year) === String(this.state.year))
+									unitPirceTotal[month] = parseInt(unitPirceTotal[month])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice);
+								else 
+									unitPirceTotalOld[month] = parseInt(unitPirceTotalOld[month])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice);
+			                }               
+			            }
+						
+			            if(response.data.data[i].monthlyGrosProfits==null||response.data.data[i].monthlyGrosProfits==""){
+							if(String(year) === String(this.state.year))
+				                grossProfitTotal[month] = parseInt(grossProfitTotal[month]) + 0;
+							else 
+				                grossProfitTotalOld[month] = parseInt(grossProfitTotalOld[month]) + 0;
+			            }else{
+							if(String(year) === String(this.state.year))
+				                grossProfitTotal[month] = parseInt(grossProfitTotal[month]) + parseInt(response.data.data[i].monthlyGrosProfits) 
+							else 
+								grossProfitTotalOld[month] = parseInt(grossProfitTotalOld[month]) + parseInt(response.data.data[i].monthlyGrosProfits) 
+			            }
+					}
+					for(let i in unitPirceTotal){
+						unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
+						grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
+						unitPirceTotalOld[i] = parseInt(unitPirceTotalOld[i] / 100000);
+						grossProfitTotalOld[i] = parseInt(grossProfitTotalOld[i] / 100000);
+					}
+					monthlyInfo = {
+				            employeeClassification: null,
+				            startYandM: yearAndMonthStart,
+				            endYandM: yearAndMonthEnd,
+				            kadou: "0",
+				        };
+			        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+					.then(response => {
+						if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+							let countPeoDataOld = [];
+							let countPeoData = [];
+							for (let i = 0;i < dateMonth;i++){
+								countPeoDataOld.push(0);
+								countPeoData.push(0);
+					        }
+							for(let i in response.data.data){
+								let year = response.data.data[i].yearAndMonth.substring(0,4);
+								let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+								if(String(year) === String(this.state.year))
+					            	countPeoData[month] = countPeoData[month] + 1;
+								else 
+					            	countPeoDataOld[month] = countPeoDataOld[month] + 1;
+							}
+							let newUnitPirceTotal = [];
+							let newGrossProfitTotal = [];
+							let newCountPeoData = [];
+							for (let i = 0;i < dateMonth;i++){
+								newUnitPirceTotal.push(unitPirceTotalOld[i]);
+								newUnitPirceTotal.push(unitPirceTotal[i]);
+								newUnitPirceTotal.push(null);
+								newGrossProfitTotal.push(grossProfitTotalOld[i]);
+								newGrossProfitTotal.push(grossProfitTotal[i]);
+								newGrossProfitTotal.push(null);
+								newCountPeoData.push(countPeoDataOld[i]);
+								newCountPeoData.push(countPeoData[i]);
+								newCountPeoData.push(null);
+					        }
+							this.setState({
+								profitData: newUnitPirceTotal,
+					    		grossProfitData: newGrossProfitTotal,
+								countPeoData: newCountPeoData,
+					        });
+						}
+					});
+                }
+			}).catch((error) => {
+				console.error("Error - " + error);
+			});
+		}
 	}
 	
     getOption = () => {
@@ -240,7 +433,17 @@ class profitChartist extends Component {
             },
             tooltip:{
                 trigger: 'axis',
-                formatter: '{b2}<br /><div><font style="color:#FFD24F">●</font> {a2} {c2}</div>'
+                formatter: function(params) {
+					let str = "";
+					params.forEach((item) => {
+						if(item.seriesName === "稼働人数"){
+							if(item.data !== null){
+								str = "稼働人数　" + item.data;
+							}
+						}
+					})
+					return str === "" ? "" : ('<div><font style="color:#FFD24F">●</font>' + str + '</div>');
+				},
             },
             legend: {
                 data:['売上','純利益'],
@@ -249,13 +452,18 @@ class profitChartist extends Component {
                 },
             },
             xAxis: {
-                data: this.state.yearStatus === "0" ? this.state.xAxisData[0] : this.state.xAxisData[1],
+                data: this.state.targetStatus === "2" ? this.state.xAxisData[2] : this.state.yearStatus === "0" ? this.state.xAxisData[0] : this.state.xAxisData[1],
                 axisLabel: {
                     show: true,
+                    interval: this.state.targetStatus === "2" ? 2 : 0,
+                    padding: this.state.targetStatus === "2" ? [0, 0, 0, 70] : 0,
                     textStyle: {
                     	fontSize: "16px",
                     }
                 },
+                axisTick: {
+                    show: false,
+                }
             },
             yAxis: {
                 type: 'value'
@@ -271,7 +479,7 @@ class profitChartist extends Component {
                 {
                     name:'売上',
                     type:'bar',
-                    barWidth: '30%',
+                    barWidth: this.state.targetStatus === '2' ? '60%' : '30%',
                     color: 'blue',
                     label: {
                     	show: true,
@@ -283,7 +491,7 @@ class profitChartist extends Component {
                 {
                     name:'純利益',
                     type:'bar',
-                    barWidth: '30%',
+                    barWidth: this.state.targetStatus === '2' ? '60%' : '30%',
                     color: '#D25050',
                     label: {
                     	show: true,
@@ -295,7 +503,11 @@ class profitChartist extends Component {
                 {
                     name:'稼働人数',
                     type:'bar',
+                    barGap: this.state.targetStatus === '2' ? '-100%' : '20%',
                     color: '#FFD24F',
+                    itemStyle: {
+                    	opacity: 0,
+                    },
                     data: this.state.countPeoData
                 }
             ]
@@ -338,9 +550,10 @@ class profitChartist extends Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text >区分</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control id="targetStatus" as="select" size="sm" onChange={this.valueChange} name="targetStatus" value={this.state.targetStatus} autoComplete="off" >
+								<Form.Control id="targetStatus" as="select" size="sm" onChange={this.targetStatusChange} name="targetStatus" value={this.state.targetStatus} autoComplete="off" >
 									<option value="0">全員売上</option>
 									<option value="1">お客様売上</option>
+									<option value="2">売上比較</option>
 								</Form.Control>
 								<Form.Control id="employeeStatus" as="select" size="sm" onChange={this.valueChange} name="employeeStatus" value={this.state.employeeStatus} autoComplete="off" hidden={this.state.targetStatus !== "0"}>
 									<option value="0">全員</option>
@@ -350,8 +563,8 @@ class profitChartist extends Component {
 								<Autocomplete hidden={this.state.targetStatus !== "1"}
 	                                id="customerNo"
 	                                name="customerNo"
-	                                value={store.getState().dropDown[53].slice(1).find(v => v.code === this.state.customerNo) || ""}
-	                                options={store.getState().dropDown[53].slice(1)}
+	                                value={store.getState().dropDown[73].slice(1).find(v => v.code === this.state.customerNo) || ""}
+	                                options={store.getState().dropDown[73].slice(1)}
 	                                getOptionLabel={(option) => option.text ? option.text : ""}
 	                                onChange={(event, values) => this.getCustomer(event, values)}
 	                                renderOption={(option) => {
@@ -375,7 +588,7 @@ class profitChartist extends Component {
 							<InputGroup.Prepend>
 								<InputGroup.Text >日付</InputGroup.Text>
 							</InputGroup.Prepend>
-							<Form.Control id="yearStatus" as="select" size="sm" onChange={this.valueChange} name="yearStatus" value={this.state.yearStatus} autoComplete="off" >
+							<Form.Control id="yearStatus" as="select" size="sm" onChange={this.valueChange} name="yearStatus" disabled={this.state.targetStatus === "2"} value={this.state.yearStatus} autoComplete="off" >
 								<option value="0">年月</option>
 								<option value="1">年</option>
 							</Form.Control>
