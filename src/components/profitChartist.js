@@ -4,6 +4,7 @@ import store from './redux/store';
 import DatePicker from "react-datepicker";
 import $ from 'jquery';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import * as utils from './utils/publicUtils.js';
 
 import { Card } from 'antd'
 //	按需导入
@@ -38,6 +39,7 @@ class profitChartist extends Component {
     		profitData: [],
     		grossProfitData: [],
     		countPeoData: [],
+    		textData: [],
     		year: new Date().getFullYear(),
     		xAxisData:[
     			['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
@@ -69,6 +71,7 @@ class profitChartist extends Component {
 			profitData: [],
     		grossProfitData: [],
     		countPeoData: [],
+    		textData: [],
         }, () => {
     		this.dataSearch();
         });
@@ -93,7 +96,7 @@ class profitChartist extends Component {
 			$('#year').empty();
 			let date = new Date();
 	        var year = date.getFullYear();
-	        var month = date.getMonth() + 1;
+	        var month = date.getMonth() + 2;
 	        for (var i = 2021; i <= year; i++) {
 	            $('#year').append('<option value="' + i + '">' + i + '</option>');
 	        }
@@ -114,6 +117,7 @@ class profitChartist extends Component {
 			profitData: [],
     		grossProfitData: [],
     		countPeoData: [],
+    		textData: [],
         }, () => {
     		this.dataSearch();
         });
@@ -142,16 +146,57 @@ class profitChartist extends Component {
 					if(yearStatus === "0"){
 						let unitPirceTotal = [0,0,0,0,0,0,0,0,0,0,0,0];
 				        let grossProfitTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let employeeTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let employeePercent= [];
+				        let spTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let spPercent= [];
+				        let bpTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let bpPercent= [];
+				        let textData= [];
+
 						for(let i in response.data.data){
 							let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
 
 							if(response.data.data[i].unitPrice==null||response.data.data[i].unitPrice==""){
 				                unitPirceTotal[month] = parseInt(unitPirceTotal[month]) + 0;
+				                switch (response.data.data[i].employeeNo.substring(0,2)) {
+								case "BP":
+									bpTotal[month] = parseInt(bpTotal[month]) + 0;
+									break;
+								case "SP":
+									spTotal[month] = parseInt(spTotal[month]) + 0;
+									break;
+								default:
+									employeeTotal[month] = parseInt(employeeTotal[month]) + 0;
+									break;
+								}
 				            }else{
 				                if(response.data.data[i].deductionsAndOvertimePayOfUnitPrice===null || response.data.data[i].deductionsAndOvertimePayOfUnitPrice===""){
-				                    unitPirceTotal[month] = parseInt(unitPirceTotal[month])+parseInt(response.data.data[i].unitPrice) 
+				                    unitPirceTotal[month] = parseInt(unitPirceTotal[month])+parseInt(response.data.data[i].unitPrice)
+				                    switch (response.data.data[i].employeeNo.substring(0,2)) {
+										case "BP":
+											bpTotal[month] = parseInt(bpTotal[month])+parseInt(response.data.data[i].unitPrice)
+											break;
+										case "SP":
+											spTotal[month] = parseInt(spTotal[month])+parseInt(response.data.data[i].unitPrice)
+											break;
+										default:
+											employeeTotal[month] = parseInt(employeeTotal[month])+parseInt(response.data.data[i].unitPrice)
+											break;
+										}
 				                }else{
 				                    unitPirceTotal[month] = parseInt(unitPirceTotal[month])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice)
+				                    switch (response.data.data[i].employeeNo.substring(0,2)) {
+										case "BP":
+											bpTotal[month] = parseInt(bpTotal[month])+parseInt(response.data.data[i].unitPrice)
+											break;
+										case "SP":
+											spTotal[month] = parseInt(spTotal[month])+parseInt(response.data.data[i].unitPrice)
+											break;
+										default:
+											employeeTotal[month] = parseInt(employeeTotal[month])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice)
+											break;
+										}
 				                }               
 				            }
 							
@@ -161,10 +206,7 @@ class profitChartist extends Component {
 				                grossProfitTotal[month] = parseInt(grossProfitTotal[month]) + parseInt(response.data.data[i].monthlyGrosProfits) 
 				            }
 						}
-						for(let i in unitPirceTotal){
-							unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
-							grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
-						}
+
 						monthlyInfo = {
 					            employeeClassification: employeeStatus === "0" ? null : (employeeStatus === "1" ? "1" : "023"),
 					            startYandM: yearAndMonthStart,
@@ -175,14 +217,43 @@ class profitChartist extends Component {
 						.then(response => {
 							if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
 								let countPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+								let employeePeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+								let spPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+								let bpPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
 								for(let i in response.data.data){
 									let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
 					            	countPeoData[month] = countPeoData[month] + 1;
+					            	switch (response.data.data[i].employeeNo.substring(0,2)) {
+									case "BP":
+										bpPeoData[month] = bpPeoData[month] + 1;
+										break;
+									case "SP":
+										spPeoData[month] = spPeoData[month] + 1;
+										break;
+									default:
+										employeePeoData[month] = employeePeoData[month] + 1;
+										break;
+									}
+								}
+								for(let i in unitPirceTotal){
+									employeePercent.push(parseInt(employeeTotal[i] * 100 / unitPirceTotal[i]) + "%");
+									spPercent.push(parseInt(spTotal[i] * 100 / unitPirceTotal[i]) + "%");
+									bpPercent.push(parseInt(bpTotal[i] * 100 / unitPirceTotal[i]) + "%");
+									unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
+									grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
+									employeeTotal[i] = utils.addComma(employeeTotal[i]);
+									spTotal[i] = utils.addComma(spTotal[i]);
+									bpTotal[i] = utils.addComma(bpTotal[i]);
+
+									textData.push("稼働人数<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+												  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
+												  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")<br/>");
 								}
 								this.setState({
 									profitData: unitPirceTotal,
 						    		grossProfitData: grossProfitTotal,
 									countPeoData: countPeoData,
+									textData: textData,
 						        });
 							}
 						});
@@ -191,20 +262,63 @@ class profitChartist extends Component {
 						let years = (new Date().getFullYear() - 2020) + 1;
 						let unitPirceTotal = [];
 				        let grossProfitTotal= [];
+				        let employeeTotal= [];
+				        let employeePercent= [];
+				        let spTotal= [];
+				        let spPercent= [];
+				        let bpTotal= [];
+				        let bpPercent= [];
+				        let textData= [];
 						for(let i = 0;i < years;i++){
 							unitPirceTotal.push(0);
 							grossProfitTotal.push(0);
+							employeeTotal.push(0);
+							spTotal.push(0);
+							bpTotal.push(0);
 						}
 						for(let i in response.data.data){
 							let year = Number(response.data.data[i].yearAndMonth.substring(0,4)) - 2020;
 
 							if(response.data.data[i].unitPrice==null||response.data.data[i].unitPrice==""){
 				                unitPirceTotal[year] = parseInt(unitPirceTotal[year]) + 0;
+				                switch (response.data.data[i].employeeNo.substring(0,2)) {
+									case "BP":
+										bpTotal[year] = parseInt(bpTotal[year]) + 0;
+										break;
+									case "SP":
+										spTotal[year] = parseInt(spTotal[year]) + 0;
+										break;
+									default:
+										employeeTotal[year] = parseInt(employeeTotal[year]) + 0;
+										break;
+									}
 				            }else{
 				                if(response.data.data[i].deductionsAndOvertimePayOfUnitPrice===null || response.data.data[i].deductionsAndOvertimePayOfUnitPrice===""){
 				                    unitPirceTotal[year] = parseInt(unitPirceTotal[year])+parseInt(response.data.data[i].unitPrice) 
+				                    switch (response.data.data[i].employeeNo.substring(0,2)) {
+										case "BP":
+											bpTotal[year] = parseInt(bpTotal[year])+parseInt(response.data.data[i].unitPrice) 
+											break;
+										case "SP":
+											spTotal[year] = parseInt(spTotal[year])+parseInt(response.data.data[i].unitPrice) 
+											break;
+										default:
+											employeeTotal[year] = parseInt(employeeTotal[year])+parseInt(response.data.data[i].unitPrice) 
+											break;
+										}
 				                }else{
 				                    unitPirceTotal[year] = parseInt(unitPirceTotal[year])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice)
+				                    switch (response.data.data[i].employeeNo.substring(0,2)) {
+										case "BP":
+											bpTotal[year] = parseInt(bpTotal[year])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice)
+											break;
+										case "SP":
+											spTotal[year] = parseInt(spTotal[year])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice)
+											break;
+										default:
+											employeeTotal[year] = parseInt(employeeTotal[year])+parseInt(response.data.data[i].unitPrice) +parseInt(response.data.data[i].deductionsAndOvertimePayOfUnitPrice)
+											break;
+										}
 				                }               
 				            }
 							
@@ -214,12 +328,7 @@ class profitChartist extends Component {
 				                grossProfitTotal[year] = parseInt(grossProfitTotal[year]) + parseInt(response.data.data[i].monthlyGrosProfits) 
 				            }
 						}
-						for(let i in unitPirceTotal){
-							unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
-							grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
-						}
-
-						
+	
 						monthlyInfo = {
 					            employeeClassification: employeeStatus === "0" ? null : (employeeStatus === "1" ? "1" : "023"),
 					            startYandM: yearAndMonthStart,
@@ -230,17 +339,49 @@ class profitChartist extends Component {
 						.then(response => {
 							if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
 								let countPeoData = [];
+								let employeePeoData = [];
+								let spPeoData = [];
+								let bpPeoData = [];
 								for(let i = 0;i < years;i++){
 									countPeoData.push(0);
+									employeePeoData.push(0);
+									spPeoData.push(0);
+									bpPeoData.push(0);
 								}
 								for(let i in response.data.data){
 									let year = Number(response.data.data[i].yearAndMonth.substring(0,4)) - 2020;
 					            	countPeoData[year] = countPeoData[year] + 1;
+					            	switch (response.data.data[i].employeeNo.substring(0,2)) {
+									case "BP":
+										bpPeoData[year] = bpPeoData[year] + 1;
+										break;
+									case "SP":
+										spPeoData[year] = spPeoData[year] + 1;
+										break;
+									default:
+										employeePeoData[year] = employeePeoData[year] + 1;
+										break;
+									}
+								}
+								for(let i in unitPirceTotal){
+									employeePercent.push(parseInt(employeeTotal[i] * 100 / unitPirceTotal[i]) + "%");
+									spPercent.push(parseInt(spTotal[i] * 100 / unitPirceTotal[i]) + "%");
+									bpPercent.push(parseInt(bpTotal[i] * 100 / unitPirceTotal[i]) + "%");
+									unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
+									grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
+									employeeTotal[i] = utils.addComma(employeeTotal[i]);
+									spTotal[i] = utils.addComma(spTotal[i]);
+									bpTotal[i] = utils.addComma(bpTotal[i]);
+
+									textData.push("稼働人数<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+												  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
+												  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")<br/>");
 								}
 								this.setState({
 									profitData: unitPirceTotal,
 						    		grossProfitData: grossProfitTotal,
 									countPeoData: countPeoData,
+									textData: textData,
 						        });
 							}
 						});
@@ -264,43 +405,119 @@ class profitChartist extends Component {
 						let unitPirceTotal = [0,0,0,0,0,0,0,0,0,0,0,0];
 				        let grossProfitTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
 						let countPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let employeeTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let employeePercent= [];
+				        let spTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let spPercent= [];
+				        let bpTotal= [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let bpPercent= [];
+				        let employeePeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+						let spPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+						let bpPeoData = [0,0,0,0,0,0,0,0,0,0,0,0];
+				        let textData= [];
 	                    for(let i in response.data.data){
+							for(let j in response.data.data[i].empDetail){
+								switch (response.data.data[i].empDetail[j].employeeNo.substring(0,2)) {
+								case "BP":
+									bpTotal[i] = parseInt(bpTotal[i]) + parseInt(response.data.data[i].empDetail[j].unitPrice) * 10000
+									bpPeoData[i] = parseInt(bpPeoData[i]) + 1;
+									break;
+								case "SP":
+									spTotal[i] = parseInt(spTotal[i]) + parseInt(response.data.data[i].empDetail[j].unitPrice) * 10000
+									spPeoData[i] = parseInt(spPeoData[i]) + 1;
+									break;
+								default:
+									employeeTotal[i] = parseInt(employeeTotal[i]) + parseInt(response.data.data[i].empDetail[j].unitPrice) * 10000
+									employeePeoData[i] = parseInt(employeePeoData[i]) + 1;
+									break;
+								}
+							}
+							employeePercent.push(parseInt(employeeTotal[i] * 100 / response.data.data[i].totalUnitPrice) + "%");
+							spPercent.push(parseInt(spTotal[i] * 100 / response.data.data[i].totalUnitPrice) + "%");
+							bpPercent.push(parseInt(bpTotal[i] * 100 / response.data.data[i].totalUnitPrice) + "%");
+							employeeTotal[i] = utils.addComma(employeeTotal[i]);
+							spTotal[i] = utils.addComma(spTotal[i]);
+							bpTotal[i] = utils.addComma(bpTotal[i]);
 							unitPirceTotal[i] = parseInt(response.data.data[i].totalUnitPrice / 100000);
 							grossProfitTotal[i] = parseInt(response.data.data[i].grossProfit / 100000);
 							countPeoData[i] = response.data.data[i].workPeoSum;
+							textData.push("稼働人数<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+									  	  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
+									  	  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")<br/>");
 	                    }
 						this.setState({
 							profitData: unitPirceTotal,
 				    		grossProfitData: grossProfitTotal,
 							countPeoData: countPeoData,
+							textData: textData,
 				        });
-						
-						
 					}
 					else{
 						let years = (new Date().getFullYear() - 2020) + 1;
 						let unitPirceTotal = [];
 				        let grossProfitTotal= [];
 						let countPeoData = [];
+						let employeeTotal= [];
+				        let employeePercent= [];
+				        let spTotal= [];
+				        let spPercent= [];
+				        let bpTotal= [];
+				        let bpPercent= [];
+				        let employeePeoData = [];
+						let spPeoData = [];
+						let bpPeoData = [];
+				        let textData= [];
 						for(let i = 0;i < years;i++){
 							unitPirceTotal.push(0);
 							grossProfitTotal.push(0);
+							employeeTotal.push(0);
+							spTotal.push(0);
+							bpTotal.push(0);
 							countPeoData.push(0);
+							employeePeoData.push(0);
+							spPeoData.push(0);
+							bpPeoData.push(0);
 						}
 						for(let i in response.data.data){
 							let year = Number(response.data.data[i].yearAndMonth.substring(0,4)) - 2020;
+							for(let j in response.data.data[i].empDetail){
+								switch (response.data.data[i].empDetail[j].employeeNo.substring(0,2)) {
+								case "BP":
+									bpTotal[year] = parseInt(bpTotal[year]) + parseInt(response.data.data[i].empDetail[j].unitPrice) * 10000
+									bpPeoData[year] = parseInt(bpPeoData[year]) + 1;
+									break;
+								case "SP":
+									spTotal[year] = parseInt(spTotal[year]) + parseInt(response.data.data[i].empDetail[j].unitPrice) * 10000
+									spPeoData[year] = parseInt(spPeoData[year]) + 1;
+									break;
+								default:
+									employeeTotal[year] = parseInt(employeeTotal[year]) + parseInt(response.data.data[i].empDetail[j].unitPrice) * 10000
+									employeePeoData[year] = parseInt(employeePeoData[year]) + 1;
+									break;
+								}
+							}
 							unitPirceTotal[year] = unitPirceTotal[year] + parseInt(response.data.data[i].totalUnitPrice);
 							grossProfitTotal[year] = grossProfitTotal[year] + parseInt(response.data.data[i].grossProfit);
 			            	countPeoData[year] = countPeoData[year] + parseInt(response.data.data[i].workPeoSum);
 						}
 						for(let i in unitPirceTotal){
+							employeePercent.push(parseInt(employeeTotal[i] * 100 / unitPirceTotal[i]) + "%");
+							spPercent.push(parseInt(spTotal[i] * 100 / unitPirceTotal[i]) + "%");
+							bpPercent.push(parseInt(bpTotal[i] * 100 / unitPirceTotal[i]) + "%");
+							employeeTotal[i] = utils.addComma(employeeTotal[i]);
+							spTotal[i] = utils.addComma(spTotal[i]);
+							bpTotal[i] = utils.addComma(bpTotal[i]);
 							unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
 							grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
+							textData.push("稼働人数<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+								  	  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
+								  	  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")<br/>");
 						}
 						this.setState({
 							profitData: unitPirceTotal,
 				    		grossProfitData: grossProfitTotal,
 							countPeoData: countPeoData,
+							textData: textData,
 				        });
 					}
                 }
@@ -323,7 +540,7 @@ class profitChartist extends Component {
 					let unitPirceTotal = [];
 			        let grossProfitTotalOld = [];
 			        let grossProfitTotal = [];
-			        let dateMonth = date.getMonth() + 1;
+			        let dateMonth = date.getMonth() + 2;
 			        for (let i = 0;i < dateMonth;i++){
 			        	unitPirceTotalOld.push(0);
 			        	unitPirceTotal.push(0);
@@ -399,10 +616,10 @@ class profitChartist extends Component {
 							let newGrossProfitTotal = [];
 							let newCountPeoData = [];
 							for (let i = 0;i < dateMonth;i++){
-								newUnitPirceTotal.push(unitPirceTotalOld[i]);
+								newUnitPirceTotal.push({value:unitPirceTotalOld[i],itemStyle: {opacity: 0.6}});
 								newUnitPirceTotal.push(unitPirceTotal[i]);
 								newUnitPirceTotal.push(null);
-								newGrossProfitTotal.push(grossProfitTotalOld[i]);
+								newGrossProfitTotal.push({value:grossProfitTotalOld[i],itemStyle: {opacity: 0.6}});
 								newGrossProfitTotal.push(grossProfitTotal[i]);
 								newGrossProfitTotal.push(null);
 								newCountPeoData.push(countPeoDataOld[i]);
@@ -436,13 +653,13 @@ class profitChartist extends Component {
                 formatter: function(params) {
 					let str = "";
 					params.forEach((item) => {
-						if(item.seriesName === "稼働人数"){
+						if(item.seriesName === "text"){
 							if(item.data !== null){
-								str = "稼働人数　" + item.data;
+								str = item.data;
 							}
 						}
 					})
-					return str === "" ? "" : ('<div><font style="color:#FFD24F">●</font>' + str + '</div>');
+					return str === "" ? "" : str;
 				},
             },
             legend: {
@@ -479,7 +696,7 @@ class profitChartist extends Component {
                 {
                     name:'売上',
                     type:'bar',
-                    barWidth: this.state.targetStatus === '2' ? '60%' : '30%',
+                    barWidth: this.state.targetStatus === '2' ? '70%' : '30%',
                     color: 'blue',
                     label: {
                     	show: true,
@@ -491,7 +708,7 @@ class profitChartist extends Component {
                 {
                     name:'純利益',
                     type:'bar',
-                    barWidth: this.state.targetStatus === '2' ? '60%' : '30%',
+                    barWidth: this.state.targetStatus === '2' ? '70%' : '30%',
                     color: '#D25050',
                     label: {
                     	show: true,
@@ -509,6 +726,15 @@ class profitChartist extends Component {
                     	opacity: 0,
                     },
                     data: this.state.countPeoData
+                },
+                {
+                    name:'text',
+                    type:'bar',
+                    itemStyle: {
+                    	show: false,
+                    	opacity: 0,
+                    },
+                    data: this.state.textData
                 }
             ]
         }

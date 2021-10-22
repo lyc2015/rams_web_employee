@@ -76,6 +76,7 @@ class SubMenu extends Component {
 			nowDate: '',// 今の期日
 			authorityCode: '',
 			hover: '',
+			className: '',
 		}
 	};
 
@@ -170,6 +171,12 @@ class SubMenu extends Component {
 		})
 	}
 	
+	setClassName = (className) => {
+		this.setState({
+			className: className,
+		})
+	}
+	
 	render() {
 		// お客様情報画面の追加パラメータ
 		var customerInfoPath = {
@@ -228,9 +235,9 @@ class SubMenu extends Component {
 										<ListGroup.Item style={this.state.hover.search("社員・BP") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="社員・BP" data-class="my-tabcolor" data-effect="solid"
 											onMouseEnter={this.toggleHover.bind(this,"社員・BP")} onMouseLeave={this.toggleHover.bind(this,"")}>
 											<Accordion.Toggle as={Button} variant="link" eventKey="0"><font
-											className={this.state.hover.search("社員・BP") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faAddressBook} /> 社員・BP</font></Accordion.Toggle>
+											className={this.state.hover.search("社員・BP") !== -1 || this.state.className.search("社員・BP") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faAddressBook} /> 社員・BP</font></Accordion.Toggle>
 											<ReactTooltip id="社員・BP"  delayUpdate={1000} getContent={() => {
-												return <div>
+												return <div onClick={this.setClassName.bind(this,"社員・BP")}>
 												<ListGroup>
 													<Accordion className="menuCol">
 														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"社員・BP-1")} onMouseLeave={this.toggleHover.bind(this,"社員・BP")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/employeeInsertNew', state: { actionType: 'insert' }})} block>
@@ -272,9 +279,9 @@ class SubMenu extends Component {
 										<ListGroup.Item style={this.state.hover.search("現場") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="現場" data-class="my-tabcolor"  data-effect="solid"
 											 onMouseEnter={this.toggleHover.bind(this,"現場")} onMouseLeave={this.toggleHover.bind(this,"")}>
 											<Accordion.Toggle as={Button} variant="link" eventKey="1"><font
-											className={this.state.hover.search("現場") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('現場')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faHome} /> 現場</font></Accordion.Toggle>
+											className={this.state.hover.search("現場") !== -1 || this.state.className.search("現場") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('現場')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faHome} /> 現場</font></Accordion.Toggle>
 											<ReactTooltip id="現場"  delayUpdate={1000} getContent={() => {
-												return <div>
+												return <div onClick={this.setClassName.bind(this,"現場")}>
 												<ListGroup>
 													<Accordion className="menuCol">
 														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"現場-1")} onMouseLeave={this.toggleHover.bind(this,"現場")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/siteInfo'})} block>
@@ -299,9 +306,9 @@ class SubMenu extends Component {
 										<ListGroup.Item style={this.state.hover.search("お客様") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="お客様" data-class="my-tabcolor"  data-effect="solid"
 											 onMouseEnter={this.toggleHover.bind(this,"お客様")} onMouseLeave={this.toggleHover.bind(this,"")}>
 											<Accordion.Toggle as={Button} variant="link" eventKey="2"><font
-												className={this.state.hover.search("お客様") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('お客様')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faUsers} /> お客様</font></Accordion.Toggle>
+												className={this.state.hover.search("お客様") !== -1 || this.state.className.search("お客様") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('お客様')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faUsers} /> お客様</font></Accordion.Toggle>
 												<ReactTooltip id="お客様"  delayUpdate={1000} getContent={() => {
-													return <div>
+													return <div onClick={this.setClassName.bind(this,"お客様")}>
 													<ListGroup>
 														<Accordion className="menuCol">
 															<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"お客様-1")} onMouseLeave={this.toggleHover.bind(this,"お客様")} onClick={this.shuseiTo.bind(this,customerInfoPath)} block>
@@ -329,9 +336,9 @@ class SubMenu extends Component {
 													 onMouseEnter={this.toggleHover.bind(this,"給料・売上")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="3"><font
 													
-													className={this.state.hover.search("給料・売上") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('給料・売上')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faYenSign} /> 給料・売上</font></Accordion.Toggle>
+													className={this.state.hover.search("給料・売上") !== -1 || this.state.className.search("給料・売上") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('給料・売上')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faYenSign} /> 給料・売上</font></Accordion.Toggle>
 													<ReactTooltip id="給料・売上"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"給料・売上")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"給料・売上-1")} onMouseLeave={this.toggleHover.bind(this,"給料・売上")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/wagesInfo'})} block>
@@ -381,9 +388,9 @@ class SubMenu extends Component {
 												<ListGroup.Item style={this.state.hover.search("営業送信") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="営業送信" data-class="my-tabcolor"  data-effect="solid"
 													 onMouseEnter={this.toggleHover.bind(this,"営業送信")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="4"><font
-													className={this.state.hover.search("営業送信") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('営業送信')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faPaperPlane} /> 営業送信</font></Accordion.Toggle>
+													className={this.state.hover.search("営業送信") !== -1 || this.state.className.search("営業送信") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('営業送信')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faPaperPlane} /> 営業送信</font></Accordion.Toggle>
 													<ReactTooltip id="営業送信"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"営業送信")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"営業送信-1")} onMouseLeave={this.toggleHover.bind(this,"営業送信")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/manageSituation'})} block>
@@ -423,9 +430,9 @@ class SubMenu extends Component {
 												<ListGroup.Item style={this.state.hover.search("営業管理") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="営業管理" data-class="my-tabcolor"  data-effect="solid"
 													 onMouseEnter={this.toggleHover.bind(this,"営業管理")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="5"><font
-													className={this.state.hover.search("営業管理") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('営業管理')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faBuilding} /> 営業管理</font></Accordion.Toggle>
+													className={this.state.hover.search("営業管理") !== -1 || this.state.className.search("営業管理") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('営業管理')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faBuilding} /> 営業管理</font></Accordion.Toggle>
 													<ReactTooltip id="営業管理"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"営業管理")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"営業管理-1")} onMouseLeave={this.toggleHover.bind(this,"営業管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/salesPointSet'})} block>
@@ -459,9 +466,9 @@ class SubMenu extends Component {
 												<ListGroup.Item style={this.state.hover.search("勤務") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="勤務" data-class="my-tabcolor"  data-effect="solid"
 													 onMouseEnter={this.toggleHover.bind(this,"勤務")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="6"><font
-													className={this.state.hover.search("勤務") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('勤務')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCalendar} /> 勤務</font></Accordion.Toggle>
+													className={this.state.hover.search("勤務") !== -1 || this.state.className.search("勤務") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('勤務')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCalendar} /> 勤務</font></Accordion.Toggle>
 													<ReactTooltip id="勤務"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"勤務")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務-1")} onMouseLeave={this.toggleHover.bind(this,"勤務")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/dutyManagement'})} block>
@@ -491,9 +498,9 @@ class SubMenu extends Component {
 												<ListGroup.Item style={this.state.hover.search("期限確認") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="期限確認" data-class="my-tabcolor"  data-effect="solid"
 													 onMouseEnter={this.toggleHover.bind(this,"期限確認")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="7"><font
-													className={this.state.hover.search("期限確認") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('期限確認')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCalendarAlt} /> 期限確認</font></Accordion.Toggle>
+													className={this.state.hover.search("期限確認") !== -1 || this.state.className.search("期限確認") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('期限確認')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCalendarAlt} /> 期限確認</font></Accordion.Toggle>
 													<ReactTooltip id="期限確認"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"期限確認")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"期限確認-1")} onMouseLeave={this.toggleHover.bind(this,"期限確認")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/situationChange'})} block>
@@ -525,9 +532,9 @@ class SubMenu extends Component {
 												<ListGroup.Item style={this.state.hover.search("マスター") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="マスター" data-class="my-tabcolor"  data-effect="solid"
 													 onMouseEnter={this.toggleHover.bind(this,"マスター")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="8"><font
-													className={this.state.hover.search("マスター") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('マスター')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faThList} /> マスター</font></Accordion.Toggle>
+													className={this.state.hover.search("マスター") !== -1 || this.state.className.search("マスター") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('マスター')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faThList} /> マスター</font></Accordion.Toggle>
 													<ReactTooltip id="マスター"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"マスター")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"マスター-1")} onMouseLeave={this.toggleHover.bind(this,"マスター")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/masterInsert'})} block>
@@ -557,9 +564,9 @@ class SubMenu extends Component {
 												<ListGroup.Item style={this.state.hover.search("設定・共有") !== -1 ? menuStyleHover : menuStyle} data-place="right" data-type="info" data-tip="" data-for="設定・共有" data-class="my-tabcolor"  data-effect="solid"
 													 onMouseEnter={this.toggleHover.bind(this,"設定・共有")} onMouseLeave={this.toggleHover.bind(this,"")}>
 													<Accordion.Toggle as={Button} variant="link" eventKey="9"><font
-													className={this.state.hover.search("設定・共有") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('設定・共有')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> 設定・共有</font></Accordion.Toggle>
+													className={this.state.hover.search("設定・共有") !== -1 || this.state.className.search("設定・共有") !== -1 ? "linkFont-click":"linkFont"} onClick={() => this.click('設定・共有')}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> 設定・共有</font></Accordion.Toggle>
 													<ReactTooltip id="設定・共有"  delayUpdate={1000} getContent={() => {
-														return <div>
+														return <div onClick={this.setClassName.bind(this,"設定・共有")}>
 														<ListGroup>
 															<Accordion className="menuCol">
 																<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"設定・共有-1")} onMouseLeave={this.toggleHover.bind(this,"設定・共有")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuManager/dataShare'})} block>

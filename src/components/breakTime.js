@@ -61,6 +61,7 @@ class BreakTime extends Component {
 				{
 					backPage: location.state.backPage,
 					sendValue: location.state.sendValue,
+					flag: location.state.sendValue.flag,
 				}
 			);
         let postData = {
@@ -109,10 +110,25 @@ class BreakTime extends Component {
         $("#breakTimeNightbreakTimeHour").val(breakTimeNightbreakTimeHour / 60);
         $("#breakTimeSumHour").val(Number($("#breakTimeDaybreakTimeHour").val()) + Number($("#breakTimeNightbreakTimeHour").val()));
     }
+    
+    beferBreakTimeRegister = () => {
+    	if(!this.state.flag){
+			var a = window.confirm("休憩時間更新すると、作業時間再計算します、よろしいでしょうか？");
+			if(a){
+	    		this.breakTimeRegister();
+			}else{
+				return;
+			}
+    	}
+    	else{
+    		this.breakTimeRegister();
+    	}
+    }
+    
     /**-
      * 登録ボタン
      */
-    breakTimeRegister() {
+    breakTimeRegister = () => {
         var breakTimeInfo = {};
         var actionType = this.state.actionType;
         breakTimeInfo["employeeNo"] = $("#employeeNo").val();
@@ -384,7 +400,7 @@ class BreakTime extends Component {
                             <Col sm={4}></Col>
                             <Col sm={4} className="text-center">
                                 <div >
-                                    <Button size="sm" className="btn btn-info btn-sm" onClick={this.breakTimeRegister.bind(this)} variant="info" id="toroku" type="button">
+                                    <Button size="sm" className="btn btn-info btn-sm" onClick={this.beferBreakTimeRegister.bind(this)} variant="info" id="toroku" type="button">
                                         <FontAwesomeIcon icon={faSave} /> 登録
 										</Button>
 										&nbsp;&nbsp;
