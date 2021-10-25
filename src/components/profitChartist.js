@@ -540,6 +540,7 @@ class profitChartist extends Component {
 					let unitPirceTotal = [];
 			        let grossProfitTotalOld = [];
 			        let grossProfitTotal = [];
+			        let textData = [];
 			        let dateMonth = date.getMonth() + 2;
 			        for (let i = 0;i < dateMonth;i++){
 			        	unitPirceTotalOld.push(0);
@@ -625,11 +626,23 @@ class profitChartist extends Component {
 								newCountPeoData.push(countPeoDataOld[i]);
 								newCountPeoData.push(countPeoData[i]);
 								newCountPeoData.push(null);
+								let unitPircePercent = parseInt((unitPirceTotal[i] / unitPirceTotalOld[i] - 1) * 100);
+								let grossProfitPercent = parseInt((grossProfitTotal[i] / grossProfitTotalOld[i] - 1) * 100);
+								let countPeoPercent = parseInt((countPeoData[i] / countPeoDataOld[i] - 1) * 100);
+								let unitPirceAveragePercent = parseInt(((unitPirceTotal[i] * 100000 / countPeoData[i]) / (unitPirceTotalOld[i] * 100000 / countPeoDataOld[i]) - 1) * 100);
+								let text = ("比率<br/>売上：" + (unitPircePercent >= 0 ? ("<font style='color: red'>↑" + unitPircePercent + "%</font>") : ("<font style='color: green'>↓" + unitPircePercent * -1 + "%</font>")) 
+										+ "<br/>粗利：" + (grossProfitPercent >= 0 ? ("<font style='color: red'>↑" + grossProfitPercent + "%</font>") : ("<font style='color: green'>↓" + grossProfitPercent * -1 + "%</font>"))
+										+ "<br/>稼働：" + (countPeoPercent >= 0 ? ("<font style='color: red'>↑" + countPeoPercent + "%</font>") : ("<font style='color: green'>↓" + countPeoPercent * -1 + "%</font>")) + "（" + countPeoDataOld[i] + " : " + countPeoData[i] + "）"
+										+ "<br/>平均単価：" + (unitPirceAveragePercent >= 0 ? ("<font style='color: red'>↑" + unitPirceAveragePercent + "%</font>") : ("<font style='color: green'>↓" + unitPirceAveragePercent * -1 + "%</font>")));
+								textData.push(text);
+								textData.push(text);
+								textData.push(null);
 					        }
 							this.setState({
 								profitData: newUnitPirceTotal,
 					    		grossProfitData: newGrossProfitTotal,
 								countPeoData: newCountPeoData,
+								textData: textData,
 					        });
 						}
 					});
@@ -637,6 +650,172 @@ class profitChartist extends Component {
 			}).catch((error) => {
 				console.error("Error - " + error);
 			});
+		}
+		else if(targetStatus === "3"){
+			let workTechnician = [0,0,0,0,0,0,0,0,0,0,0,0];
+			let notWorkTechnician = [0,0,0,0,0,0,0,0,0,0,0,0];
+			let manager = [0,0,0,0,0,0,0,0,0,0,0,0];
+			let affairs = [0,0,0,0,0,0,0,0,0,0,0,0];
+			let business = [0,0,0,0,0,0,0,0,0,0,0,0];
+			let total = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+			// 稼働技術者
+			let monthlyInfo = {
+		            kadou: "0",
+		            employeeOccupation: "3",
+		            startYandM: yearAndMonthStart,
+		            endYandM: yearAndMonthEnd,
+		        };
+	        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+			.then(response => {
+				if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+					for(let i in response.data.data){
+						let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+						if(response.data.data[i].salary == null || response.data.data[i].salary == ""){
+							workTechnician[month] = workTechnician[month] + 0;
+			            }else{
+			                if(response.data.data[i].deductionsAndOvertimePay===null || response.data.data.deductionsAndOvertimePay===""){
+			                	workTechnician[month] = workTechnician[month] + parseInt(response.data.data[i].salary)
+			                }
+			                else{
+			                	workTechnician[month] = workTechnician[month] + parseInt(response.data.data[i].salary)+parseInt(response.data.data[i].deductionsAndOvertimePay)
+			                }              
+			            }
+					}
+				}
+			});
+	        
+	        // 非稼働技術者
+			monthlyInfo = {
+		            kadou: "1",
+		            employeeOccupation: "3",
+		            startYandM: yearAndMonthStart,
+		            endYandM: yearAndMonthEnd,
+		        };
+	        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+			.then(response => {
+				if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+					for(let i in response.data.data){
+						let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+						if(response.data.data[i].salary == null || response.data.data[i].salary == ""){
+							notWorkTechnician[month] = notWorkTechnician[month] + 0;
+			            }else{
+			                if(response.data.data[i].deductionsAndOvertimePay===null || response.data.data.deductionsAndOvertimePay===""){
+			                	notWorkTechnician[month] = notWorkTechnician[month] + parseInt(response.data.data[i].salary)
+			                }
+			                else{
+			                	notWorkTechnician[month] = notWorkTechnician[month] + parseInt(response.data.data[i].salary)+parseInt(response.data.data[i].deductionsAndOvertimePay)
+			                }              
+			            }
+					}
+					for(let i in total){
+						total[i] = parseInt(total[i]) + parseInt(notWorkTechnician[i]);
+					}
+				}
+			});
+	        
+	     // 管理者
+			monthlyInfo = {
+		            employeeOccupation: "0",
+		            startYandM: yearAndMonthStart,
+		            endYandM: yearAndMonthEnd,
+		        };
+	        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+			.then(response => {
+				if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+					for(let i in response.data.data){
+						let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+						if(response.data.data[i].salary == null || response.data.data[i].salary == ""){
+							manager[month] = manager[month] + 0;
+			            }else{
+			                if(response.data.data[i].deductionsAndOvertimePay===null || response.data.data.deductionsAndOvertimePay===""){
+			                	manager[month] = manager[month] + parseInt(response.data.data[i].salary)
+			                }
+			                else{
+			                	manager[month] = manager[month] + parseInt(response.data.data[i].salary)+parseInt(response.data.data[i].deductionsAndOvertimePay)
+			                }              
+			            }
+					}
+					for(let i in total){
+						total[i] = parseInt(total[i]) + parseInt(manager[i]);
+					}
+				}
+			});
+	        
+		     // 事務
+			monthlyInfo = {
+		            employeeOccupation: "2",
+		            startYandM: yearAndMonthStart,
+		            endYandM: yearAndMonthEnd,
+		        };
+	        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+			.then(response => {
+				if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+					for(let i in response.data.data){
+						let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+						if(response.data.data[i].salary == null || response.data.data[i].salary == ""){
+							affairs[month] = affairs[month] + 0;
+			            }else{
+			                if(response.data.data[i].deductionsAndOvertimePay===null || response.data.data.deductionsAndOvertimePay===""){
+			                	affairs[month] = affairs[month] + parseInt(response.data.data[i].salary)
+			                }
+			                else{
+			                	affairs[month] = affairs[month] + parseInt(response.data.data[i].salary)+parseInt(response.data.data[i].deductionsAndOvertimePay)
+			                }              
+			            }
+					}
+					for(let i in total){
+						total[i] = parseInt(total[i]) + parseInt(affairs[i]);
+					}
+				}
+			});
+	        
+	        // 営業
+			monthlyInfo = {
+		            employeeOccupation: "1",
+		            startYandM: yearAndMonthStart,
+		            endYandM: yearAndMonthEnd,
+		        };
+	        axios.post(this.state.serverIP + "monthlySales/searchMonthlySales", monthlyInfo)
+			.then(response => {
+				if (response.data.errorsMessage === null || response.data.errorsMessage === undefined) {
+					for(let i in response.data.data){
+						let month = Number(response.data.data[i].yearAndMonth.substring(4,6)) - 1;
+						if(response.data.data[i].salary == null || response.data.data[i].salary == ""){
+							business[month] = business[month] + 0;
+			            }else{
+			                if(response.data.data[i].deductionsAndOvertimePay===null || response.data.data.deductionsAndOvertimePay===""){
+			                	business[month] = business[month] + parseInt(response.data.data[i].salary)
+			                }
+			                else{
+			                	business[month] = business[month] + parseInt(response.data.data[i].salary)+parseInt(response.data.data[i].deductionsAndOvertimePay)
+			                }              
+			            }
+					}
+					for(let i in total){
+						total[i] = parseInt(total[i]) + parseInt(business[i]);
+					}
+				}
+			});
+	        
+	        let textData = [];
+			setTimeout(() => {
+		        for(let i in total){
+		        	textData.push("比率<br/>技術者稼働：" + utils.addComma(workTechnician[i]) + "<br/>"
+		        				+ "技術者非稼働：" + utils.addComma(notWorkTechnician[i]) + "<br/>"
+		        				+ "管理者：" + utils.addComma(manager[i]) + "<br/>"
+		        				+ "事務：" + utils.addComma(affairs[i]) + "<br/>"
+		        				+ "営業：" + utils.addComma(business[i]) + "<br/>");
+		        	workTechnician[i] = parseInt(workTechnician[i] / 100000);
+		        	total[i] = parseInt(total[i] / 100000);
+		        }
+		        
+				this.setState({
+					profitData: workTechnician,
+		    		grossProfitData: total,
+					textData: textData,
+		        });
+			}, 1500);
 		}
 	}
 	
@@ -663,7 +842,7 @@ class profitChartist extends Component {
 				},
             },
             legend: {
-                data:['売上','純利益'],
+                data: this.state.targetStatus !== '3' ? ['売上','純利益'] : ['稼働','非稼働'],
                 textStyle: {
                 	fontSize: "16px",
                 },
@@ -694,7 +873,7 @@ class profitChartist extends Component {
             },
             series : [
                 {
-                    name:'売上',
+                    name: this.state.targetStatus !== '3' ? '売上' : '稼働',
                     type:'bar',
                     barWidth: this.state.targetStatus === '2' ? '70%' : '30%',
                     color: 'blue',
@@ -706,7 +885,7 @@ class profitChartist extends Component {
                     data: this.state.profitData
                 },
                 {
-                    name:'純利益',
+                    name:this.state.targetStatus !== '3' ? '純利益' : '非稼働',
                     type:'bar',
                     barWidth: this.state.targetStatus === '2' ? '70%' : '30%',
                     color: '#D25050',
@@ -720,7 +899,7 @@ class profitChartist extends Component {
                 {
                     name:'稼働人数',
                     type:'bar',
-                    barGap: this.state.targetStatus === '2' ? '-100%' : '20%',
+                    barGap: this.state.targetStatus === '2' || this.state.targetStatus === '3' ? '-100%' : '20%',
                     color: '#FFD24F',
                     itemStyle: {
                     	opacity: 0,
@@ -780,6 +959,7 @@ class profitChartist extends Component {
 									<option value="0">全員売上</option>
 									<option value="1">お客様売上</option>
 									<option value="2">売上比較</option>
+									<option value="3">支出</option>
 								</Form.Control>
 								<Form.Control id="employeeStatus" as="select" size="sm" onChange={this.valueChange} name="employeeStatus" value={this.state.employeeStatus} autoComplete="off" hidden={this.state.targetStatus !== "0"}>
 									<option value="0">全員</option>
@@ -814,7 +994,7 @@ class profitChartist extends Component {
 							<InputGroup.Prepend>
 								<InputGroup.Text >日付</InputGroup.Text>
 							</InputGroup.Prepend>
-							<Form.Control id="yearStatus" as="select" size="sm" onChange={this.valueChange} name="yearStatus" disabled={this.state.targetStatus === "2"} value={this.state.yearStatus} autoComplete="off" >
+							<Form.Control id="yearStatus" as="select" size="sm" onChange={this.valueChange} name="yearStatus" disabled={this.state.targetStatus === "2" || this.state.targetStatus === "3"} value={this.state.yearStatus} autoComplete="off" >
 								<option value="0">年月</option>
 								<option value="1">年</option>
 							</Form.Control>

@@ -77,13 +77,14 @@ class DutyRegistration extends React.Component {
 				} */
 		dataData[row.id][event.target.name] = event.target.value;
 
-		if (dataData[row.id]["hasWork"] === "休日") {
+		if (dataData[row.id]["hasWork"] === this.state.hasWork[0]) {
 			row.startTime = "";
 			row.startTimeHours = "";
 			row.startTimeMinutes = "";
 			row.endTime = "";
 			row.endTimeHours = "";
 			row.endTimeMinutes = "";
+			
 			dataData[row.id]["workContent"] = "";
 			dataData[row.id]["remark"] = "";
 			dataData[row.id]["workHour"] = "";
@@ -190,7 +191,10 @@ class DutyRegistration extends React.Component {
 				if(dateData[i].confirmFlag === "1"){
 					if(day !== undefined && day !== null && dateData[i].day === day){
 						if (dateData[i].hasWork == this.state.hasWork[1]) {
-							DutyRegistrationJs.addRowClass(target, "dutyRegistration-WorkSelect");
+							if(dateData[i].isWork == 0)
+								DutyRegistrationJs.addRowClass(target, "dutyRegistration-SleepSelect");
+							else
+								DutyRegistrationJs.addRowClass(target, "dutyRegistration-WorkSelect");
 						}
 						else if (dateData[i].hasWork == this.state.hasWork[0]) {
 							if(dateData[i].isWork == 0)
@@ -201,7 +205,10 @@ class DutyRegistration extends React.Component {
 					}
 					else{
 						if (dateData[i].hasWork == this.state.hasWork[1]) {
-							DutyRegistrationJs.addRowClass(target, "dutyRegistration-WorkConfirmation");
+							if(dateData[i].isWork == 0)
+								DutyRegistrationJs.addRowClass(target, "dutyRegistration-SleepConfirmation");
+							else
+								DutyRegistrationJs.addRowClass(target, "dutyRegistration-WorkConfirmation");
 						}
 						else if (dateData[i].hasWork == this.state.hasWork[0]) {
 							if(dateData[i].isWork == 0)
@@ -213,7 +220,10 @@ class DutyRegistration extends React.Component {
 				}
 				else{
 					if (dateData[i].hasWork == this.state.hasWork[1]) {
-						DutyRegistrationJs.addRowClass(target, "dutyRegistration-Work");
+						if(dateData[i].isWork == 0)
+							DutyRegistrationJs.addRowClass(target, "dutyRegistration-Sleep");
+						else
+							DutyRegistrationJs.addRowClass(target, "dutyRegistration-Work");
 					}
 					else if (dateData[i].hasWork == this.state.hasWork[0]) {
 						if(dateData[i].isWork == 0)
@@ -231,6 +241,10 @@ class DutyRegistration extends React.Component {
 	};
 	//初期化メソッド
 	componentDidMount() {
+		this.getWorkData();
+	}
+	
+	getWorkData = () => {
 		var dateData = [];
 		var monthDays = new Date(this.state.year, this.state.month, 0).getDate();
 		let workDays = 0;
@@ -266,81 +280,81 @@ class DutyRegistration extends React.Component {
 		}
 		this.setState({ dateData: dateData, workDays: workDays, workHours: workHours });
 		let postData = {
-			yearMonth: this.state.year + this.state.month,
-		}
-		axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
-			.then(resultMap => {
-				if (resultMap.data.breakTime !== null) {
-					let dateData = [];
-					let defaultDateData = [];
-					let workDays = 0;
-					let workHours = 0;
-					let sleepHour = 0;
-					dateData = this.state.dateData;
-					defaultDateData = resultMap.data.dateData;
-					if (publicUtils.isNull(resultMap.data.breakTime)) {
-						resultMap.data.breakTime = {};
+				yearMonth: this.state.year + this.state.month,
+			}
+			axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
+				.then(resultMap => {
+					if (resultMap.data.breakTime !== null) {
+						let dateData = [];
+						let defaultDateData = [];
+						let workDays = 0;
+						let workHours = 0;
+						let sleepHour = 0;
+						dateData = this.state.dateData;
+						defaultDateData = resultMap.data.dateData;
+						if (publicUtils.isNull(resultMap.data.breakTime)) {
+							resultMap.data.breakTime = {};
+						}
+						//					console.log(resultMap.data);
+						if (!publicUtils.isNull(resultMap.data.breakTime) && resultMap.data.breakTime["breakTimeFixedStatus"] === "1" && resultMap.data.breakTime !== "0") {
+							sleepHour = resultMap.data.breakTime["totalBreakTime"];
+						}
+						let dayIndex = -1;
+						
+						let lunchBreakStartTime = resultMap.data.breakTime.lunchBreakStartTime;
+						let lunchBreakFinshTime = resultMap.data.breakTime.lunchBreakFinshTime;
+						let lunchBreakTime = resultMap.data.breakTime.lunchBreakTime;
+						let nightBreakStartTime = resultMap.data.breakTime.nightBreakStartTime;
+						let nightBreakfinshTime = resultMap.data.breakTime.nightBreakfinshTime;
+						let nightBreakTime = resultMap.data.breakTime.nightBreakTime;
+						
+						for (let i = 0; i < defaultDateData.length; i++) {
+							dayIndex = defaultDateData[i].day - 1;
+							dateData[dayIndex].hasWork = this.state.hasWork[defaultDateData[i].isWork];
+							if (defaultDateData[i].isWork == 1) {
+								dateData[dayIndex].startTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].startTime));
+								dateData[dayIndex].startTimeHours = publicUtils.nullToEmpty(defaultDateData[i].startTime) === "" ? "" : defaultDateData[i].startTime.substring(0,2);
+								dateData[dayIndex].startTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].startTime) === "" ? "" : defaultDateData[i].startTime.substring(2,4);
+								dateData[dayIndex].endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
+								dateData[dayIndex].endTimeHours = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(0,2);
+								dateData[dayIndex].endTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(2,4);
+								dateData[dayIndex].sleepHour = sleepHour;
+								let startTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].startTime));
+								let endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
+								dateData[dayIndex].workHour = this.getWorkHour(startTime,endTime,lunchBreakStartTime,lunchBreakFinshTime,lunchBreakTime,nightBreakStartTime,nightBreakfinshTime,nightBreakTime);
+								workDays++;
+								workHours += Number(dateData[dayIndex].workHour);
+								dateData[dayIndex].endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
+								dateData[dayIndex]['workContent'] = publicUtils.nullToEmpty(defaultDateData[i].workContent);
+								dateData[dayIndex]['remark'] = publicUtils.nullToEmpty(defaultDateData[i].remark);
+							} else { dateData[dayIndex].sleepHour = ""; }
+							dateData[dayIndex].confirmFlag = publicUtils.nullToEmpty(defaultDateData[i].confirmFlag) === "" ? "" : defaultDateData[i].confirmFlag;
+							dateData[dayIndex].errorFlag = "";
+						}
+						this.setState({
+							breakTime: resultMap.data.breakTime, dateData: dateData, workDays: workDays, workHours: workHours,
+							employeeNo: resultMap.data.employeeNo, siteCustomer: resultMap.data.siteCustomer, customer: resultMap.data.customer,
+							siteResponsiblePerson: resultMap.data.siteResponsiblePerson, systemName: resultMap.data.systemName,
+							employeeName: resultMap.data.employeeName, sleepHour: sleepHour,
+							lunchBreakStartTime: lunchBreakStartTime,
+							lunchBreakFinshTime: lunchBreakFinshTime,
+							lunchBreakTime: lunchBreakTime,
+							nightBreakStartTime: nightBreakStartTime,
+							nightBreakfinshTime: nightBreakfinshTime,
+							nightBreakTime: nightBreakTime,
+							breakTimeFlag: false,
+						});
+					} else {
+						alert("休憩時間を登録してください。");
+						this.setState({
+							breakTimeFlag: true,
+						});
 					}
-					//					console.log(resultMap.data);
-					if (!publicUtils.isNull(resultMap.data.breakTime) && resultMap.data.breakTime["breakTimeFixedStatus"] === "1" && resultMap.data.breakTime !== "0") {
-						sleepHour = resultMap.data.breakTime["totalBreakTime"];
-					}
-					let dayIndex = -1;
-					
-					let lunchBreakStartTime = resultMap.data.breakTime.lunchBreakStartTime;
-					let lunchBreakFinshTime = resultMap.data.breakTime.lunchBreakFinshTime;
-					let lunchBreakTime = resultMap.data.breakTime.lunchBreakTime;
-					let nightBreakStartTime = resultMap.data.breakTime.nightBreakStartTime;
-					let nightBreakfinshTime = resultMap.data.breakTime.nightBreakfinshTime;
-					let nightBreakTime = resultMap.data.breakTime.nightBreakTime;
-					
-					for (let i = 0; i < defaultDateData.length; i++) {
-						dayIndex = defaultDateData[i].day - 1;
-						dateData[dayIndex].hasWork = this.state.hasWork[defaultDateData[i].isWork];
-						if (defaultDateData[i].isWork == 1) {
-							dateData[dayIndex].startTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].startTime));
-							dateData[dayIndex].startTimeHours = publicUtils.nullToEmpty(defaultDateData[i].startTime) === "" ? "" : defaultDateData[i].startTime.substring(0,2);
-							dateData[dayIndex].startTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].startTime) === "" ? "" : defaultDateData[i].startTime.substring(2,4);
-							dateData[dayIndex].endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
-							dateData[dayIndex].endTimeHours = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(0,2);
-							dateData[dayIndex].endTimeMinutes = publicUtils.nullToEmpty(defaultDateData[i].endTime) === "" ? "" : defaultDateData[i].endTime.substring(2,4);
-							dateData[dayIndex].sleepHour = sleepHour;
-							let startTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].startTime));
-							let endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
-							dateData[dayIndex].workHour = this.getWorkHour(startTime,endTime,lunchBreakStartTime,lunchBreakFinshTime,lunchBreakTime,nightBreakStartTime,nightBreakfinshTime,nightBreakTime);
-							workDays++;
-							workHours += Number(dateData[dayIndex].workHour);
-							dateData[dayIndex].endTime = publicUtils.timeInsertChar(publicUtils.nullToEmpty(defaultDateData[i].endTime));
-							dateData[dayIndex]['workContent'] = publicUtils.nullToEmpty(defaultDateData[i].workContent);
-							dateData[dayIndex]['remark'] = publicUtils.nullToEmpty(defaultDateData[i].remark);
-						} else { dateData[dayIndex].sleepHour = ""; }
-						dateData[dayIndex].confirmFlag = publicUtils.nullToEmpty(defaultDateData[i].confirmFlag) === "" ? "" : defaultDateData[i].confirmFlag;
-						dateData[dayIndex].errorFlag = "";
-					}
-					this.setState({
-						breakTime: resultMap.data.breakTime, dateData: dateData, workDays: workDays, workHours: workHours,
-						employeeNo: resultMap.data.employeeNo, siteCustomer: resultMap.data.siteCustomer, customer: resultMap.data.customer,
-						siteResponsiblePerson: resultMap.data.siteResponsiblePerson, systemName: resultMap.data.systemName,
-						employeeName: resultMap.data.employeeName, sleepHour: sleepHour,
-						lunchBreakStartTime: lunchBreakStartTime,
-						lunchBreakFinshTime: lunchBreakFinshTime,
-						lunchBreakTime: lunchBreakTime,
-						nightBreakStartTime: nightBreakStartTime,
-						nightBreakfinshTime: nightBreakfinshTime,
-						nightBreakTime: nightBreakTime,
-						breakTimeFlag: false,
-					});
-				} else {
-					alert("休憩時間を登録してください。");
-					this.setState({
-						breakTimeFlag: true,
-					});
-				}
-				this.setTableStyle();
-			})
-			.catch(function (e) {
-				alert("error");
-			})
+					this.setTableStyle();
+				})
+				.catch(function (e) {
+					alert("error");
+				})
 	}
 	/**
 	* 小さい画面の閉め 
@@ -420,6 +434,7 @@ class DutyRegistration extends React.Component {
 					}
 					//window.location.reload();
 					this.onBack();
+					this.getWorkData();
 				})
 				.catch(function () {
 					this.setState({ loading: true, });
@@ -511,7 +526,7 @@ class DutyRegistration extends React.Component {
 		if (!this.state.isConfirmedPage && row.confirmFlag !== "1") {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
-					<select class=" form-control editor edit-select" name="hasWork" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+					<select class=" form-control editor edit-select" name="hasWork" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row); }} >
 						{this.state.hasWork.map(date =>
 							<option key={date} value={date}>
 								{date}
@@ -880,20 +895,20 @@ class DutyRegistration extends React.Component {
 						<Row>
 							<Col sm={12}>
 								<BootstrapTable ref="table" className={"bg-white text-dark"} data={this.state.dateData} selectRow={selectRow} pagination={false} options={this.options} headerStyle={{ background: '#5599FF' }} >
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='40' dataField='week' >曜日</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} hidden>作業開始時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} hidden>作業終了時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='40' dataField='week' >曜日</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} hidden>作業開始時刻</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} hidden>作業終了時刻</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
 
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} hidden >休憩時間</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='60' dataField='workHour'  dataFormat={this.workHourFormatter}>作業時間</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='220' dataField='workContent' dataFormat={this.workContentFormatter} >作業内容</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='220' dataField='remark' dataFormat={this.remarkFormatter} >備考</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} hidden >休憩時間</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='60' dataField='workHour'  dataFormat={this.workHourFormatter}>作業時間</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='220' dataField='workContent' dataFormat={this.workContentFormatter} >作業内容</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='220' dataField='remark' dataFormat={this.remarkFormatter} >備考</TableHeaderColumn>
 								</BootstrapTable>
 							</Col>
 						</Row>
