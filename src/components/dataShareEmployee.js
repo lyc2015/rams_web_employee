@@ -23,8 +23,22 @@ class dataShareEmployee extends React.Component {
 		this.valueChange = this.valueChange.bind(this);
 	};
 	componentDidMount(){
+    	this.getLoginUserInfo();
 		this.searchData();
 	}
+	
+	getLoginUserInfo = () => {
+		axios.post(this.state.serverIP + "sendLettersConfirm/getLoginUserInfo")
+			.then(result => {
+				this.setState({
+					loginUserInfo: result.data,
+				})
+			})
+			.catch(function(error) {
+				alert(error);
+			});
+	}
+	
 	// onchange
 	valueChange = event => {
 		this.setState({
@@ -69,8 +83,16 @@ class dataShareEmployee extends React.Component {
 				rowNo: row.fileNo,
 				rowFilePath: row.filePath,
 				rowShareStatus: row.shareStatus,
-				rowClickFlag: false,
 			})
+			if(row.shareUser === "" || (row.shareUser === (this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName) && row.shareStatus === "2")){
+				this.setState({
+					rowClickFlag: false,
+				})
+			}else{
+				this.setState({
+					rowClickFlag: true,
+				})
+			}
 		} else {
 			this.setState({
 				rowNo: '',
@@ -89,7 +111,113 @@ class dataShareEmployee extends React.Component {
 		);
 	}
 	
+	shareStatus(code) {
+		if(code === null || code === "")
+			return;
+		let shareStatusAll = this.state.shareStatusAll;
+        for (var i in shareStatusAll) {
+            if (code === shareStatusAll[i].code) {
+                return shareStatusAll[i].value;
+            }
+        }
+    };
 	
+	/**
+	 * 行追加
+	 */
+	insertRow = () => {
+		var dataShareList = this.state.dataShareList;
+		var dataShareModel = {};
+		if(dataShareList.length > 0){
+			dataShareModel["rowNo"] = dataShareList.length + 1;
+		}else{
+			dataShareModel["rowNo"] = 1;
+		}
+		dataShareModel["fileName"] = "";
+		dataShareModel["shareUser"] = "";
+		dataShareModel["updateTime"] = "";
+		dataShareModel["shareStatus"] = "";
+
+		dataShareList.push(dataShareModel);
+		var currentPage = Math.ceil(dataShareList.length / 10);
+		this.setState({
+			dataShareList: dataShareList,
+			currentPage: currentPage,
+			rowClickFlag: false,
+			rowNo: dataShareList.length,
+			rowShareStatus: '',
+		})
+		this.refs.table.setState({
+			selectedRowKeys: [dataShareList.length]
+		});
+	}
+	
+	getFile=()=>{
+		$("#getFile").click();
+	}
+	
+	  /**
+	 * uploadボタン
+	 */
+    workRepotUpload=()=>{
+	let getfile=$("#getFile").val();
+	let fileName = getfile.split('.');
+	if(
+		fileName[fileName.length -1]=== "xlsx" ||
+		fileName[fileName.length -1]=== "xls" ||
+		fileName[fileName.length -1]=== "xltx" ||
+		fileName[fileName.length -1]=== "xlt" ||
+		fileName[fileName.length -1]=== "xlsm" ||
+		fileName[fileName.length -1]=== "xlsb" ||
+		fileName[fileName.length -1]=== "xltm" ||
+		fileName[fileName.length -1]=== "csv"||
+		fileName[fileName.length -1]=== "pdf"
+		){
+	  }else{
+	    alert('PDF或いはexcelをアップロードしてください')
+	    return false;
+	  }
+		const formData = new FormData()
+		const emp = {
+				attendanceYearAndMonth:this.state.rowSelectAttendanceYearAndMonth,
+			};
+			formData.append('emp', JSON.stringify(emp))
+			formData.append('dataShareFile', $("#getFile").get(0).files[0])
+			formData.append('rowNo', this.state.rowNo)
+/*			axios.post(this.state.serverIP + "dataShare/updateDataShareFile",formData)
+			.then(response => {
+				if (response.data != null) {
+					this.searchData();
+					this.setState({ "myToastShow": true, message: "アップロード成功！"  });
+					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+				} else {
+					alert("err")
+				}
+			});*/
+    }
+    
+	dataDelete = () => {
+        /*var a = window.confirm("削除していただきますか？");
+        if(a){
+			var model = {};
+			model["fileNo"] = this.state.rowNo;
+			axios.post(this.state.serverIP + "dataShare/deleteDataShare",model)
+			.then(response => {
+				if (response.data != null) {
+					this.setState({ 
+						rowNo: '',
+						rowShareStatus: '',
+					}, () => {
+						this.searchData();
+					})
+					this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
+					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+				} else {
+					alert("err")
+				}
+			});
+        }*/
+	}
 	
 	render() {
 		const {dataShareList} = this.state;
@@ -144,12 +272,22 @@ class dataShareEmployee extends React.Component {
 					</div>
 				</Form>
 				<div >
+				<Form.File id="getFile" accept="application/pdf,application/vnd.ms-excel" custom hidden="hidden" onChange={this.workRepotUpload}/>
                     <Row>
-                        <Col sm={12}>
+	                    <Col sm={6}>
+		                    <div>
+		                       <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
+									<FontAwesomeIcon icon={faUpload} />Upload
+								</Button>
+								</div>
+						</Col>
+                        <Col sm={6}>
                             <div style={{ "float": "right" }}>
+								<Button variant="info" size="sm" id="revise" onClick={this.insertRow}><FontAwesomeIcon icon={faSave}/> 追加</Button>{' '}
 								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP)} id="workRepotDownload" disabled={this.state.rowShareStatus === ""}>
 	                          		 <FontAwesomeIcon icon={faDownload} />Download
-		                        </Button>
+		                        </Button>{' '}
+	     						<Button variant="info" size="sm" id="revise" onClick={this.dataDelete} disabled={this.state.rowClickFlag}><FontAwesomeIcon icon={faTrash} /> 削除</Button>{' '}
 	 						</div>
 						</Col>
                     </Row>
@@ -159,6 +297,7 @@ class dataShareEmployee extends React.Component {
 						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
 						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
 						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' >日付</TableHeaderColumn>
+						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus'>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
 				</div>

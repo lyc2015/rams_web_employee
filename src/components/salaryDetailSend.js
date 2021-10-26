@@ -44,9 +44,11 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		rowEmployeeNo: [],
 		rowEmployeeFristName: [],
 		rowCompanyMail: [],
+		rowFileName: [],
 		pdfUpdate: "",
 		pdfUpdateName: "",
 		yearAndMonth: "",
+		format: "0",
 		letterStatus: "0",
 		letterYearAndMonth: "0",
 		date: new Date(),
@@ -70,8 +72,17 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		}
 		this.setState({
 			employeeList: employeeList,
+			rowNo: [],
+			rowEmployeeNo: [],
+			rowEmployeeFristName: [],
+			rowCompanyMail: [],
+			rowFileName: [],
 			[event.target.name]: event.target.value,
         });
+		this.refs.table.store.selected = [];
+		this.refs.table.setState({
+			selectedRowKeys: [],
+		});
 	}
 	
 	//　年月
@@ -138,12 +149,15 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		let selectedRowKeys = [];
 		let rowEmployeeFristName = [];
 		let rowCompanyMail = [];
+		let rowFileName = [];
 		
 		for(let i in this.state.employeeList){
 			rowNo.push(this.state.employeeList[i].rowNo);
 			selectedRowKeys.push(this.state.employeeList[i].employeeNo);
 			rowEmployeeFristName.push(this.state.employeeList[i].employeeFristName);
 			rowCompanyMail.push(this.state.employeeList[i].companyMail);
+			if(!(this.state.employeeList[i].fileName === undefined || this.state.employeeList[i].fileName === null || this.state.employeeList[i].fileName === ""))
+				rowFileName.push(this.state.employeeList[i].fileName);
 		}
 		
 		this.refs.table.store.selected = this.refs.table.state.selectedRowKeys.length !== this.state.employeeList.length ? selectedRowKeys : [];
@@ -151,12 +165,24 @@ class salaryDetailSend extends Component {// 状況変動一覧
 			selectedRowKeys: this.refs.table.state.selectedRowKeys.length !== this.state.employeeList.length ? selectedRowKeys : [],
 		});
 		
-		this.setState({
-			rowNo: rowNo,
-			rowEmployeeNo: selectedRowKeys,
-			rowEmployeeFristName: rowEmployeeFristName,
-			rowCompanyMail: rowCompanyMail,
-		});
+		if(this.refs.table.state.selectedRowKeys.length !== this.state.employeeList.length){
+			this.setState({
+				rowNo: rowNo,
+				rowEmployeeNo: selectedRowKeys,
+				rowEmployeeFristName: rowEmployeeFristName,
+				rowCompanyMail: rowCompanyMail,
+				rowFileName: rowFileName,
+			});
+		}
+		else{
+			this.setState({
+				rowNo: [],
+				rowEmployeeNo: [],
+				rowEmployeeFristName: [],
+				rowCompanyMail: [],
+				rowFileName: [],
+			});
+		}
 	}
     
     handleRowSelect = (row, isSelected, e) => {
@@ -166,26 +192,36 @@ class salaryDetailSend extends Component {// 状況変動一覧
     			rowEmployeeNo: this.state.rowEmployeeNo.concat([row.employeeNo]),
     			rowEmployeeFristName: this.state.rowEmployeeFristName.concat([row.employeeFristName]),
     			rowCompanyMail: this.state.rowCompanyMail.concat([row.companyMail]),
+    			rowFileName: row.fileName === undefined || row.fileName === null || row.fileName === "" ?  this.state.rowFileName : this.state.rowFileName.concat([row.fileName]),
     		});
     	}else{
     		let index;
 			index = this.state.rowNo.findIndex(item => item === row.rowNo);
-			this.state.rowNo.splice(index, 1);
+			if(index !== -1)
+				this.state.rowNo.splice(index, 1);
 			
 			index = this.state.rowEmployeeNo.findIndex(item => item === row.employeeNo);
-			this.state.rowEmployeeNo.splice(index, 1);
+			if(index !== -1)
+				this.state.rowEmployeeNo.splice(index, 1);
 			
 			index = this.state.rowEmployeeFristName.findIndex(item => item === row.employeeFristName);
-			this.state.rowEmployeeFristName.splice(index, 1);
+			if(index !== -1)
+				this.state.rowEmployeeFristName.splice(index, 1);
 			
 			index = this.state.rowCompanyMail.findIndex(item => item === row.companyMail);
-			this.state.rowCompanyMail.splice(index, 1);
+    		if(index !== -1)
+    			this.state.rowCompanyMail.splice(index, 1);
+			
+			index = this.state.rowFileName.findIndex(item => item === row.fileName);
+    		if(index !== -1)
+    			this.state.rowFileName.splice(index, 1);
 			
     		this.setState({
     			rowNo: this.state.rowNo,
     			rowEmployeeNo: this.state.rowEmployeeNo,
     			rowEmployeeFristName: this.state.rowEmployeeFristName,
     			rowCompanyMail: this.state.rowCompanyMail,
+    			rowFileName: this.state.rowFileName,
     		});
     		
     		let selectedRowKeys = this.refs.table.state.selectedRowKeys;
@@ -216,6 +252,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
 			rowEmployeeNo: [],
 			rowEmployeeFristName: [],
 			rowCompanyMail: [],
+			rowFileName: [],
 		});
 		
 		this.refs.table.store.selected = [];
@@ -264,33 +301,55 @@ class salaryDetailSend extends Component {// 状況変動一覧
 			pdfUpdate: filePath,
 			pdfUpdateName: fileName,
 		})
-
-		let letterStatus = this.state.letterStatus === "0" ? "給与" : "源泉";
-		let fileNameList = [];
-		for(let i = 0;i < $('#pdfUpdate').get(0).files.length;i++){
-			const formData = new FormData();
-			let employeeList = this.state.employeeList;
-			for(let j in employeeList){
-				if($('#pdfUpdate').get(0).files[i].name.search(letterStatus) !== -1 && $('#pdfUpdate').get(0).files[i].name.search(String(employeeList[j].employeeNo)) !== -1){
-					fileNameList.push($('#pdfUpdate').get(0).files[i].name);
-					formData.append('pdfUpdate', $('#pdfUpdate').get(0).files[i]);
-					break;
+		
+		if(this.state.format === "0"){
+			let letterStatus = this.state.letterStatus === "0" ? "給与" : "源泉";
+			let fileNameList = [];
+			for(let i = 0;i < $('#pdfUpdate').get(0).files.length;i++){
+				const formData = new FormData();
+				let employeeList = this.state.employeeList;
+				for(let j in employeeList){
+					if($('#pdfUpdate').get(0).files[i].name.search(letterStatus) !== -1 && $('#pdfUpdate').get(0).files[i].name.search(String(employeeList[j].employeeNo)) !== -1){
+						fileNameList.push($('#pdfUpdate').get(0).files[i].name);
+						formData.append('pdfUpdate', $('#pdfUpdate').get(0).files[i]);
+						break;
+					}
 				}
+				axios.post(this.state.serverIP + "SalaryDetailSend/updatePDF", formData)
+				.then(result => {
+					if(i === $('#pdfUpdate').get(0).files.length - 1){
+						this.updateEmployeeList(fileNameList);
+						this.setState({ loading: true, });
+						if(this.state.fileCount > 0){
+							this.setState({ "myToastShow": true, myToastShowValue: "取り込み完了" });
+							setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+						}
+						else{
+							this.setState({ "errorsMessageShow": true, errorsMessageValue: "取り込み失敗" });
+							setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+						}
+					}
+				}).catch((error) => {
+					this.setState({ loading: true, });
+					console.error("Error - " + error);
+					this.setState({ "errorsMessageShow": true, errorsMessageValue: "アップデートするファイル大きすぎる。" });
+					setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+				});
 			}
+		}
+		else{
+			const formData = new FormData();
+			formData.append('pdfUpdate', $('#pdfUpdate').get(0).files[0]);
 			axios.post(this.state.serverIP + "SalaryDetailSend/updatePDF", formData)
 			.then(result => {
-				if(i === $('#pdfUpdate').get(0).files.length - 1){
-					this.updateEmployeeList(fileNameList);
-					this.setState({ loading: true, });
-					if(this.state.fileCount > 0){
-						this.setState({ "myToastShow": true, myToastShowValue: "取り込み完了" });
-						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
-					}
-					else{
-						this.setState({ "errorsMessageShow": true, errorsMessageValue: "取り込み失敗" });
-						setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
-					}
+				let employeeList = this.state.employeeList;
+				for(let i in employeeList){
+					employeeList[i].fileName = $('#pdfUpdate').get(0).files[0].name;
+					employeeList[i].sendState = "0";
 				}
+				this.setState({ loading: true, employeeList: employeeList, fileCount: employeeList.length });
+				this.setState({ "myToastShow": true, myToastShowValue: "取り込み完了" });
+				setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 			}).catch((error) => {
 				this.setState({ loading: true, });
 				console.error("Error - " + error);
@@ -360,13 +419,13 @@ class salaryDetailSend extends Component {// 状況変動一覧
 
 		for(let i in employeeList){
 			if(employeeList[i].companyMail !== undefined && employeeList[i].companyMail !== null && employeeList[i].companyMail !== "" && employeeList[i].sendState !== "1"){
-				//	普通邮箱送信
+				
 				var mailConfirmContont = employeeList[i].employeeFristName + `さん
 
 お疲れ様です。LYCの`+ this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName + `です。
 
 表題の件につきまして、
-` + (this.state.letterStatus === "0" ? (yearAndMonth + "分の給料明細") : (letterYearAndMonth + "年の給与所得の源泉徴収票")) + `を添付致しました。
+` + (this.state.format === "0" ? (this.state.letterStatus === "0" ? (yearAndMonth + "分の給料明細") : (letterYearAndMonth + "年の給与所得の源泉徴収票")) : employeeList[i].fileName) + `を添付致しました。
 ご確認お願いいたします。
 
 以上です。
@@ -383,7 +442,7 @@ P-mark：第21004525(02)号
 
 				var model = {};
 				
-				model["mailTitle"] = this.state.letterStatus === "0" ? (yearAndMonth + "給料明細") : ("給与所得の源泉徴収票_" + letterYearAndMonth + "年分");
+				model["mailTitle"] = this.state.format === "0" ? (this.state.letterStatus === "0" ? (yearAndMonth + "給料明細") : ("給与所得の源泉徴収票_" + letterYearAndMonth + "年分")) : employeeList[i].fileName;
 				model["mailConfirmContont"] = mailConfirmContont;
 				model["selectedmail"] = employeeList[i].companyMail;
 				model["resumePath"] = employeeList[i].fileName;
@@ -484,9 +543,20 @@ P-mark：第21004525(02)号
 	                <Col sm={2}>
 	                <InputGroup size="sm" className="mb-3">
 						<InputGroup.Prepend>
+							<InputGroup.Text id="sixKanji">フォーマット</InputGroup.Text>
+						</InputGroup.Prepend>
+						<Form.Control id="format" as="select" size="sm" onChange={this.letterStatusChange} name="format" value={this.state.format} autoComplete="off" >
+							<option value="0">不一致</option>
+							<option value="1">一致</option>
+						</Form.Control>
+					</InputGroup>
+	                </Col>
+	                <Col sm={2}>
+	                <InputGroup size="sm" className="mb-3">
+						<InputGroup.Prepend>
 							<InputGroup.Text >区分</InputGroup.Text>
 						</InputGroup.Prepend>
-						<Form.Control id="letterStatus" as="select" size="sm" onChange={this.letterStatusChange} name="letterStatus" value={this.state.letterStatus} autoComplete="off" >
+						<Form.Control id="letterStatus" as="select" size="sm" onChange={this.letterStatusChange} disabled={this.state.format === "1"} name="letterStatus" value={this.state.letterStatus} autoComplete="off" >
 							<option value="0">給料</option>
 							<option value="1">源泉</option>
 						</Form.Control>
@@ -499,13 +569,14 @@ P-mark：第21004525(02)号
 							<DatePicker
 								selected={this.state.date}
 								onChange={this.inactiveYearAndMonth}
+								disabled={this.state.format === "1"}
 								autoComplete="off"
 								locale="ja"
 								dateFormat="yyyy/MM"
 								showMonthYearPicker
 								showFullMonthYearPicker
 								maxDate={new Date()}
-								id="datePicker"
+								id={this.state.format === "1" ? "datePickerReadonlyDefault" : "datePicker"}
 								className="form-control form-control-sm"
 							/>
 						</InputGroup.Prepend>
@@ -516,7 +587,7 @@ P-mark：第21004525(02)号
 						<InputGroup.Prepend>
 							<InputGroup.Text >年度</InputGroup.Text>
 						</InputGroup.Prepend>
-						<Form.Control id="letterYearAndMonth" as="select" size="sm" onChange={this.valueChange} name="letterYearAndMonth" value={this.state.letterYearAndMonth} autoComplete="off" >
+						<Form.Control id="letterYearAndMonth" as="select" size="sm" onChange={this.valueChange} disabled={this.state.format === "1"} name="letterYearAndMonth" value={this.state.letterYearAndMonth} autoComplete="off" >
 							<option value="0">{new Date().getFullYear()}</option>
 							<option value="1">{new Date().getFullYear() - 1}</option>
 						</Form.Control>
@@ -529,7 +600,7 @@ P-mark：第21004525(02)号
 		                <InputGroup size="sm">
                         	<Button size="sm" variant="info" name="clickButton" onClick={this.shuseiTo.bind(this, "employeeInfo")} disabled={this.state.rowNo.length !== 1} variant="info" id="employeeInfo">個人情報</Button>
 								<font style={{"margin-left": "2px","margin-right": "2px"}}></font>
-                        	<Button size="sm" variant="info" name="clickButton"　onClick={this.openDaiolog} disabled={this.state.rowNo.length !== 1}>メール確認</Button>
+                        	<Button size="sm" variant="info" name="clickButton"　onClick={this.openDaiolog} disabled={this.state.rowNo.length !== 1 || this.state.rowFileName.length !== 1}>メール確認</Button>
 								<font style={{"margin-left": "2px","margin-right": "2px"}}></font>
                         	<Button size="sm" variant="info" name="clickButton"　onClick={this.selectAll} >すべて選択</Button>
 								<font style={{"margin-left": "2px","margin-right": "2px"}}></font>
@@ -547,7 +618,7 @@ P-mark：第21004525(02)号
 							<Button size="sm" variant="info" name="clickButton"　onClick={this.beforeSendMail}　disabled={this.state.sendOver}><FontAwesomeIcon icon={faEnvelope} /> 送信</Button>{' '}
 	                    </div>
 	                    <div hidden>
-							<Form.File id="pdfUpdate" data-browse="添付" multiple="multiple" value={this.state.pdfUpdate} custom onChange={(event) => this.changeFile(event, 'pdfUpdate')} />
+							<Form.File id="pdfUpdate" data-browse="添付" multiple={this.state.format === "1" ? "" : "multiple"} value={this.state.pdfUpdate} custom onChange={(event) => this.changeFile(event, 'pdfUpdate')} />
 						</div>
                     </Col>
 				</Row>
