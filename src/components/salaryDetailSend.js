@@ -417,6 +417,8 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		let yearAndMonth = this.getLastMonth(new Date());
 		let letterYearAndMonth = this.state.letterYearAndMonth === "0" ? new Date().getFullYear() : new Date().getFullYear() - 1;
 
+		let emailModel = [];
+
 		for(let i in employeeList){
 			if(employeeList[i].companyMail !== undefined && employeeList[i].companyMail !== null && employeeList[i].companyMail !== "" && employeeList[i].sendState !== "1"){
 				
@@ -425,7 +427,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
 お疲れ様です。LYCの`+ this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName + `です。
 
 表題の件につきまして、
-` + (this.state.format === "0" ? (this.state.letterStatus === "0" ? (yearAndMonth + "分の給料明細") : (letterYearAndMonth + "年の給与所得の源泉徴収票")) : employeeList[i].fileName) + `を添付致しました。
+` + (this.state.format === "0" ? (this.state.letterStatus === "0" ? (yearAndMonth + "分の給料明細") : (letterYearAndMonth + "年の給与所得の源泉徴収票")) : String(employeeList[i].fileName).substring(0,String(employeeList[i].fileName).lastIndexOf("."))) + `を添付致しました。
 ご確認お願いいたします。
 
 以上です。
@@ -442,32 +444,40 @@ P-mark：第21004525(02)号
 
 				var model = {};
 				
-				model["mailTitle"] = this.state.format === "0" ? (this.state.letterStatus === "0" ? (yearAndMonth + "給料明細") : ("給与所得の源泉徴収票_" + letterYearAndMonth + "年分")) : employeeList[i].fileName;
+				model["mailTitle"] = this.state.format === "0" ? (this.state.letterStatus === "0" ? (yearAndMonth + "給料明細") : ("給与所得の源泉徴収票_" + letterYearAndMonth + "年分")) : String(employeeList[i].fileName).substring(0,String(employeeList[i].fileName).lastIndexOf("."));
 				model["mailConfirmContont"] = mailConfirmContont;
 				model["selectedmail"] = employeeList[i].companyMail;
 				model["resumePath"] = employeeList[i].fileName;
 				model["mailFrom"] = this.state.loginUserInfo[0].companyMail;
 				
-				axios.post(this.state.serverIP + "SalaryDetailSend/sendMailWithFile", model)
-				.then(result => {
-					if (result.data.errorsMessage != null) {
-						employeeList[i].sendState = "×";
-						this.setState({ sendOver: false, employeeList: employeeList });
-						this.setState({ "errorsMessageShow": true, errorsMessageValue: result.data.errorsMessage });
-						setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
-					} 								
-					else{
-						employeeList[i].sendState = "1";
-						this.setState({ employeeList: employeeList});
-					}
-				})
-				.catch(function(error) {
-					employeeList[i].sendState = "×";
-					this.setState({ sendOver: false, employeeList: employeeList });
-					alert(error);
-				});
+				emailModel. push(model);
 			}
 		}
+		
+		axios.post(this.state.serverIP + "SalaryDetailSend/sendMailWithFile", emailModel)
+		.then(result => {
+			if (result.data.errorsMessage != null) {
+				for(let i in employeeList){
+					employeeList[i].sendState = "×";
+				}
+				this.setState({ sendOver: false, employeeList: employeeList });
+				this.setState({ "errorsMessageShow": true, errorsMessageValue: result.data.errorsMessage });
+				setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+			} 								
+			else{
+				for(let i in employeeList){
+					employeeList[i].sendState = "1";
+				}
+				this.setState({ employeeList: employeeList});
+			}
+		})
+		.catch(function(error) {
+			for(let i in employeeList){
+				employeeList[i].sendState = "×";
+			}
+			this.setState({ sendOver: false, employeeList: employeeList });
+			alert(error);
+		});
 	}
 	
     shuseiTo = (actionType) => {

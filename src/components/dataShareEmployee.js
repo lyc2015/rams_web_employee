@@ -53,12 +53,16 @@ class dataShareEmployee extends React.Component {
 		rowNo: '',
 		rowFilePath : '',
 		rowShareStatus: '',
-		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"}],
+		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"},{code:"2",value:"upload済み"},{code:"3",value:"承認済み"}],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
 
 	searchData = () => {
-    	axios.post(this.state.serverIP + "dataShare/selectDataShareFileOnly")
+		const formData = new FormData()
+		const emp = {
+		};
+		formData.append('emp', JSON.stringify(emp))
+    	axios.post(this.state.serverIP + "dataShare/selectDataShareFileOnly",formData)
 		.then(response => response.data)
 		.then((data) => {
 			if (data.length!=0) {
@@ -80,7 +84,8 @@ class dataShareEmployee extends React.Component {
 	handleRowSelect = (row, isSelected, e) => {
 		if (isSelected) {
 			this.setState({
-				rowNo: row.fileNo,
+				rowNo: row.rowNo,
+				fileNo: row.fileNo,
 				rowFilePath: row.filePath,
 				rowShareStatus: row.shareStatus,
 			})
@@ -96,6 +101,7 @@ class dataShareEmployee extends React.Component {
 		} else {
 			this.setState({
 				rowNo: '',
+				fileNo: '',
 				rowFilePath: '',
 				rowShareStatus: '',
 				rowClickFlag: true,
@@ -133,6 +139,7 @@ class dataShareEmployee extends React.Component {
 		}else{
 			dataShareModel["rowNo"] = 1;
 		}
+		dataShareModel["fileNo"] = "";
 		dataShareModel["fileName"] = "";
 		dataShareModel["shareUser"] = "";
 		dataShareModel["updateTime"] = "";
@@ -145,6 +152,7 @@ class dataShareEmployee extends React.Component {
 			currentPage: currentPage,
 			rowClickFlag: false,
 			rowNo: dataShareList.length,
+			fileNo: '',
 			rowShareStatus: '',
 		})
 		this.refs.table.setState({
@@ -179,12 +187,13 @@ class dataShareEmployee extends React.Component {
 	  }
 		const formData = new FormData()
 		const emp = {
-				attendanceYearAndMonth:this.state.rowSelectAttendanceYearAndMonth,
 			};
 			formData.append('emp', JSON.stringify(emp))
 			formData.append('dataShareFile', $("#getFile").get(0).files[0])
 			formData.append('rowNo', this.state.rowNo)
-/*			axios.post(this.state.serverIP + "dataShare/updateDataShareFile",formData)
+			formData.append('shareStatus', "2")
+			
+			axios.post(this.state.serverIP + "dataShare/updateDataShareFile",formData)
 			.then(response => {
 				if (response.data != null) {
 					this.searchData();
@@ -193,19 +202,20 @@ class dataShareEmployee extends React.Component {
 				} else {
 					alert("err")
 				}
-			});*/
+			});
     }
     
 	dataDelete = () => {
-        /*var a = window.confirm("削除していただきますか？");
+        var a = window.confirm("削除していただきますか？");
         if(a){
 			var model = {};
-			model["fileNo"] = this.state.rowNo;
+			model["fileNo"] = this.state.fileNo;
 			axios.post(this.state.serverIP + "dataShare/deleteDataShare",model)
 			.then(response => {
 				if (response.data != null) {
 					this.setState({ 
 						rowNo: '',
+						fileNo: '',
 						rowShareStatus: '',
 					}, () => {
 						this.searchData();
@@ -216,7 +226,7 @@ class dataShareEmployee extends React.Component {
 					alert("err")
 				}
 			});
-        }*/
+        }
 	}
 	
 	render() {
@@ -293,7 +303,7 @@ class dataShareEmployee extends React.Component {
                     </Row>
 					<Col >
 					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo'  isKey>番号</TableHeaderColumn>
+						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey>番号</TableHeaderColumn>
 						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
 						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
 						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' >日付</TableHeaderColumn>

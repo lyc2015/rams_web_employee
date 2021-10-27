@@ -11,6 +11,7 @@ import { faUpload, faDownload, faUndo } from '@fortawesome/free-solid-svg-icons'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import * as publicUtils from './utils/publicUtils.js';
 import * as messageUtils from './utils/messageUtils.js';
+import DatePicker, {  } from "react-datepicker";
 import { Link } from "react-router-dom";
 import store from './redux/store';
 import MyToast from './myToast';
@@ -35,6 +36,7 @@ class DutyRegistration extends React.Component {
 			dateData: [],
 			dateDataTemp: [],
 			rowNo: [],
+			yearMonth: new Date(),
 			year: new Date().getFullYear(),
 			month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
 			//			status: {sleep2sleep: 0 ,work2work: 1, sleep2work: 2, work2sleep: 3},
@@ -759,6 +761,30 @@ class DutyRegistration extends React.Component {
 			}
 		}
 	}
+	
+	test　= () => {
+		var a = window.confirm("初期化してよろしいでしょうか？");
+        if(a){
+    		let postData = {
+    				yearMonth: this.state.year + this.state.month,
+    			}
+        	axios.post(this.state.serverIP + "dutyRegistration/clearData",postData)
+			.then(response => {
+	        	this.getWorkData();
+			});
+        }
+	}
+	
+	// 年月変更後、レコ＾ド再取る
+	setYearMonth = (date) => {
+		this.setState({
+			yearMonth: date,
+			year: date.getFullYear(),
+			month: (date.getMonth() + 1).toString().padStart(2, "0"),
+		}, () => {
+	    	this.getWorkData();
+		});
+	}
 
 	render() {
 		const selectRow = {
@@ -829,10 +855,26 @@ class DutyRegistration extends React.Component {
 							</Col>
 						</Row>
 						<Row className="align-items-center">
-							<Col sm={4} md={{ span: 4, offset: 4 }}>
-								<span size="lg" className="mb-3">
-									<h3 >{this.state.year}年{this.state.month}月　作業報告書</h3>
-								</span>
+							<Col sm={4}>
+							</Col>
+							<Col sm={5}>
+							<InputGroup.Append>
+								<DatePicker
+									selected={this.state.yearMonth}
+									onChange={this.setYearMonth}
+									autoComplete="off"
+									locale="ja"
+									showMonthYearPicker
+									showFullMonthYearPicker
+									className="form-control form-control-sm"
+									dateFormat="yyyy年MM月"
+									id="datePicker"
+								/>
+								<h3>作業報告書</h3>
+								</InputGroup.Append>
+								{/*<span size="lg" className="mb-3">
+									{this.state.year}年{this.state.month}月　
+								</span>*/}
 							</Col>
 							<Col sm={3} md={{ span: 3, offset: 1 }} hidden>
 								<InputGroup size="sm" className="mb-3">
@@ -840,8 +882,7 @@ class DutyRegistration extends React.Component {
 									<input style={{ width: "150px" }} value={this.state.siteResponsiblePerson} name="siteResponsiblePerson" onChange={this.valueChange} className="inputWithoutBorder" />
 								</InputGroup>
 							</Col>
-							<Col sm={1}>
-							</Col>
+
 							<Col sm={3}>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
@@ -885,6 +926,7 @@ class DutyRegistration extends React.Component {
 						</Row>
 						<Row>
 							<Col sm={12}>
+                    			<Button size="sm" variant="info" name="clickButton" onClick={this.test} variant="info">初期化</Button>{" "}
                         		<Button size="sm" variant="info" name="clickButton" title="月に一回のみ登録してください" onClick={this.shuseiTo.bind(this, "breakTime")} variant="info" id="employeeInfo">休憩時間登録</Button>
 								<div style={{ "float": "right" }}>
                         			<Button size="sm" variant="info" name="clickButton" onClick={this.release} disabled={this.state.isConfirmedPage || this.state.rowNo.length === 0} variant="info">解除</Button>{" "}
@@ -898,12 +940,12 @@ class DutyRegistration extends React.Component {
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='40' dataField='week' >曜日</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} hidden>作業開始時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} hidden>作業終了時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} hidden>作業開始時刻</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderRight: 'none' }} width='50' dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderLeft: 'none' }} width='50' dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} hidden>作業終了時刻</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderRight: 'none' }} width='50' dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderLeft: 'none' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
 
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} hidden >休憩時間</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='60' dataField='workHour'  dataFormat={this.workHourFormatter}>作業時間</TableHeaderColumn>

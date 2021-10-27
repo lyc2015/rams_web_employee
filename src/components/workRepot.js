@@ -75,19 +75,19 @@ class workRepot extends React.Component {
 			});
 	};
 	//　変更
-	sumWorkTimeChange = (e) =>{
-		if(e.sumWorkTime !== null){
-			if(e.sumWorkTime.length > 6){
+	sumWorkTimeChange = (sumWorkTime) =>{
+		if(sumWorkTime !== null){
+			if(sumWorkTime.length > 6){
 				alert("稼働時間をチェックしてください。");
 				return;
 			}else{
-				if(e.sumWorkTime.split(".").length > 1){
-					if(e.sumWorkTime.split(".")[0].length > 3 || e.sumWorkTime.split(".")[1].length > 2 ){
+				if(sumWorkTime.split(".").length > 1){
+					if(sumWorkTime.split(".")[0].length > 3 || sumWorkTime.split(".")[1].length > 2 ){
 						alert("稼働時間をチェックしてください。");
 						return;
 					}
 				}else{
-					if(e.sumWorkTime.length > 3){
+					if(sumWorkTime.length > 3){
 						alert("稼働時間をチェックしてください。");
 						return;
 					}
@@ -96,14 +96,14 @@ class workRepot extends React.Component {
 		}
 		const emp = {
 			attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
-			sumWorkTime:　e.sumWorkTime,
+			sumWorkTime:　sumWorkTime,
 		};
 		axios.post(this.state.serverIP + "workRepot/updateworkRepot",emp)
 			.then(response => {
 				if (response.data != null) {
 					this.searchWorkRepot();
 					this.setState({ "myToastShow": true, message: "アップロード成功！", });
-					this.setState({ rowSelectSumWorkTime: e.sumWorkTime, });
+					this.setState({ rowSelectSumWorkTime: sumWorkTime, });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
 					alert("err")
@@ -253,6 +253,22 @@ if($("#getFile").get(0).files[0].size>1048576){
 			return cell;
 	}
 	
+	//onChange
+	tableValueChange = (event, cell, row) => {
+		let employeeList = this.state.employeeList;
+		employeeList[row.id][event.target.name] = event.target.value;
+
+		this.setState({
+			employeeList: employeeList
+		})
+	}
+	
+	sumWorkTimeFormatter = (cell, row) => {
+		let returnItem = cell;
+		returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sumWorkTime" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.sumWorkTimeChange(cell)} /></span>;
+		return returnItem;
+	}
+	
 	render() {
 		const {employeeList} = this.state;
 		//　テーブルの行の選択
@@ -332,7 +348,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 						<TableHeaderColumn width='0'hidden={true}  tdStyle={ { padding: '.0em' } }   dataField='workingTimeReport'></TableHeaderColumn>
 						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth' editable={false} isKey>年月</TableHeaderColumn>
 						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' editable={false}>ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } } onChange={this.sumWorkTimeChange}  dataField='sumWorkTime' editable={this.state.rowSelectapproval} editColumnClassName="dutyRegistration-DataTableEditingCell" >稼働時間（必）</TableHeaderColumn>
+						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }   dataField='sumWorkTime' dataFormat={this.sumWorkTimeFormatter} editable={false} editColumnClassName="dutyRegistration-DataTableEditingCell" >稼働時間（必）</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' editable={false}>登録者</TableHeaderColumn>
 						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false} dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus' editable={false} dataFormat={this.approvalStatus.bind(this)}>ステータス</TableHeaderColumn>

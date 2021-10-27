@@ -932,11 +932,11 @@ class profitChartist extends Component {
 	        let textData = [];
 			setTimeout(() => {
 		        for(let i in total){
-		        	textData.push("金額と比率<br/>1.技術者稼働：" + parseInt(workTechnician[i] * 100 / total[i]) + "%<br/>" + utils.addComma(workTechnician[i]) + "<br/>"
-		        				+ "2.技術者非稼働：" + parseInt(notWorkTechnician[i] * 100 / total[i]) + "%<br/>" + utils.addComma(notWorkTechnician[i]) + "<br/>"
-		        				+ "3.管理者：" + parseInt(manager[i] * 100 / total[i]) + "%<br/>" + utils.addComma(manager[i]) + "<br/>"
-		        				+ "4.事務：" + parseInt(affairs[i] * 100 / total[i]) + "%<br/>" + utils.addComma(affairs[i]) + "<br/>"
-		        				+ "5.営業：" + parseInt(business[i] * 100 / total[i]) + "%<br/>" + utils.addComma(business[i]) + "<br/>");
+		        	textData.push("金額と比率<br/>1.技術者稼働：" + (workTechnician[i] * 100 / total[i]).toFixed(1) + "%<br/>" + utils.addComma(workTechnician[i]) + "<br/>"
+		        				+ "2.技術者非稼働：" + (notWorkTechnician[i] * 100 / total[i]).toFixed(1) + "%<br/>" + utils.addComma(notWorkTechnician[i]) + "<br/>"
+		        				+ "3.管理者：" + (manager[i] * 100 / total[i]).toFixed(1) + "%<br/>" + utils.addComma(manager[i]) + "<br/>"
+		        				+ "4.事務：" + (affairs[i] * 100 / total[i]).toFixed(1) + "%<br/>" + utils.addComma(affairs[i]) + "<br/>"
+		        				+ "5.営業：" + (business[i] * 100 / total[i]).toFixed(1) + "%<br/>" + utils.addComma(business[i]) + "<br/>");
 		        	workTechnician[i] = parseInt(workTechnician[i] / 100000);
 		        	notWorkTotal[i] = parseInt(notWorkTotal[i] / 100000);
 		        }

@@ -23,7 +23,7 @@ class dataShare extends React.Component {
 		this.valueChange = this.valueChange.bind(this);
 	};
 	componentDidMount(){
-		this.searchData();
+		this.searchData(this.state.fileNo);
 	}
 	// onchange
 	valueChange = event => {
@@ -31,14 +31,23 @@ class dataShare extends React.Component {
 			[event.target.name]: event.target.value
 		})
 	}
+	
+	dataStatusChange = event => {
+		this.setState({
+			[event.target.name]: event.target.value
+		})
+	}
+	
 	// 初期化データ
 	initialState = {
 		dataShareList: [],
 		currentPage: 1,
 		rowClickFlag: true,
 		rowNo: '',
+		fileNo: '',
 		rowFilePath : '',
 		rowShareStatus: '',
+		dataStatus: '0',
 		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"}],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
@@ -70,11 +79,13 @@ class dataShare extends React.Component {
 			};
 			formData.append('emp', JSON.stringify(emp))
 			formData.append('dataShareFile', $("#getFile").get(0).files[0])
-			formData.append('rowNo', this.state.rowNo)
+			formData.append('fileNo', this.state.fileNo)
+			formData.append('shareStatus', "0")
+						
 			axios.post(this.state.serverIP + "dataShare/updateDataShareFile",formData)
 			.then(response => {
 				if (response.data != null) {
-					this.searchData();
+					this.searchData(response.data);
 					this.setState({ "myToastShow": true, message: "アップロード成功！"  });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
@@ -83,7 +94,7 @@ class dataShare extends React.Component {
 			});
     }
     
-    searchData = () => {
+    searchData = (fileNo) => {
     	axios.post(this.state.serverIP + "dataShare/selectDataShareFile")
 		.then(response => response.data)
 		.then((data) => {
@@ -97,16 +108,19 @@ class dataShare extends React.Component {
 			}
 			this.setState({ 
 				dataShareList: data,
+				fileNo: fileNo,
 			})
-			this.refs.table.setState({
-				selectedRowKeys: [String(this.state.rowNo)]
-			});
+			
+			let rowNo = this.state.rowNo;
+			
 			if(this.state.rowNo !== ''){
 				if(this.state.rowNo > data.length){
 					this.setState({ 
 						rowShareStatus: data[data.length - 1].shareStatus,
 						rowFilePath: data[data.length - 1].filePath,
+						rowNo: data.length,
 					})
+					rowNo =  data.length;
 				}
 				else{
 					this.setState({ 
@@ -115,6 +129,9 @@ class dataShare extends React.Component {
 					})
 				}
 			}
+			this.refs.table.setState({
+				selectedRowKeys: [String(rowNo)]
+			});
 		});
     }
     
@@ -126,7 +143,8 @@ class dataShare extends React.Component {
 	handleRowSelect = (row, isSelected, e) => {
 		if (isSelected) {
 			this.setState({
-				rowNo: row.fileNo,
+				rowNo: row.rowNo,
+				fileNo: row.fileNo,
 				rowFilePath: row.filePath,
 				rowShareStatus: row.shareStatus,
 				rowClickFlag: false,
@@ -134,6 +152,7 @@ class dataShare extends React.Component {
 		} else {
 			this.setState({
 				rowNo: '',
+				fileNo: '',
 				rowFilePath: '',
 				rowShareStatus: '',
 				rowClickFlag: true,
@@ -155,10 +174,11 @@ class dataShare extends React.Component {
 		var dataShareList = this.state.dataShareList;
 		var dataShareModel = {};
 		if(dataShareList.length > 0){
-			dataShareModel["fileNo"] = dataShareList.length + 1;
+			dataShareModel["rowNo"] = dataShareList.length + 1;
 		}else{
-			dataShareModel["fileNo"] = 1;
+			dataShareModel["rowNo"] = 1;
 		}
+		dataShareModel["fileNo"] = "";
 		dataShareModel["fileName"] = "";
 		dataShareModel["shareUser"] = "";
 		dataShareModel["updateTime"] = "";
@@ -171,6 +191,7 @@ class dataShare extends React.Component {
 			currentPage: currentPage,
 			rowClickFlag: false,
 			rowNo: dataShareList.length,
+			fileNo: '',
 			rowShareStatus: '',
 		})
 		this.refs.table.setState({
@@ -180,12 +201,12 @@ class dataShare extends React.Component {
 	
 	dataShare = () => {
 		var model = {};
-		model["fileNo"] = this.state.rowNo;
+		model["fileNo"] = this.state.fileNo;
 		model["shareStatus"] = this.state.rowShareStatus === "0" ? "1" : "0";
 		axios.post(this.state.serverIP + "dataShare/updateDataShare",model)
 		.then(response => {
 			if (response.data != null) {
-				this.searchData();
+				this.searchData(this.state.fileNo);
 				this.setState({ "myToastShow": true, message: "共有成功！"  });
 				setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 			} else {
@@ -198,15 +219,16 @@ class dataShare extends React.Component {
         var a = window.confirm("削除していただきますか？");
         if(a){
 			var model = {};
-			model["fileNo"] = this.state.rowNo;
+			model["fileNo"] = this.state.fileNo;
 			axios.post(this.state.serverIP + "dataShare/deleteDataShare",model)
 			.then(response => {
 				if (response.data != null) {
 					this.setState({ 
 						rowNo: '',
+						fileNo: '',
 						rowShareStatus: '',
 					}, () => {
-						this.searchData();
+						this.searchData(this.state.fileNo);
 					})
 					this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
@@ -283,7 +305,20 @@ class dataShare extends React.Component {
 				</Form>
 				<div >
 				<Form.File id="getFile" accept="application/pdf,application/vnd.ms-excel" custom hidden="hidden" onChange={this.workRepotUpload}/>
-                    <Row>
+                	<Row>
+		                <Col sm={2}>
+			                <InputGroup size="sm" className="mb-3">
+								<InputGroup.Prepend>
+									<InputGroup.Text >区分</InputGroup.Text>
+								</InputGroup.Prepend>
+								<Form.Control id="dataStatus" as="select" size="sm" onChange={this.dataStatusChange} name="dataStatus" value={this.state.dataStatus} autoComplete="off" >
+									<option value="0">共有</option>
+									<option value="1">取得</option>
+								</Form.Control>
+							</InputGroup>
+						</Col>
+                	</Row>
+					<Row>
                         <Col sm={4}>
                             <div>
                                <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
@@ -303,7 +338,7 @@ class dataShare extends React.Component {
                     </Row>
 					<Col >
 					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='fileNo'  isKey>番号</TableHeaderColumn>
+						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey>番号</TableHeaderColumn>
 						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
 						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
 						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' >日付</TableHeaderColumn>
