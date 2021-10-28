@@ -11,6 +11,7 @@ import store from './redux/store';
 import MyToast from './myToast';
 import MailSalary from './mailSalary';
 import TableSelect from './TableSelect';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faEnvelope, faIdCard, faListOl, faBuilding, faTrash, faUpload, faGlasses, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 axios.defaults.withCredentials = true;
@@ -20,6 +21,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
         super(props);
         this.state = this.initialState;// 初期化
 		this.options = {
+			page: this.state.currentPage, 
 			sizePerPage: 15,
 			pageStartIndex: 1,
 			paginationSize: 3,
@@ -38,6 +40,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
     	salesProgressCodes: store.getState().dropDown[70],// ステータス
         serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 		modeSelect: 'checkbox',
+		currentPage: 1,
 		selectetRowIds: [],
 		loginUserInfo: [],
 		rowNo: [],
@@ -56,6 +59,9 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		loading: true,
 		myToastShow: false,
 		sendOver: false,
+		employeeNo: null,
+		employeeMail: null,
+		employeeNameDrop: store.getState().dropDown[38].slice(1),
     }
                	// onchange
 	valueChange = event => {
@@ -83,6 +89,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
 		this.refs.table.setState({
 			selectedRowKeys: [],
 		});
+    	this.getSalaryDetail(event.target.value);
 	}
 	
 	//　年月
@@ -102,7 +109,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
     			employeeList: this.props.location.state.sendValue.employeeList,
             });   
         }else{
-        	this.getSalaryDetail();
+        	this.getSalaryDetail(this.state.format);
         }
         
     	var yearAndMonth = this.getLastMonth(new Date());
@@ -123,15 +130,27 @@ class salaryDetailSend extends Component {// 状況変動一覧
 			});
 	}
     
-    getSalaryDetail(){
-    	axios.post(this.state.serverIP + "SalaryDetailSend/getEmployee")
-		.then(response => {
-			this.setState({
-				employeeList:response.data.data
-	        });   
-		}).catch((error) => {
-			console.error("Error - " + error);
-		});
+    getSalaryDetail = (type) => {
+    	if(type === "0"){
+    		axios.post(this.state.serverIP + "SalaryDetailSend/getEmployee")
+    		.then(response => {
+    			this.setState({
+    				employeeList:response.data.data
+    	        });   
+    		}).catch((error) => {
+    			console.error("Error - " + error);
+    		});
+    	}
+    	else{
+    		axios.post(this.state.serverIP + "SalaryDetailSend/getEmployeeSameFile")
+    		.then(response => {
+    			this.setState({
+    				employeeList:response.data.data
+    	        });   
+    		}).catch((error) => {
+    			console.error("Error - " + error);
+    		});
+    	}
     }
     
     getLastMonth = (date) => {
@@ -403,7 +422,10 @@ class salaryDetailSend extends Component {// 状況変動一覧
 			this.setState({ "errorsMessageShow": true, errorsMessageValue: message });
 			setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 		}else{
-			this.sendMailWithFile();
+	        var a = window.confirm("送信してもよろしいでしょうか？");
+	        if(a){
+				this.sendMailWithFile();
+	        }
 		}
 	}
 
@@ -436,8 +458,7 @@ class salaryDetailSend extends Component {// 状況変動一覧
 LYC株式会社` + `
 事務担当 ` + this.state.loginUserInfo[0].employeeFristName + ` ` + this.state.loginUserInfo[0].employeeLastName + `
 〒101-0032 東京都千代田区岩本町3-3-3サザンビル3F
-URL：http://www.lyc.co.jp/
-TEL：03-6908-5796
+URL：http://www.lyc.co.jp/	TEL：03-6908-5796
 E-mail：`+ this.state.loginUserInfo[0].companyMail + ` 共通mail：eigyou@lyc.co.jp
 P-mark：第21004525(02)号
 労働者派遣事業許可番号　派13-306371`;
@@ -511,6 +532,50 @@ P-mark：第21004525(02)号
 		);
 	}
 	
+	employeeNameChange = (event, values) => {
+        if (values !== null) {
+        	this.setState({
+                employeeNo: values.code,
+                employeeName: values.text,
+                employeeMail: values.mail,
+            })
+        }else{
+        	this.setState({
+                employeeNo: null,
+                employeeName: null,
+                employeeMail: null,
+            })
+        }
+	}
+	
+	addEmployee = () => {
+		let flag = false;
+		let employeeList = this.state.employeeList;
+		for(let i in employeeList){
+			if(employeeList[i].employeeNo === this.state.employeeNo){
+				flag = true;
+				break;
+			}
+		}
+		if(flag){
+			alert("明細で存在しました、ご確認お願い致します。");
+		}else{
+			let newData = [];
+			newData["rowNo"] = employeeList.length + 1;
+			newData["employeeNo"] = this.state.employeeNo;
+			newData["employeeName"] = this.state.employeeName;
+			newData["companyMail"] = this.state.employeeMail;
+
+			employeeList.push(newData);
+			
+			var currentPage = Math.ceil(employeeList.length / 15);
+			this.setState({
+				employeeList: employeeList,
+				currentPage: currentPage,
+            })
+		}
+	}
+	
     render(){
         const  situationChanges= this.state.situationChanges;
         const  errorsMessageValue= this.state.errorsMessageValue;
@@ -525,7 +590,21 @@ P-mark：第21004525(02)号
     			clickToExpand: true,
     			onSelect: this.handleRowSelect,
     		};
-				
+     // テーブルの定義
+		const options = {
+				page: this.state.currentPage, 
+				sizePerPage: 15,
+				pageStartIndex: 1,
+				paginationSize: 3,
+				prePage: '<', // Previous page button text
+	            nextPage: '>', // Next page button text
+	            firstPage: '<<', // First page button text
+	            lastPage: '>>', // Last page button text
+				hideSizePerPage: true,
+	            alwaysShowAllBtns: true,
+	            paginationShowsTotal: this.renderShowsTotal,
+				sortIndicator: false, // 隐藏初始排序箭头
+		};		
         return(
             <div>
                 <div style={{ "display": this.state.errorsMessageShow ? "block" : "none" }}>
@@ -561,7 +640,7 @@ P-mark：第21004525(02)号
 						</Form.Control>
 					</InputGroup>
 	                </Col>
-	                <Col sm={2}>
+	                <Col sm={2} hidden={this.state.format === "1"}>
 	                <InputGroup size="sm" className="mb-3">
 						<InputGroup.Prepend>
 							<InputGroup.Text >区分</InputGroup.Text>
@@ -572,7 +651,7 @@ P-mark：第21004525(02)号
 						</Form.Control>
 					</InputGroup>
 	                </Col>
-	                <Col sm={3} hidden={this.state.letterStatus === "1"}>
+	                <Col sm={3} hidden={this.state.letterStatus === "1" || this.state.format === "1"}>
 	                <InputGroup size="sm" className="mb-3">
 		                <InputGroup.Prepend>
 							<InputGroup.Text id="inputGroup-sizing-sm">年月</InputGroup.Text>
@@ -592,7 +671,7 @@ P-mark：第21004525(02)号
 						</InputGroup.Prepend>
 					</InputGroup>
 	                </Col>
-	                <Col sm={2} hidden={this.state.letterStatus === "0"}>
+	                <Col sm={2} hidden={this.state.letterStatus === "0" || this.state.format === "1"}>
 	                <InputGroup size="sm" className="mb-3">
 						<InputGroup.Prepend>
 							<InputGroup.Text >年度</InputGroup.Text>
@@ -603,6 +682,42 @@ P-mark：第21004525(02)号
 						</Form.Control>
 					</InputGroup>
 	                </Col>
+	                <Col sm={1} hidden={this.state.letterStatus === "0" || this.state.format === "1"}>
+	                </Col>
+	                
+	                <Col sm={5} hidden={!(this.state.format === "1")}>
+	                </Col>
+	                
+	                <Col>
+	                	<InputGroup size="sm" className="mb-3">
+			                <InputGroup.Prepend>
+								<InputGroup.Text id="sanKanji">社員</InputGroup.Text>
+							</InputGroup.Prepend>
+							<Autocomplete
+								id="employeeNo"
+	                            name="employeeNo"
+	                            value={this.state.employeeNameDrop.find(v => v.code === this.state.employeeNo) || {}}
+	                            options={this.state.employeeNameDrop}
+	                            getOptionDisabled={(option) => option.name}
+	                            getOptionLabel={(option) => option.text}
+	                            onChange={(event, values) => this.employeeNameChange(event, values)}
+	                            renderOption={(option) => {
+	                                return (
+	                                    <React.Fragment>
+	                                        {option.name}
+	                                    </React.Fragment>
+	                                )
+	                            }}
+	                            renderInput={(params) => (
+	                                <div ref={params.InputProps.ref}>
+	                                    <input placeholder="  例：佐藤真一" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-salaryDetailSend" />
+	                                </div>
+	                            )}
+							/>
+							<font style={{"marginRight": "10px"}}></font>
+							<Button size="sm" variant="info" name="clickButton"　disabled={this.state.employeeNo === null} onClick={this.addEmployee}　> 追加</Button>
+						</InputGroup>
+					</Col>
                 </Row>
                 <Row>
                     <Col>
@@ -639,7 +754,7 @@ P-mark：第21004525(02)号
                     data={this.state.employeeList}
                     pagination={true}
                     headerStyle={{ background: '#5599FF' }}
-                    options={this.options}
+                    options={options}
                     selectRow={selectRow}
 　					striped hover condensed>
 							<TableHeaderColumn tdStyle={{ padding: '.45em' }} width='10%' dataField='rowNo' >番号</TableHeaderColumn>

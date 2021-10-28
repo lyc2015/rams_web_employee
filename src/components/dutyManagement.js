@@ -511,7 +511,7 @@ class dutyManagement extends React.Component {
 		//　 テーブルの定義
 		const options = {
 			page: 1, 
-			sizePerPage: 10,  // which size per page you want to locate as default
+			sizePerPage: 12,  // which size per page you want to locate as default
 			pageStartIndex: 1, // where to start counting the pages
 			paginationSize: 3,  // the pagination bar size.
 			prePage: '<', // Previous page button text
@@ -637,7 +637,7 @@ class dutyManagement extends React.Component {
                     </Row>
                     <Col>
 						<BootstrapTable data={employeeList} ref='table' selectRow={selectRow} pagination={true} cellEdit={cellEdit} options={options} approvalRow headerStyle={ { background: '#5599FF'} } striped hover condensed >
-							<TableHeaderColumn width='55'　tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='rowNo'>番号</TableHeaderColumn>
+							<TableHeaderColumn width='55'　tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='rowNo' editable={false}>番号</TableHeaderColumn>
 							<TableHeaderColumn width='90'　tdStyle={ { padding: '.45em' } } 　dataFormat={this.greyShow.bind(this)} dataField='employeeNo' isKey hidden>社員番号</TableHeaderColumn>
 							<TableHeaderColumn width='120' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='employeeName' editable={false}>氏名</TableHeaderColumn>
 							<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } } dataFormat={this.greyShow.bind(this)} dataField='customerName' editable={false}>お客様</TableHeaderColumn>

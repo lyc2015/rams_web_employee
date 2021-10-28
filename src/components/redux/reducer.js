@@ -86,6 +86,7 @@ export function fetchDropDown() {
 		"getWorkingEmployeeNo",// 79稼働中社員番号取得
 		"getNotWorkingEmployeeNo",// 80稼働してなの社員番号取得
 		"getBpGrossProfit",// 81 BP粗利取得
+		"getBankBranch",// 82 銀行支店名、支店番号取得
 		"getServerIP",// 最後
 	]
 	var outArray = [];
@@ -205,6 +206,7 @@ var methodNameList = ["getGender",// 0.性別区別
 		"getWorkingEmployeeNo",// 79稼働中社員番号取得
 		"getNotWorkingEmployeeNo",// 80稼働してなの社員番号取得
 		"getBpGrossProfit",// 81 BP粗利取得
+		"getBankBranch",// 82 銀行支店名、支店番号取得
 		"getServerIP",// 最後
 	]
 var outArray = [];

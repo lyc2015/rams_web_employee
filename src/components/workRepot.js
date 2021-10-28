@@ -131,10 +131,10 @@ class workRepot extends React.Component {
     alert('PDF或いはexcelをアップロードしてください')
     return false;
   }
-if($("#getFile").get(0).files[0].size>1048576){
+/*if($("#getFile").get(0).files[0].size>1048576){
 	 alert('１M以下のファイルをアップロードしてください')
     return false;
-}
+}*/
 		const formData = new FormData()
 		const emp = {
 				attendanceYearAndMonth:this.state.rowSelectAttendanceYearAndMonth,
@@ -167,6 +167,7 @@ if($("#getFile").get(0).files[0].size>1048576){
 			var TheYearMonth=publicUtils.setFullYearMonth(new Date())-1;
 			this.setState(
 				{
+					rowId: row.id,
 					rowSelectAttendanceYearAndMonth: row.attendanceYearAndMonth,
 					rowSelectWorkingTimeReport: row.workingTimeReport,
 					rowSelectSumWorkTime: row.sumWorkTime,
@@ -186,8 +187,9 @@ if($("#getFile").get(0).files[0].size>1048576){
 			$("#workRepotClear").attr("disabled",true);
 			this.setState(
 				{	
-					rowSelectWorkingTimeReport:'',
-					rowSelectAttendanceYearAndMonth:'',
+					rowId: '',
+					rowSelectWorkingTimeReport: '',
+					rowSelectAttendanceYearAndMonth: '',
 					rowSelectSumWorkTime: '',
 					rowSelectapproval: '',
 					rowApprovalStatus: '',
@@ -216,6 +218,16 @@ if($("#getFile").get(0).files[0].size>1048576){
 					axios.post(this.state.serverIP + "workRepot/clearworkRepot",emp)
 						.then(response => {
 							if (response.data != null) {
+								let employeeList = this.state.employeeList;
+								employeeList[this.state.rowId]["sumWorkTime"] = "";
+
+								this.setState({
+									employeeList: employeeList
+								})
+								this.refs.table.store.selected = [];
+								this.refs.table.setState({
+									selectedRowKeys: [],
+								});
 								this.searchWorkRepot();
 								this.setState({ "myToastShow": true, message: "クリア完成！",  });
 								setTimeout(() => this.setState({ "myToastShow": false }), 3000);
@@ -265,7 +277,9 @@ if($("#getFile").get(0).files[0].size>1048576){
 	
 	sumWorkTimeFormatter = (cell, row) => {
 		let returnItem = cell;
-		returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sumWorkTime" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.sumWorkTimeChange(cell)} /></span>;
+		let lastMonth = new Date(new Date().getFullYear(),new Date().getMonth(),0)
+		if(row.approvalStatus !== "1" && Number(row.attendanceYearAndMonth) >= Number(lastMonth.getFullYear() + (lastMonth.getMonth() + 1).toString().padStart(2, "0")))
+			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sumWorkTime" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.sumWorkTimeChange(cell)} /></span>;
 		return returnItem;
 	}
 	
@@ -297,11 +311,6 @@ if($("#getFile").get(0).files[0].size>1048576){
 			onApprovalRow: this.onApprovalRow,
 			handleConfirmApprovalRow: this.customConfirm,
 		};
-		const cellEdit = {
-			mode: 'click',
-			blurToSave: true,
-			afterSaveCell: this.sumWorkTimeChange,
-		}
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -343,15 +352,13 @@ if($("#getFile").get(0).files[0].size>1048576){
 						</Col>
                     </Row>
 					<Col >
-					<BootstrapTable data={employeeList} cellEdit={cellEdit} pagination={true}  options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='0'　hidden={true} tdStyle={ { padding: '.0em' } }  dataField='approvalStatus' ></TableHeaderColumn>
-						<TableHeaderColumn width='0'hidden={true}  tdStyle={ { padding: '.0em' } }   dataField='workingTimeReport'></TableHeaderColumn>
-						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth' editable={false} isKey>年月</TableHeaderColumn>
-						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' editable={false}>ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }   dataField='sumWorkTime' dataFormat={this.sumWorkTimeFormatter} editable={false} editColumnClassName="dutyRegistration-DataTableEditingCell" >稼働時間（必）</TableHeaderColumn>
-						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' editable={false}>登録者</TableHeaderColumn>
-						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false} dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
-						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus' editable={false} dataFormat={this.approvalStatus.bind(this)}>ステータス</TableHeaderColumn>
+					<BootstrapTable data={employeeList} ref="table" pagination={true}  options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
+						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth'  isKey>年月</TableHeaderColumn>
+						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' >ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }   dataField='sumWorkTime' dataFormat={this.sumWorkTimeFormatter}>稼働時間（必）</TableHeaderColumn>
+						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' >登録者</TableHeaderColumn>
+						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime'  dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
+						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus'  dataFormat={this.approvalStatus.bind(this)}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
 				</div>

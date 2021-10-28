@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import '../asserts/css/style.css';
 import ErrorsMessageToast from './errorsMessageToast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faDownload, faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faDownload, faUndo, faMoneyCheckAlt } from '@fortawesome/free-solid-svg-icons';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import * as publicUtils from './utils/publicUtils.js';
 import * as messageUtils from './utils/messageUtils.js';
@@ -43,6 +43,7 @@ class DutyRegistration extends React.Component {
 			workDays: 0,
 			workHours: 0,
 			isConfirmedPage: false,
+			disabledFlag: false,
 			breakTimeFlag: false,
 			breakTime: {},
 			serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],//劉林涛　テスト
@@ -525,7 +526,7 @@ class DutyRegistration extends React.Component {
 		let returnItem = (
 			<span id={"dutyDataRowNumber-" + row.id}>{cell}</span>
 		)
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1") {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1") {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
 					<select class=" form-control editor edit-select" name="hasWork" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row); }} >
@@ -544,7 +545,7 @@ class DutyRegistration extends React.Component {
 	}
 	startTimeFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			//returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="startTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 			returnItem = (
 			<div>
@@ -573,7 +574,7 @@ class DutyRegistration extends React.Component {
 	
 	startTimeHoursFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="startTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -592,7 +593,7 @@ class DutyRegistration extends React.Component {
 	
 	startTimeMinutesFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="startTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -611,7 +612,7 @@ class DutyRegistration extends React.Component {
 	
 	endTimeFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="endTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 		}
 		return returnItem;
@@ -619,7 +620,7 @@ class DutyRegistration extends React.Component {
 	
 	endTimeHoursFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="endTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -638,7 +639,7 @@ class DutyRegistration extends React.Component {
 	
 	endTimeMinutesFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = (
 				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="endTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
@@ -662,17 +663,17 @@ class DutyRegistration extends React.Component {
 	
 	sleepHourFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1] && this.state.breakTime.breakTimeFixedStatus == 0) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && this.state.dateData[row.id].hasWork === this.state.hasWork[1] && this.state.breakTime.breakTimeFixedStatus == 0) {
 			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sleepHour" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 		}
-		else if (!this.state.isConfirmedPage && this.state.dateData[row.id].hasWork === this.state.hasWork[1] && this.state.breakTime.breakTimeFixedStatus) {
+		else if (!this.state.isConfirmedPage && !this.state.disabledFlag && this.state.dateData[row.id].hasWork === this.state.hasWork[1] && this.state.breakTime.breakTimeFixedStatus) {
 			row.sleepHour = this.state.breakTime.totalBreakTime;
 		}
 		return returnItem;
 	}
 	workContentFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = <span class={row.errorFlag === "WorkContent" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"}><input type="text" class=" form-control editor edit-text" name="workContent" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 		}else{
 			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
@@ -681,7 +682,7 @@ class DutyRegistration extends React.Component {
 	}
 	remarkFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && row.confirmFlag !== "1"  && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1"  && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="remark" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 		}else{
 			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell}</span>)
@@ -735,6 +736,15 @@ class DutyRegistration extends React.Component {
  					},
  				}
  				break;
+ 			case "costRegistration":
+				path = {
+					pathname: '/subMenuEmployee/costRegistration',
+					state: {
+						backPage: "dutyRegistration",
+						sendValue: sendValue,
+					},
+				}
+				break;
  			default:
  		}
         this.props.history.push(path);
@@ -777,10 +787,21 @@ class DutyRegistration extends React.Component {
 	
 	// 年月変更後、レコ＾ド再取る
 	setYearMonth = (date) => {
+		let year = date.getFullYear();
+		let month = (date.getMonth() + 1).toString().padStart(2, "0");
+		let temp = String(year) + String(month);
+		let now;
+		if((new Date().getMonth() + 1).toString().padStart(2, "0") === "01"){
+			now = new Date().getFullYear() - 1 + "12";
+		}else{
+			now = String(new Date().getFullYear()) + (new Date().getMonth()).toString().padStart(2, "0");
+		}
+
 		this.setState({
 			yearMonth: date,
-			year: date.getFullYear(),
-			month: (date.getMonth() + 1).toString().padStart(2, "0"),
+			year: year,
+			month: month,
+			disabledFlag: temp < now,
 		}, () => {
 	    	this.getWorkData();
 		});
@@ -837,7 +858,7 @@ class DutyRegistration extends React.Component {
 							</Col>*/}
 							<Col sm={3}>
 								<InputGroup size="sm" className="mb-3">
-									<Form.Control type="text" value={this.state.siteCustomer} name="siteCustomer" autoComplete="off" size="sm" onChange={this.valueChange} />
+									<Form.Control type="text" value={this.state.siteCustomer} disabled={this.state.disabledFlag || this.state.isConfirmedPage} name="siteCustomer" autoComplete="off" size="sm" onChange={this.valueChange} />
 									<InputGroup.Prepend>
 										<InputGroup.Text id="inputGroup-sizing-sm">御中</InputGroup.Text>
 									</InputGroup.Prepend>
@@ -850,7 +871,7 @@ class DutyRegistration extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="inputGroup-sizing-sm">会社名</InputGroup.Text>
 									</InputGroup.Prepend>
-									<Form.Control type="text" value={this.state.customer} name="customer" autoComplete="off" size="sm" onChange={this.valueChange} />
+									<Form.Control type="text" value={this.state.customer} disabled={this.state.disabledFlag || this.state.isConfirmedPage} name="customer" autoComplete="off" size="sm" onChange={this.valueChange} />
 								</InputGroup>
 							</Col>
 						</Row>
@@ -868,7 +889,9 @@ class DutyRegistration extends React.Component {
 									showFullMonthYearPicker
 									className="form-control form-control-sm"
 									dateFormat="yyyy年MM月"
-									id="datePicker"
+									maxDate={new Date()}
+									disabled={this.state.isConfirmedPage}
+									id={this.state.isConfirmedPage ? "datePickerReadonlyDefault" : "datePicker"}
 								/>
 								<h3>作業報告書</h3>
 								</InputGroup.Append>
@@ -888,7 +911,7 @@ class DutyRegistration extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="inputGroup-sizing-sm">責任者名</InputGroup.Text>
 									</InputGroup.Prepend>
-									<Form.Control type="text" value={this.state.siteResponsiblePerson} name="siteResponsiblePerson" autoComplete="off" size="sm" onChange={this.valueChange} />
+									<Form.Control type="text" value={this.state.siteResponsiblePerson} disabled={this.state.disabledFlag || this.state.isConfirmedPage} name="siteResponsiblePerson" autoComplete="off" size="sm" onChange={this.valueChange} />
 								</InputGroup>
 							</Col>
 						</Row>
@@ -910,7 +933,7 @@ class DutyRegistration extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="inputGroup-sizing-sm">業務名称</InputGroup.Text>
 									</InputGroup.Prepend>
-									<Form.Control type="text" value={this.state.systemName} name="systemName" autoComplete="off" size="sm" onChange={this.valueChange} />
+									<Form.Control type="text" value={this.state.systemName} disabled={this.state.disabledFlag || this.state.isConfirmedPage} name="systemName" autoComplete="off" size="sm" onChange={this.valueChange} />
 								</InputGroup>
 							</Col>
 							<Col sm={6}>
@@ -920,16 +943,19 @@ class DutyRegistration extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="fiveKanji">作業担当者</InputGroup.Text>
 									</InputGroup.Prepend>
-									<Form.Control type="text" value={this.state.employeeName} name="employeeName" autoComplete="off" size="sm" onChange={this.valueChange} />
+									<Form.Control type="text" value={this.state.employeeName} disabled={this.state.disabledFlag || this.state.isConfirmedPage} name="employeeName" autoComplete="off" size="sm" onChange={this.valueChange} />
 								</InputGroup>
 							</Col>
 						</Row>
 						<Row>
 							<Col sm={12}>
-                    			<Button size="sm" variant="info" name="clickButton" onClick={this.test} variant="info">初期化</Button>{" "}
-                        		<Button size="sm" variant="info" name="clickButton" title="月に一回のみ登録してください" onClick={this.shuseiTo.bind(this, "breakTime")} variant="info" id="employeeInfo">休憩時間登録</Button>
+                    			<Button size="sm" variant="info" name="clickButton" disabled={this.state.disabledFlag || this.state.isConfirmedPage} onClick={this.test} variant="info">初期化</Button>{" "}
+                        		<Button size="sm" variant="info" name="clickButton" title="月に一回のみ登録してください" disabled={this.state.disabledFlag || this.state.isConfirmedPage} onClick={this.shuseiTo.bind(this, "breakTime")} variant="info" id="employeeInfo">休憩時間登録</Button>{" "}
+                        		<Button variant="info" size="sm" disabled={this.state.disabledFlag || this.state.isConfirmedPage} onClick={this.shuseiTo.bind(this, "costRegistration")} >
+									<FontAwesomeIcon icon={faMoneyCheckAlt} /> 費用登録
+								</Button>
 								<div style={{ "float": "right" }}>
-                        			<Button size="sm" variant="info" name="clickButton" onClick={this.release} disabled={this.state.isConfirmedPage || this.state.rowNo.length === 0} variant="info">解除</Button>{" "}
+                        			<Button size="sm" variant="info" name="clickButton" onClick={this.release} disabled={this.state.isConfirmedPage || this.state.disabledFlag || this.state.rowNo.length === 0} variant="info">解除</Button>{" "}
 									<Link className="btn btn-info btn-sm" onClick={this.downloadPDF.bind(this)} id="downloadPDF"><FontAwesomeIcon icon={faDownload} /> PDF</Link>
 								</div>
 							</Col>
@@ -966,7 +992,7 @@ class DutyRegistration extends React.Component {
 						<Row>
 							<Col style={{ "textAlign": "right" }} sm={3} md={{ span: 0, offset: 3 }} >
 								<div hidden={this.state.isConfirmedPage}>
-									<Button size="sm" className="btn btn-info btn-sm" onClick={this.beforeSubmit.bind(this)}>
+									<Button size="sm" className="btn btn-info btn-sm" disabled={this.state.disabledFlag} onClick={this.beforeSubmit.bind(this)}>
 										<FontAwesomeIcon icon={faUpload} /> 提出
 									</Button>
 								</div>

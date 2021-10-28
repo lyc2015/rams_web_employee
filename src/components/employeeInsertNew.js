@@ -48,6 +48,8 @@ class employeeInsertNew extends React.Component {
 		disabledFalg: true,
 		accountInfo: null,// 口座情報のデータ
 		bpInfoModel: null,// pb情報
+		employeeFristName: '',
+		employeeLastName: '',
 		developLanguage1: '',
 		developLanguage2: '',
 		developLanguage3: '',
@@ -178,8 +180,8 @@ class employeeInsertNew extends React.Component {
 			formData.append('passportInfo', publicUtils.nullToEmpty($('#passportInfo').get(0).files[0]))
 		axios.post(this.state.serverIP + "employee/insertEmployee", formData)
 			.then(result => {
-				this.setState({ loading: true, });
 				if (result.data.errorsMessage != null) {
+					this.setState({ loading: true, });
 					this.setState({ "errorsMessageShow": true, errorsMessageValue: result.data.errorsMessage });
 					setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 				} else {
@@ -855,7 +857,7 @@ class employeeInsertNew extends React.Component {
 				</Modal>
 				{/* 終了 */}
 				<div style={{ "textAlign": "center" }}>
-					<Button size="sm" id="bankInfo" onClick={this.handleShowModal.bind(this, "bankInfo")} disabled={employeeStatus === "0" || employeeStatus === "2" || employeeStatus === "3" ? false : true} >口座情報</Button>{' '}
+					<Button size="sm" id="bankInfo" onClick={this.handleShowModal.bind(this, "bankInfo")} disabled={ this.state.disabledFalg ? true : (employeeStatus === "0" || employeeStatus === "2" || employeeStatus === "3" ? false : true)} >口座情報</Button>{' '}
 					<Button size="sm" id="passwordSet" onClick={this.handleShowModal.bind(this, "passwordSet")} disabled={ this.state.disabledFalg ? true : (employeeStatus === "0" || employeeStatus === "2" || employeeStatus === "3" ? false : true)}>PW設定</Button>{' '}
 					<Button size="sm" id="bpInfoModel" hidden onClick={this.handleShowModal.bind(this, "bpInfoModel")} disabled={employeeStatus === "0" || employeeStatus === "2" || employeeStatus === "3" ? true : false}>BP情報</Button>{' '}
 				</div>

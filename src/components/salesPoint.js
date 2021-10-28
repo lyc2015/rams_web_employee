@@ -319,7 +319,7 @@ class salesPoint extends React.Component {
 												dateFormat="yyyy/MM"
 												showMonthYearPicker
 												showFullMonthYearPicker
-												maxDate={new Date()}
+												maxDate={new Date(new Date().getFullYear(), parseInt(new Date().getMonth() + 1) + 1, 0)}
 												name="admissionStartDate"
 												className="form-control form-control-sm"
 												id="datePicker"
@@ -332,7 +332,7 @@ class salesPoint extends React.Component {
 												dateFormat="yyyy/MM"
 												showMonthYearPicker
 												showFullMonthYearPicker
-												maxDate={new Date()}
+												maxDate={new Date(new Date().getFullYear(), parseInt(new Date().getMonth() + 1) + 1, 0)}
 												name="admissionEndDate"
 												className="form-control form-control-sm"
 												id="datePicker"

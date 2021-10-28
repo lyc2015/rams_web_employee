@@ -1051,7 +1051,7 @@ class sendRepot extends React.Component {
 									renderInput={(params) => (
 										<div ref={params.InputProps.ref}>
 											<input type="text" {...params.inputProps}
-												id="customerCode" className="auto form-control Autocompletestyle-salesSend-customers"
+												id="customerCode" className="auto form-control Autocompletestyle-sendRepot"
 												 />
 										</div>
 									)}
@@ -1068,7 +1068,7 @@ class sendRepot extends React.Component {
 								renderInput={(params) => (
 									<div ref={params.InputProps.ref}>
 										<input type="text" {...params.inputProps}
-											id="personInCharge" className="auto form-control Autocompletestyle-salesSend-personInCharge"
+											id="personInCharge" className="auto form-control Autocompletestyle-sendRepot"
 											 />
 									</div>
 								)}
@@ -1157,10 +1157,10 @@ class sendRepot extends React.Component {
 							<TableHeaderColumn width='20%' dataField='customerName' dataFormat={this.customerNameFormat.bind(this)}>お客様名</TableHeaderColumn>
 							<TableHeaderColumn width='9%' dataField='purchasingManagers'>担当者</TableHeaderColumn>
 							<TableHeaderColumn dataField='customerDepartmentCode' hidden dataFormat={this.customerDepartmentNameFormat}>部門</TableHeaderColumn>
-							<TableHeaderColumn width='9%' dataField='positionCode' dataFormat={this.positionNameFormat}>職位</TableHeaderColumn>
-							<TableHeaderColumn width='14%' dataField='purchasingManagersMail' >メール</TableHeaderColumn>
+							<TableHeaderColumn dataField='positionCode' dataFormat={this.positionNameFormat} hidden>職位</TableHeaderColumn>
+							<TableHeaderColumn width='20%' dataField='purchasingManagersMail' >メール</TableHeaderColumn>
 							<TableHeaderColumn width='12%' dataField='salesPersonsAppend' dataFormat={this.CellFormatter.bind(this)}>担当追加</TableHeaderColumn>
-							<TableHeaderColumn width='12%' dataField='sendRepotsAppend' dataFormat={this.CellFormatter2.bind(this)}>対象社員</TableHeaderColumn>
+							<TableHeaderColumn width='15%' dataField='sendRepotsAppend' dataFormat={this.CellFormatter2.bind(this)}>対象社員</TableHeaderColumn>
 							<TableHeaderColumn width='12%' dataField='approvalStatus'dataFormat={this.Judgment.bind(this)}>承認済み</TableHeaderColumn>
 							<TableHeaderColumn width='12%' dataField='sentReportStatus'dataFormat={this.Judgment.bind(this)}>送信済み</TableHeaderColumn>
 							<TableHeaderColumn dataField='rowId' hidden={true} >ID</TableHeaderColumn>

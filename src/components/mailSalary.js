@@ -48,8 +48,7 @@ class mailSalary extends React.Component {
 LYC株式会社
 事務担当　`+ this.state.loginUserInfo[0].employeeFristName + ` ` + this.state.loginUserInfo[0].employeeLastName + `
 〒101-0032 東京都千代田区岩本町3-3-3サザンビル3F  
-URL：http://www.lyc.co.jp/
-TEL：03-6908-5796
+URL：http://www.lyc.co.jp/	TEL：03-6908-5796
 E-mail：`+ this.state.loginUserInfo[0].companyMail + ` 共通mail：eigyou@lyc.co.jp
 P-mark：第21004525(02)号
 労働者派遣事業許可番号　派13-306371

@@ -9,6 +9,7 @@ import { faSave, faUndo, faEdit } from '@fortawesome/free-solid-svg-icons';
 import MyToast from './myToast';
 import ErrorsMessageToast from './errorsMessageToast';
 import store from './redux/store';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 axios.defaults.withCredentials = true;
 /**
@@ -33,6 +34,8 @@ class BankInfo extends Component {
         type:'',
         errorsMessageShow: false,
         errorsMessageValue: '',
+        bankBranchDrop: store.getState().dropDown[82].slice(1),
+        bankBranchDropAll: store.getState().dropDown[82].slice(1),
         serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],//劉林涛　テスト
     }
 
@@ -130,6 +133,21 @@ class BankInfo extends Component {
             employeeOrCustomerNo: accountInfoMod.employeeOrCustomerNo,
             accountName: accountInfoMod.accountName,
         })
+        let bankBranchDrop = [];
+        for(let i in this.state.bankBranchDropAll){
+        	if(this.state.bankBranchDropAll[i].value === accountInfoMod.bankCode){
+        		bankBranchDrop.push(this.state.bankBranchDropAll[i]);
+        	}
+        }
+        if(accountInfoMod.bankBranchName === undefined){
+            this.setState({
+            	bankBranchName: this.state.bankBranchDrop.find(v => v.code === accountInfoMod.bankBranchCode).name,
+            })
+        }
+        this.setState({
+        	bankBranchDrop: bankBranchDrop,
+        })
+        
         if (accountInfoMod.accountTypeStatus === '0') {
             $("#futsu").attr("checked", true);
         } else if (accountInfoMod.accountTypeStatus === '1') {
@@ -187,6 +205,7 @@ class BankInfo extends Component {
             $.each(formArray, function (i, item) {
                 accountInfo[item.name] = item.value;
             });
+            accountInfo["bankBranchCode"] = this.state.bankBranchCode;
             accountInfo["accountBelongsStatus"] = this.state.accountBelongsStatus;
             accountInfo["employeeOrCustomerNo"] = this.state.employeeOrCustomerNo;
             if (this.state.actionType === "update") {
@@ -240,8 +259,17 @@ class BankInfo extends Component {
         $("#accountNo").val("");
         $("#accountName").val("");
         $("#futsu").attr("checked", true);
+        
+        let bankBranchDrop = [];
+        for(let i in this.state.bankBranchDropAll){
+        	if(this.state.bankBranchDropAll[i].value === val){
+        		bankBranchDrop.push(this.state.bankBranchDropAll[i]);
+        	}
+        }
+
         this.setState({
             [event.target.name]: event.target.value,
+            bankBranchDrop: bankBranchDrop,
         })
     }
     resetValue = () => {
@@ -254,6 +282,21 @@ class BankInfo extends Component {
         })
         bankInfoJs.setDisabled();
     }
+    
+    bankBranchChange = (event, values) => {
+        if (values !== null) {
+        	this.setState({
+        		bankBranchName: values.name,
+        		bankBranchCode: values.code,
+            })
+        }else{
+        	this.setState({
+        		bankBranchName: null,
+        		bankBranchCode: null,
+            })
+        }
+	}
+    
     render() {
         const { actionType, errorsMessageValue, accountInfoName, bankCode, bankBranchName, bankBranchCode, accountNo, accountName , message , type} = this.state;
         return (
@@ -297,10 +340,32 @@ class BankInfo extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text>支店名</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <Form.Control readOnly
+                                    <Autocomplete
+	    								id="bankBranchName"
+	    	                            name="bankBranchName"
+	    	                            disabled={bankCode === ""}
+	    	                            value={this.state.bankBranchDrop.find(v => v.name === this.state.bankBranchName) || {}}
+	    	                            options={this.state.bankBranchDrop}
+	    	                            getOptionDisabled={(option) => option.name}
+	    	                            getOptionLabel={(option) => option.name}
+	    	                            onChange={(event, values) => this.bankBranchChange(event, values)}
+	    	                            renderOption={(option) => {
+	    	                                return (
+	    	                                    <React.Fragment>
+	    	                                        {option.name}
+	    	                                    </React.Fragment>
+	    	                                )
+	    	                            }}
+	    	                            renderInput={(params) => (
+	    	                                <div ref={params.InputProps.ref}>
+	    	                                    <input placeholder="  例：浦和支店" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-salaryDetailSend" />
+	    	                                </div>
+	    	                            )}
+	    							/>
+                                    {/*<Form.Control readOnly
                                         placeholder="例：浦和支店"
                                         onBlur={this.getBankBranchInfo.bind(this, "bankBranchName")}
-                                        id="bankBranchName" maxLength="20" name="bankBranchName" value={bankBranchName} onChange={this.valueChange} />
+                                        id="bankBranchName" maxLength="20" name="bankBranchName" value={bankBranchName} onChange={this.valueChange} />*/}
                                 </InputGroup>
                             </Col>
                             <Col>
@@ -308,9 +373,31 @@ class BankInfo extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="inputGroup-sizing-sm">支店番号</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <Form.Control placeholder="例：010" onBlur={this.getBankBranchInfo.bind(this, "bankBranchCode")} readOnly
-                                        id="bankBranchCode" maxLength="3" name="bankBranchCode" value={bankBranchCode} onChange={this.valueChange} />
-                                </InputGroup>
+                                    <Autocomplete
+	    								id="bankBranchCode"
+	    	                            name="bankBranchCode"
+	    	                            disabled={bankCode === ""}
+	    	                            value={this.state.bankBranchDrop.find(v => v.code === this.state.bankBranchCode) || {}}
+	    	                            options={this.state.bankBranchDrop}
+	    	                            getOptionDisabled={(option) => option.code}
+	    	                            getOptionLabel={(option) => option.code}
+	    	                            onChange={(event, values) => this.bankBranchChange(event, values)}
+	    	                            renderOption={(option) => {
+	    	                                return (
+	    	                                    <React.Fragment>
+	    	                                        {option.code}
+	    	                                    </React.Fragment>
+	    	                                )
+	    	                            }}
+	    	                            renderInput={(params) => (
+	    	                                <div ref={params.InputProps.ref}>
+	    	                                    <input placeholder="  例：010" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-salaryDetailSend" />
+	    	                                </div>
+	    	                            )}
+	    							/>
+                                    {/*<Form.Control placeholder="例：010" onBlur={this.getBankBranchInfo.bind(this, "bankBranchCode")} readOnly
+                                        id="bankBranchCode" maxLength="3" name="bankBranchCode" value={bankBranchCode} onChange={this.valueChange} />*/ }
+                              </InputGroup>
                             </Col>
                         </Row>
                         <Row>
