@@ -120,7 +120,7 @@ class dutyManagement extends React.Component {
 					//totalPersons=response.data.length;
 					for(var i=0;i<response.data.length;i++){
 						if(response.data[i].workTime !== null){
-							averageWorkingTime = averageWorkingTime+response.data[i].workTime;
+							averageWorkingTime = Number(averageWorkingTime) + Number(response.data[i].workTime);
 							totalPersons = totalPersons + 1;
 						}
 						if(Number(totalWorkingTime) < Number(response.data[i].workTime)){

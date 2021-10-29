@@ -285,10 +285,18 @@ class resume extends React.Component {
 					<Form.File id="getFile" accept="application/pdf,application/vnd.ms-excel"  custom hidden="hidden" onChange={this.resumeUpload}/>
 	                <br/>
                     <Row>
-						<Col sm={2}>
+						<Col sm={6}>
 							<font style={{ whiteSpace: 'nowrap'}}>履歴書</font>
 						</Col>
-						<Col sm={10}></Col>
+						<Col sm={6}>
+							<div style={{ "textAlign": "right" }}>
+								<Button size="sm" variant="info" type="button" onClick={this.InsertResume} on>
+									<FontAwesomeIcon icon={faSave} /> {" 登録"}
+								</Button>
+							</div>
+						</Col>
+					</Row>
+	                <Row>
 						<Col sm={12}>
 							<BootstrapTable pagination={true} data={employeeList} options={options} approvalRow selectRow={selectRow} headerStyle={{ background: '#5599FF' }} striped hover condensed >
 								<TableHeaderColumn dataField='filePath' hidden></TableHeaderColumn>
@@ -305,18 +313,6 @@ class resume extends React.Component {
 						</Col>
 					</Row>
 					<br/>
-					<Row>
-						<Col sm={4}>
-							<div style={{ "position": "relative", "left": "100%" }}>
-								<div style={{ "textAlign": "center" }}>
-									<Button size="sm" variant="info" type="button" onClick={this.InsertResume} on>
-										<FontAwesomeIcon icon={faSave} /> {" 登録"}
-									</Button>
-								</div>
-							</div>
-						</Col>
-					</Row>
-					<br />
 				</div>
 			</div >
 		);

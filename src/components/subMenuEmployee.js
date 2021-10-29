@@ -159,7 +159,7 @@ class SubMenu extends Component {
 												<ListGroup>
 													<Accordion className="menuCol">
 														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-1")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/dataShareEmployee'})} block>
-															<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/dataShareEmployee', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileContract}/> 事務共有</Link></div>
+															<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/dataShareEmployee', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileContract}/> ファイル共有</Link></div>
 														</ListGroup.Item>
 														<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-2")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/resume'})} block>
 															<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/resume', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileWord}/> 履歴書</Link></div>

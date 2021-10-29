@@ -187,7 +187,7 @@ class costRegistration extends React.Component {
 			.then(response => {
 				if (response.data) {
 					this.setState({changeData: false,})
-					this.setState({ "myToastShow": true, "method": "put", "message": "登録完了" });
+					this.setState({ "myToastShow": true, "method": "put", "message": "更新成功!" });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 					this.resetBook();
 					this.searchCostRegistration();
@@ -272,6 +272,7 @@ class costRegistration extends React.Component {
 		if (!a) {
 			return;
 		}
+		$('#costRegistrationFile').val(null);
 		var splDate = (this.state.rowSelectHappendDate).split("～");
 		const emp = {
 			oldCostClassificationCode: this.state.rowSelectCostClassificationCode,
@@ -284,6 +285,8 @@ class costRegistration extends React.Component {
 				if (result.data ==true) {
 					//削除の後で、rowSelectの値に空白をセットする
 					this.setState({
+							costRegistrationFile: null,
+							costRegistrationFileName: null,
 							changeData: false,
 					})
 					this.setState({ "myToastShow": true, "method": "put", "message": "削除完了" });
@@ -305,10 +308,7 @@ class costRegistration extends React.Component {
 		this.refs.table.setState({
 			selectedRowKeys: [],
 		});
-		this.setState({ 
-			"myToastShow": false,
-				"message": "",
-		});
+
 	};
 	//リセット　reset
 	resetStates = {
@@ -382,6 +382,8 @@ class costRegistration extends React.Component {
 			if (filePath != null) {
 				this.setState({
 					costRegistrationFileFlag: true,
+				},() => {
+					this.InsertCost()
 				})
 			}
 	}
@@ -417,7 +419,7 @@ class costRegistration extends React.Component {
 				this.setState(
 						{
 							rowRemark: '',
-							regularStatus: '',
+							regularStatus: '0',
 							stationCode1: '',
 							stationCode2: '',
 							detailedNameOrLine: '',
@@ -527,20 +529,20 @@ class costRegistration extends React.Component {
 			
 		} else {
 			return (
-			<div style={{ "textAlign": "center" }}>
-				<Row>
-					<Col>
-						{transportationCode(row.transportationCode, this.state.station)}
-					</Col>
-					<Col  sm={1}>
-						<td style={{"borderTop": "0","borderRight": "0","borderBottom": "0"}}></td>
-					</Col>
-					<Col>
-						{transportationCode(row.destinationCode, this.state.station)}
-					</Col>
-				</Row>
-			</div>
-			)
+					<div style={{ "textAlign": "center" }}>
+						<Row>
+							<Col>
+								{transportationCode((row.costClassificationCode == 1 ? row.originCode : row.transportationCode), this.state.station)}
+							</Col>
+							<Col  sm={1}>
+								<td style={{"borderTop": "0","borderRight": "0","borderBottom": "0"}}></td>
+							</Col>
+							<Col>
+								{transportationCode(row.destinationCode, this.state.station)}
+							</Col>
+						</Row>
+					</div>
+					)
 		}
 	}
 	
@@ -648,10 +650,10 @@ class costRegistration extends React.Component {
 			sizePerPage: 5,  // which size per page you want to locate as default
 			pageStartIndex: 1, // where to start counting the pages
 			paginationSize: 3,  // the pagination bar size.
-			prePage: 'Prev', // Previous page button text
-			nextPage: 'Next', // Next page button text
-			firstPage: 'First', // First page button text
-			lastPage: 'Last', // Last page button text
+			prePage: '<', // Previous page button text
+            nextPage: '>', // Next page button text
+            firstPage: '<<', // First page button text
+            lastPage: '>>', // Last page button text
 			paginationShowsTotal: this.renderShowsTotal,  // Accept bool or function
 			hideSizePerPage: true, //> You can hide the dropdown for sizePerPage
 			expandRowBgColor: 'rgb(165, 165, 165)',
@@ -828,10 +830,10 @@ class costRegistration extends React.Component {
 								<Button size="sm" variant="info" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} type="reset" onClick={this.resetBook}>
 									<FontAwesomeIcon icon={faUndo} /> Reset
 								</Button>{' '}
+								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
 								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={this.handleShowModal.bind(this)}>
 									<FontAwesomeIcon /> {" 他の費用"}
 								</Button>{' '}
-								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
 								<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
 							</div>
 						 </Col>

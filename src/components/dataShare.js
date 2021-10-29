@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../asserts/css/development.css';
 import '../asserts/css/style.css';
 import $ from 'jquery';
+import DatePicker from "react-datepicker";
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -33,13 +34,25 @@ class dataShare extends React.Component {
 	}
 	
 	dataStatusChange = event => {
+		this.refs.table.setState({
+			selectedRowKeys: []
+		});
 		this.setState({
+			modeSelect: event.target.value === "0" ? 'radio' : 'checkbox',
+			fileNo: event.target.value === "0" ? "" : [],
+			rowNo: event.target.value === "0" ? "" : [],
+			rowFilePath : event.target.value === "0" ? "" : [],
+			rowShareStatus: event.target.value === "0" ? "" : [],
+			rowClickFlag: true,
 			[event.target.name]: event.target.value
+		},() => {
+			this.searchData(this.state.fileNo);
 		})
 	}
 	
 	// 初期化データ
 	initialState = {
+		modeSelect: 'radio',
 		dataShareList: [],
 		currentPage: 1,
 		rowClickFlag: true,
@@ -48,8 +61,18 @@ class dataShare extends React.Component {
 		rowFilePath : '',
 		rowShareStatus: '',
 		dataStatus: '0',
-		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"}],
+		yearAndMonth: null,
+		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"},{code:"2",value:"upload済み"},{code:"3",value:"承認済み"}],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
+	};
+	
+	// 年月
+	inactiveYearAndMonth = (date) => {
+		this.setState({
+			yearAndMonth: date,
+		}, () => {
+			this.searchData(this.state.fileNo);
+		});
 	};
 
   /**
@@ -95,7 +118,12 @@ class dataShare extends React.Component {
     }
     
     searchData = (fileNo) => {
-    	axios.post(this.state.serverIP + "dataShare/selectDataShareFile")
+    	let model = {
+    			dataStatus: this.state.dataStatus,
+    			updateTime: this.state.yearAndMonth === null ? null : this.state.yearAndMonth.getFullYear() + (this.state.yearAndMonth.getMonth() + 1).toString().padStart(2, "0") + "00"
+    			}
+    	
+    	axios.post(this.state.serverIP + "dataShare/selectDataShareFile", model)
 		.then(response => response.data)
 		.then((data) => {
 			if (data.length!=0) {
@@ -123,10 +151,12 @@ class dataShare extends React.Component {
 					rowNo =  data.length;
 				}
 				else{
-					this.setState({ 
-						rowShareStatus: data[this.state.rowNo - 1].shareStatus,
-						rowFilePath: data[this.state.rowNo - 1].filePath,
-					})
+					if(this.state.dataStatus === "0"){
+						this.setState({ 
+							rowShareStatus: data[this.state.rowNo - 1].shareStatus,
+							rowFilePath: data[this.state.rowNo - 1].filePath,
+						})
+					}
 				}
 			}
 			this.refs.table.setState({
@@ -141,24 +171,103 @@ class dataShare extends React.Component {
 	
 	// 行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
-		if (isSelected) {
-			this.setState({
-				rowNo: row.rowNo,
-				fileNo: row.fileNo,
-				rowFilePath: row.filePath,
-				rowShareStatus: row.shareStatus,
-				rowClickFlag: false,
-			})
-		} else {
-			this.setState({
-				rowNo: '',
-				fileNo: '',
-				rowFilePath: '',
-				rowShareStatus: '',
-				rowClickFlag: true,
-			})
+		if(this.state.dataStatus === "0"){
+			if (isSelected) {
+				this.setState({
+					rowNo: row.rowNo,
+					fileNo: row.fileNo,
+					rowFilePath: row.filePath,
+					rowShareStatus: row.shareStatus,
+					rowClickFlag: false,
+				})
+			} else {
+				this.setState({
+					rowNo: '',
+					fileNo: '',
+					rowFilePath: '',
+					rowShareStatus: '',
+					rowClickFlag: true,
+				})
+			}
+		}
+		else{
+			if (isSelected) {
+				this.setState({
+					rowNo: this.state.rowNo.concat([row.rowNo]),
+					fileNo: this.state.fileNo.concat([row.fileNo]),
+					rowFilePath: this.state.rowFilePath.concat([row.filePath]),
+					rowShareStatus: this.state.rowShareStatus.concat([row.shareStatus]),
+					rowClickFlag: false,
+				})
+			} else {
+	    		let index;
+				index = this.state.rowNo.findIndex(item => item === row.rowNo);
+				if(index !== -1)
+					this.state.rowNo.splice(index, 1);
+				
+				index = this.state.fileNo.findIndex(item => item === row.fileNo);
+				if(index !== -1)
+					this.state.fileNo.splice(index, 1);
+				
+				index = this.state.rowFilePath.findIndex(item => item === row.filePath);
+				if(index !== -1)
+					this.state.rowFilePath.splice(index, 1);
+				
+				index = this.state.rowShareStatus.findIndex(item => item === row.shareStatus);
+				if(index !== -1)
+					this.state.rowShareStatus.splice(index, 1);
+				
+				this.setState({
+	    			rowNo: this.state.rowNo,
+	    			fileNo: this.state.fileNo,
+	    			rowFilePath: this.state.rowFilePath,
+	    			rowShareStatus: this.state.rowShareStatus,
+	    			rowClickFlag: this.state.rowNo.length === 0 ? true : false,
+	    		});
+			}
 		}
 	}
+	
+	selectAll = () => {
+		let rowNo = [];
+		let fileNo = [];
+		let filePath = [];
+		let shareStatus = [];
+		let selectedRowKeys = [];
+		
+		for(let i in this.state.dataShareList){
+			rowNo.push(this.state.dataShareList[i].rowNo);
+			fileNo.push(this.state.dataShareList[i].fileNo);
+			filePath.push(this.state.dataShareList[i].filePath);
+			shareStatus.push(this.state.dataShareList[i].shareStatus);
+			selectedRowKeys.push(this.state.dataShareList[i].rowNo);
+		}
+		
+		this.refs.table.store.selected = this.refs.table.state.selectedRowKeys.length !== this.state.dataShareList.length ? selectedRowKeys : [];
+		this.refs.table.setState({
+			selectedRowKeys: this.refs.table.state.selectedRowKeys.length !== this.state.dataShareList.length ? selectedRowKeys : [],
+		});
+		
+		if(this.refs.table.state.selectedRowKeys.length !== this.state.dataShareList.length){
+			this.setState({
+				rowNo: rowNo,
+				fileNo: fileNo,
+				rowFilePath: filePath,
+				rowShareStatus: shareStatus,
+				rowClickFlag: rowNo.length === 0 ? true : false,
+			});
+		}
+		else{
+			this.setState({
+				rowNo: [],
+				fileNo: [],
+				rowFilePath: [],
+				rowShareStatus: [],
+				rowClickFlag: true,
+			});
+		}
+	}
+	
 	renderShowsTotal(start, to, total) {
 		return (
 			<p style={{ color: 'dark', "float": "left", "display": total > 0 ? "block" : "none" }}  >
@@ -199,6 +308,23 @@ class dataShare extends React.Component {
 		});
 	}
 	
+	dataApproval = () => {
+		let fileNoList = [];
+		for(let i in this.state.fileNo){
+			fileNoList.push(this.state.fileNo[i]);
+		}
+		axios.post(this.state.serverIP + "dataShare/updateDataShares",fileNoList)
+		.then(response => {
+			if (response.data != null) {
+				this.searchData(this.state.fileNo);
+				this.setState({ "myToastShow": true, message: "承認成功！"  });
+				setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+			} else {
+				alert("err")
+			}
+		});
+	}
+	
 	dataShare = () => {
 		var model = {};
 		model["fileNo"] = this.state.fileNo;
@@ -218,24 +344,49 @@ class dataShare extends React.Component {
 	dataDelete = () => {
         var a = window.confirm("削除していただきますか？");
         if(a){
-			var model = {};
-			model["fileNo"] = this.state.fileNo;
-			axios.post(this.state.serverIP + "dataShare/deleteDataShare",model)
-			.then(response => {
-				if (response.data != null) {
-					this.setState({ 
-						rowNo: '',
-						fileNo: '',
-						rowShareStatus: '',
-					}, () => {
-						this.searchData(this.state.fileNo);
-					})
-					this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
-					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
-				} else {
-					alert("err")
+			if(this.dataStatus === "0"){
+				var model = {};
+				model["fileNo"] = this.state.fileNo;
+				axios.post(this.state.serverIP + "dataShare/deleteDataShare",model)
+				.then(response => {
+					if (response.data != null) {
+						this.setState({ 
+							rowNo: '',
+							fileNo: '',
+							rowShareStatus: '',
+						}, () => {
+							this.searchData(this.state.fileNo);
+						})
+						this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
+						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					} else {
+						alert("err")
+					}
+				});
+			}
+			else{
+				let fileNoList = [];
+				for(let i in this.state.fileNo){
+					fileNoList.push(this.state.fileNo[i]);
 				}
-			});
+
+				axios.post(this.state.serverIP + "dataShare/deleteDataShares",fileNoList)
+				.then(response => {
+					if (response.data != null) {
+						this.setState({ 
+							rowNo: '',
+							fileNo: '',
+							rowShareStatus: '',
+						}, () => {
+							this.searchData(this.state.fileNo);
+						})
+						this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
+						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					} else {
+						alert("err")
+					}
+				});
+			}
         }
 	}
 	
@@ -249,12 +400,18 @@ class dataShare extends React.Component {
             }
         }
     };
+
+	downLoad = () => {
+		for(let i in this.state.rowFilePath){
+			publicUtils.handleDownload(this.state.rowFilePath[i], this.state.serverIP);
+		}
+	}
 	
 	render() {
 		const {dataShareList} = this.state;
 		// テーブルの行の選択
 		const selectRow = {
-			mode: 'radio',
+			mode: this.state.modeSelect,
 			bgColor: 'pink',
 			clickToSelectAndEditCell: true,
 			hideSelectColumn: true,
@@ -281,11 +438,6 @@ class dataShare extends React.Component {
 			onApprovalRow: this.onApprovalRow,
 			handleConfirmApprovalRow: this.customConfirm,
 		};
-		const cellEdit = {
-			mode: 'click',
-			blurToSave: true,
-			afterSaveCell: this.sumWorkTimeChange,
-		}
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -317,21 +469,42 @@ class dataShare extends React.Component {
 								</Form.Control>
 							</InputGroup>
 						</Col>
+						
+						<Col sm={3}>
+			                <InputGroup size="sm" className="mb-3">
+								<InputGroup.Prepend>
+									<InputGroup.Text >年月</InputGroup.Text>
+								</InputGroup.Prepend>
+								<DatePicker
+									selected={this.state.yearAndMonth}
+									onChange={this.inactiveYearAndMonth}
+									autoComplete="off"
+									locale="ja"
+									dateFormat="yyyy/MM"
+									showMonthYearPicker
+									showFullMonthYearPicker
+									id={"datePicker"}
+									className="form-control form-control-sm"
+								/>
+							</InputGroup>
+						</Col>
                 	</Row>
 					<Row>
                         <Col sm={4}>
                             <div>
-                               <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
-									<FontAwesomeIcon icon={faUpload} />Upload
+                               <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag || this.state.dataStatus === "1"} hidden={this.state.dataStatus === "1"}>
+									<FontAwesomeIcon icon={faUpload} /> Upload
 								</Button>{' '}
-								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP)} id="workRepotDownload" disabled={this.state.rowShareStatus === ""}>
-	                          		 <FontAwesomeIcon icon={faDownload} />Download
+								<Button variant="info" size="sm" onClick={this.selectAll} disabled={this.state.dataStatus === "0"} hidden={this.state.dataStatus === "0"}>すべて選択</Button>{' '}
+								<Button variant="info" size="sm" onClick={this.state.dataStatus === "0" ? publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP) : this.downLoad} id="workRepotDownload" disabled={this.state.rowShareStatus === "" || this.state.rowShareStatus.length === 0}>
+	                          		 <FontAwesomeIcon icon={faDownload} /> Download
 		                        </Button>
 	 						</div>
 						</Col>
                         <Col sm={8}>
                         <div style={{ "float": "right" }}>
-							<Button variant="info" size="sm" id="revise" onClick={this.state.rowClickFlag ? this.insertRow : this.dataShare} disabled={this.state.rowClickFlag ? false : this.state.rowShareStatus === ""}><FontAwesomeIcon icon={faSave}/> {this.state.rowClickFlag ? "追加" : this.state.rowShareStatus === "1" ? "解除" : "共有"}</Button>{' '}
+							<Button variant="info" size="sm" id="revise" onClick={this.dataApproval} disabled={this.state.rowClickFlag || this.state.dataStatus === "0"} hidden={this.state.dataStatus === "0"}><FontAwesomeIcon icon={faSave}/> 承認</Button>{' '}
+							<Button variant="info" size="sm" id="revise" onClick={this.state.rowClickFlag ? this.insertRow : this.dataShare} disabled={(this.state.rowClickFlag ? false : this.state.rowShareStatus === "") || this.state.dataStatus === "1"} hidden={this.state.dataStatus === "1"}><FontAwesomeIcon icon={faSave}/> {this.state.rowClickFlag || this.state.dataStatus === "1" ? "追加" : this.state.rowShareStatus === "1" ? "解除" : "共有"}</Button>{' '}
 							<Button variant="info" size="sm" id="revise" onClick={this.dataDelete} disabled={this.state.rowClickFlag || this.state.rowShareStatus === "1"}><FontAwesomeIcon icon={faTrash} /> 削除</Button>{' '}
  						</div>
 					</Col>

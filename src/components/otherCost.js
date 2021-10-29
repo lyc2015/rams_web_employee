@@ -266,8 +266,8 @@ class otherCost extends React.Component {
 				return;
 			}
 		if (this.state.costClassificationCode == 1) {
-			if (this.state.yearAndMonth == "" ||
-			this.state.transportationCode == "" ||
+			if (this.state.yearAndMonth == "" || this.state.yearAndMonth == null ||
+			this.state.transportationCode == "" || this.state.cost1 == "" || this.state.cost1 == null ||
 			this.state.stationCode3 == "" ||
 			this.state.stationCode4 == "" ||
 			isNaN(utils.deleteComma(this.state.cost1))) {
@@ -294,8 +294,8 @@ class otherCost extends React.Component {
 			formData.append('costFile', publicUtils.nullToEmpty($('#otherCostFile').get(0).files[0]))
 
 		} else if (this.state.costClassificationCode > 1) {
-			if (this.state.detailedNameOrLine2 == "" ||
-				this.state.stationCode5 == "" ||
+			if (this.state.yearAndMonth == "" || this.state.yearAndMonth == null || this.state.detailedNameOrLine2 == "" ||
+				this.state.stationCode5 == "" || this.state.cost2 == "" || this.state.cost2 == null || 
 				isNaN(utils.deleteComma(this.state.cost2))) {
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": this.costClassificationCode(this.state.costClassificationCode) + "関連の項目入力してください"  });
 				return;
