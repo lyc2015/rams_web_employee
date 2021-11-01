@@ -40,7 +40,7 @@ class workRepot extends React.Component {
 	initialState = {
 		employeeList: [],
 		rowApprovalStatus: '',
-		approvalStatuslist: store.getState().dropDown[27],
+		approvalStatuslist: [{code:"0",name: "アップロード済み"},{code:"1",name: "承認済み"}],
 		costClassificationCode: store.getState().dropDown[30],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
@@ -67,7 +67,7 @@ class workRepot extends React.Component {
 						}
 					}
 				} else {
-					data.push({"approvalStatus":0,"approvalStatusName":"未","attendanceYearAndMonth":publicUtils.setFullYearMonth(new Date())});
+					data.push({"approvalStatus":0,"approvalStatusName":"アップロード済み","attendanceYearAndMonth":publicUtils.setFullYearMonth(new Date())});
 					}
 				this.setState({ 
 					employeeList: data

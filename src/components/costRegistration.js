@@ -63,8 +63,22 @@ class costRegistration extends React.Component {
 		})
 	}
 	costValueChange = (e) => {
-		let cost = e.target.value
-		cost = utils.addComma(cost) 
+		let cost = e.target.value;
+		if(cost.length > 7)
+			return cost;
+		let result = "";
+		for (let i = 0; i < cost.length; i++ )
+		{
+			if (cost.charCodeAt(i)==12288)
+			{
+				result += String.fromCharCode(cost.charCodeAt(i)-12256);
+				continue;
+			}
+			if (cost.charCodeAt(i)>65280 && cost.charCodeAt(i)<65375)
+				result += String.fromCharCode(cost.charCodeAt(i)-65248);
+			else result += String.fromCharCode(cost.charCodeAt(i));
+		}
+		cost = utils.addComma(result) 
 		this.setState({
 			[e.target.name]: cost
 		})
@@ -75,12 +89,15 @@ class costRegistration extends React.Component {
 		approvalStatuslist: [],
 		stationCode1: '',　// 出発
 		stationCode2: '',　// 到着
+		detailedNameOrLine: '', //線路/回数
 		rowSelectCostClassificationCode: '',
 		showOtherCostModal: false,//他の費用
 		otherCostModel: null,//他の費用データ
 		changeData: false,//insert:false
 		yearMonth: new Date(),
+		cost: '',
 		regularStatus: "0",
+		errorItem: '',
 		disabledFlag: false,
 		station: store.getState().dropDown[14],
 		costClassification: store.getState().dropDown[30],
@@ -150,13 +167,36 @@ class costRegistration extends React.Component {
 			return;
         }*/
 		const formData = new FormData()
-		if (isNaN(utils.deleteComma(this.state.cost)) ||
+		if (this.state.cost === "" ||
 			this.state.stationCode1 == "" ||
 			this.state.stationCode2 == "" ||
 			this.state.detailedNameOrLine == "") {
 			this.setState({ "errorsMessageShow": true, "method": "put", "message": (this.state.regularStatus === "0" ? "定期通勤":"非定期通勤") + "関連の項目入力してください" });
+			if(this.state.stationCode1 == ""){
+				this.setState({ errorItem: "stationCode1" });
+				return;
+			}
+			if(this.state.stationCode2 == ""){
+				this.setState({ errorItem: "stationCode2" });
+				return;
+			}
+			if(this.state.detailedNameOrLine == ""){
+				this.setState({ errorItem: "detailedNameOrLine" });
+				return;
+			}
+			if(this.state.cost === ""){
+				this.setState({ errorItem: "cost" });
+				return;
+			}
 			return;
 		}
+		if(isNaN(utils.deleteComma(this.state.cost))){
+			this.setState({ "errorsMessageShow": true, "method": "put", "message": "料金は半角数字のみ入力してください。" });
+			this.setState({ errorItem: "cost" });
+			return;
+		}
+		
+		this.setState({ errorItem: "" });
 		if (this.state.rowSelectCostClassificationCode === "0") {
 			var theUrl = "costRegistration/updateCostRegistration"
 		} else {
@@ -186,14 +226,14 @@ class costRegistration extends React.Component {
 		axios.post(this.state.serverIP + theUrl, formData)
 			.then(response => {
 				if (response.data) {
-					this.setState({changeData: false,})
+					this.setState({changeData: false, "errorsMessageShow": false})
 					this.setState({ "myToastShow": true, "method": "put", "message": "更新成功!" });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 					this.resetBook();
 					this.searchCostRegistration();
 				} else {
 					this.setState({ "errorsMessageShow": true, "method": "put", "message": (this.state.regularStatus === "0" ? "定期通勤":"非定期通勤") + "データはすでに存在している" });
-					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 				}
 			}).catch((error) => {
 				console.error("Error - " + error);
@@ -230,7 +270,7 @@ class costRegistration extends React.Component {
 				costClassification1: this.state.rowSelectCostClassificationCode,
 				yearAndMonth: publicUtils.converToLocalTime(this.state.rowSelectHappendDate, true),
 				transportationCode: this.state.rowSelectTransportationCode,
-				stationCode3: this.state.rowSelectTransportationCode,
+				stationCode3: this.state.rowSelectOriginCode,
 				stationCode4: this.state.rowSelectDestinationCode,
 				roundCode: this.state.rowSelectRoundCode,
 				cost1: this.state.rowSelectCost,
@@ -319,6 +359,7 @@ class costRegistration extends React.Component {
 		rowSelectCostClassificationCode: '',
 		rowSelectDetailedNameOrLine: '',
 		rowSelectStationCode: '',
+		rowSelectOriginCode: '',
 		rowSelectTransportationCode: '',
 		rowSelectDestinationCode: '',
 		rowSelectCost: '',
@@ -396,6 +437,7 @@ class costRegistration extends React.Component {
 					rowSelectCostClassificationCode: row.costClassificationCode,
 					rowSelectDetailedNameOrLine: row.detailedNameOrLine,
 					rowSelectStationCode: row.stationCode,
+					rowSelectOriginCode: row.originCode,
 					rowSelectTransportationCode: row.transportationCode,
 					rowSelectDestinationCode: row.destinationCode,
 					rowSelectCost: row.cost,
@@ -435,6 +477,7 @@ class costRegistration extends React.Component {
 					rowSelectCostClassificationCode: '',
 					rowSelectDetailedNameOrLine: '',
 					rowSelectStationCode: '',
+					rowSelectOriginCode: '',
 					rowSelectTransportationCode: '',
 					rowSelectDestinationCode: '',
 					rowSelectCost: '',
@@ -687,6 +730,7 @@ class costRegistration extends React.Component {
 							oldHappendDate1={this.state.oldHappendDate1}
 							detailedNameOrLine2={this.state.detailedNameOrLine2}
 							stationCode5={this.state.stationCode5}
+							originCode={this.state.rowSelectOriginCode}
 							remark={this.state.rowRemark}
 							cost2={this.state.cost2}
 							oldCostFile1={this.state.oldCostFile}
@@ -770,7 +814,7 @@ class costRegistration extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  出発" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode1" />
+												<input placeholder="  出発" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode1" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode1" />
 											</div>
 										)}
 									/>
@@ -790,7 +834,7 @@ class costRegistration extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  到着" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode2" />
+												<input placeholder="  到着" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode2" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode2" />
 											</div>
 										)}
 									/>
@@ -801,7 +845,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>
@@ -809,7 +853,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">料金</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.cost} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
+								<Form.Control type="text" value={this.state.cost} style={this.state.errorItem === "cost" ? {borderColor: "red"} : {borderColor: ""}} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
 							</InputGroup>
 						</Col>
 						<Col sm={4}>

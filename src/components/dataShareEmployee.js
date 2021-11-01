@@ -49,6 +49,7 @@ class dataShareEmployee extends React.Component {
 	initialState = {
 		dataShareList: [],
 		currentPage: 1,
+		addDisabledFlag: false,
 		rowClickFlag: true,
 		rowNo: '',
 		rowFilePath : '',
@@ -76,6 +77,7 @@ class dataShareEmployee extends React.Component {
 			}
 			this.setState({ 
 				dataShareList: data,
+				addDisabledFlag: false,
 			})
 		});
     }
@@ -154,6 +156,7 @@ class dataShareEmployee extends React.Component {
 			rowNo: dataShareList.length,
 			fileNo: '',
 			rowShareStatus: '',
+			addDisabledFlag: true,
 		})
 		this.refs.table.setState({
 			selectedRowKeys: [dataShareList.length]
@@ -190,7 +193,7 @@ class dataShareEmployee extends React.Component {
 			};
 			formData.append('emp', JSON.stringify(emp))
 			formData.append('dataShareFile', $("#getFile").get(0).files[0])
-			formData.append('rowNo', this.state.rowNo)
+			formData.append('fileNo', this.state.fileNo)
 			formData.append('shareStatus', "2")
 			
 			axios.post(this.state.serverIP + "dataShare/updateDataShareFile",formData)
@@ -218,6 +221,9 @@ class dataShareEmployee extends React.Component {
 						fileNo: '',
 						rowShareStatus: '',
 					}, () => {
+						this.refs.table.setState({
+							selectedRowKeys: []
+						});
 						this.searchData();
 					})
 					this.setState({ "myToastShow": true, message: "削除成功！" , rowClickFlag: true });
@@ -286,14 +292,14 @@ class dataShareEmployee extends React.Component {
                     <Row>
 	                    <Col sm={6}>
 		                    <div>
-		                       <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
+		                       <Button variant="info" size="sm" title="複数のファイルは一つのzip化にしてください。" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
 									<FontAwesomeIcon icon={faUpload} />Upload
 								</Button>
-								</div>
+							</div>
 						</Col>
                         <Col sm={6}>
                             <div style={{ "float": "right" }}>
-								<Button variant="info" size="sm" id="revise" onClick={this.insertRow}><FontAwesomeIcon icon={faSave}/> 追加</Button>{' '}
+								<Button variant="info" size="sm" id="revise" onClick={this.insertRow} disabled={this.state.addDisabledFlag} ><FontAwesomeIcon icon={faSave}/> 追加</Button>{' '}
 								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP)} id="workRepotDownload" disabled={this.state.rowShareStatus === ""}>
 	                          		 <FontAwesomeIcon icon={faDownload} />Download
 		                        </Button>{' '}

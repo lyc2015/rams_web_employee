@@ -33,6 +33,7 @@ class otherCost extends React.Component {
 		stationCode3: '',　// 出発
 		stationCode4: '',　// 到着
 		stationCode5: '',　// 場所
+		errorItem: '',
 		costClassificationsts: 0,//区分状態
 		otherCostFileFlag: false,//ファイル状態
 		station: store.getState().dropDown[14],
@@ -48,7 +49,21 @@ class otherCost extends React.Component {
 	}
 	costValueChange = (e) => {
 		let cost = e.target.value
-		cost = utils.addComma(cost)
+		if(cost.length > 7)
+			return cost;
+		let result = "";
+		for (let i = 0; i < cost.length; i++ )
+		{
+			if (cost.charCodeAt(i)==12288)
+			{
+				result += String.fromCharCode(cost.charCodeAt(i)-12256);
+				continue;
+			}
+			if (cost.charCodeAt(i)>65280 && cost.charCodeAt(i)<65375)
+				result += String.fromCharCode(cost.charCodeAt(i)-65248);
+			else result += String.fromCharCode(cost.charCodeAt(i));
+		}
+		cost = utils.addComma(result) 
 		this.setState({
 			[e.target.name]: cost
 		})
@@ -262,6 +277,7 @@ class otherCost extends React.Component {
 			var theUrl = "costRegistration/insertCostRegistration"
 		}
 		if (this.state.costClassificationCode < 1) {
+			this.setState({ errorItem: "costClassificationCode" });
 			this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": "区分を入力してください" });
 				return;
 			}
@@ -269,9 +285,33 @@ class otherCost extends React.Component {
 			if (this.state.yearAndMonth == "" || this.state.yearAndMonth == null ||
 			this.state.transportationCode == "" || this.state.cost1 == "" || this.state.cost1 == null ||
 			this.state.stationCode3 == "" ||
-			this.state.stationCode4 == "" ||
-			isNaN(utils.deleteComma(this.state.cost1))) {
+			this.state.stationCode4 == "") {
 				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": this.costClassificationCode(this.state.costClassificationCode) + "関連の項目入力してください" });
+				if(this.state.yearAndMonth == "" || this.state.yearAndMonth == null){
+					this.setState({ errorItem: "yearAndMonth" });
+					return;
+				}
+				if(this.state.transportationCode == ""){
+					this.setState({ errorItem: "transportationCode" });
+					return;
+				}
+				if(this.state.stationCode3 == ""){
+					this.setState({ errorItem: "stationCode3" });
+					return;
+				}
+				if(this.state.stationCode4 == ""){
+					this.setState({ errorItem: "stationCode4" });
+					return;
+				}
+				if(this.state.cost1 == "" || this.state.cost1 == null){
+					this.setState({ errorItem: "cost1" });
+					return;
+				}
+				return;
+			}
+			if(isNaN(utils.deleteComma(this.state.cost1))){
+				this.setState({ errorItem: "cost1" });
+				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": "料金は半角数字のみ入力してください。" });
 				return;
 			}
 			const emp = {
@@ -295,9 +335,29 @@ class otherCost extends React.Component {
 
 		} else if (this.state.costClassificationCode > 1) {
 			if (this.state.yearAndMonth == "" || this.state.yearAndMonth == null || this.state.detailedNameOrLine2 == "" ||
-				this.state.stationCode5 == "" || this.state.cost2 == "" || this.state.cost2 == null || 
-				isNaN(utils.deleteComma(this.state.cost2))) {
+				this.state.stationCode5 == "" || this.state.cost2 == "" || this.state.cost2 == null) {
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": this.costClassificationCode(this.state.costClassificationCode) + "関連の項目入力してください"  });
+				if(this.state.yearAndMonth == "" || this.state.yearAndMonth == null){
+					this.setState({ errorItem: "yearAndMonth" });
+					return;
+				}
+				if(this.state.detailedNameOrLine2 == ""){
+					this.setState({ errorItem: "detailedNameOrLine2" });
+					return;
+				}
+				if(this.state.stationCode5 == ""){
+					this.setState({ errorItem: "stationCode5" });
+					return;
+				}
+				if(this.state.cost2 == "" || this.state.cost2 == null){
+					this.setState({ errorItem: "cost2" });
+					return;
+				}
+				return;
+			}
+			if(isNaN(utils.deleteComma(this.state.cost2))){
+				this.setState({ errorItem: "cost2" });
+				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": "料金は半角数字のみ入力してください。" });
 				return;
 			}
 			const emp = {
@@ -373,6 +433,7 @@ class otherCost extends React.Component {
 										size="sm"
 										name="costClassificationCode"
 										value={this.state.costClassificationCode}
+										style={this.state.errorItem === "costClassificationCode" ? {borderColor: "red"} : {borderColor: ""}}
 										autoComplete="off">
 										{this.state.costClassificationForOtherCost.map(data =>
 											<option key={data.code} value={data.code}>
@@ -395,7 +456,7 @@ class otherCost extends React.Component {
 											locale="ja"
 											minDate={this.state.minDate}
 											dateFormat="yyyy/MM/dd"
-											id={this.state.costClassificationCode === "" ? "datePickerReadonlyDefault" : "datePicker"}
+											id={this.state.costClassificationCode === "" ? "datePickerReadonlyDefault" : (this.state.errorItem === "yearAndMonth" ? "datePickerRed" : "datePicker")}
 											className="form-control form-control-sm"
 										/>
 									</InputGroup.Prepend>
@@ -427,6 +488,7 @@ class otherCost extends React.Component {
 										size="sm"
 										name="transportationCode"
 										value={this.state.transportationCode}
+										style={this.state.errorItem === "transportationCode" ? {borderColor: "red"} : {borderColor: ""}}
 										autoComplete="off"
 										disabled={this.state.costClassificationCode != 1 ? true : false}
 									>
@@ -453,7 +515,7 @@ class otherCost extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  出発" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode3" />
+												<input placeholder="  出発" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode3" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode3" />
 											</div>
 										)}
 									/>
@@ -474,7 +536,7 @@ class otherCost extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  到着" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode4" />
+												<input placeholder="  到着" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode4" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode4" />
 											</div>
 										)}
 									/>
@@ -485,7 +547,7 @@ class otherCost extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="threeKanji">料金</InputGroup.Text>
 									</InputGroup.Prepend>
-									<FormControl value={cost1} name='cost1' maxLength='7' onChange={(e) => this.costValueChange(e)}  disabled={this.state.costClassificationCode != 1 ? true : false} placeholder="例：XXXXX" autoComplete="off"  type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" />
+									<FormControl value={cost1} name='cost1' maxLength='7' onChange={(e) => this.costValueChange(e)} style={this.state.errorItem === "cost1" ? {borderColor: "red"} : {borderColor: ""}}  disabled={this.state.costClassificationCode != 1 ? true : false} placeholder="例：XXXXX" autoComplete="off"  type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" />
 								</InputGroup>
 							</Col>
 						</Row>
@@ -500,7 +562,7 @@ class otherCost extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="inputGroup-sizing-sm">名称</InputGroup.Text>
 									</InputGroup.Prepend>
-									<FormControl placeholder="" autoComplete="off" name="detailedNameOrLine2" value={this.state.detailedNameOrLine2}
+									<FormControl placeholder="" autoComplete="off" name="detailedNameOrLine2" value={this.state.detailedNameOrLine2} style={this.state.errorItem === "detailedNameOrLine2" ? {borderColor: "red"} : {borderColor: ""}}
 										onChange={this.valueChange} type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
 								</InputGroup>
 							</Col>
@@ -518,7 +580,7 @@ class otherCost extends React.Component {
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  場所" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-costRegistration" id="stationCode5" />
+												<input placeholder="  場所" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode5" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode5" />
 											</div>
 										)}
 									/>
@@ -529,7 +591,7 @@ class otherCost extends React.Component {
 									<InputGroup.Prepend>
 										<InputGroup.Text id="threeKanji">料金</InputGroup.Text>
 									</InputGroup.Prepend>
-									<FormControl value={cost2} name='cost2' maxLength='7' onChange={(e) => this.costValueChange(e)}  value={this.state.cost2} placeholder="例：XXXXX" autoComplete="off" type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
+									<FormControl value={cost2} name='cost2' maxLength='7' style={this.state.errorItem === "cost2" ? {borderColor: "red"} : {borderColor: ""}} onChange={(e) => this.costValueChange(e)}  value={this.state.cost2} placeholder="例：XXXXX" autoComplete="off" type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
 								</InputGroup>
 							</Col>
 							<Col></Col>

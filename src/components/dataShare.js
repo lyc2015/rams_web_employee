@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faUpload,faDownload, faSave, faEdit, faTrash} from '@fortawesome/free-solid-svg-icons';
 import * as publicUtils from './utils/publicUtils.js';
 import store from './redux/store';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import MyToast from './myToast';
 axios.defaults.withCredentials = true;
 
@@ -44,6 +45,8 @@ class dataShare extends React.Component {
 			rowFilePath : event.target.value === "0" ? "" : [],
 			rowShareStatus: event.target.value === "0" ? "" : [],
 			rowClickFlag: true,
+			employeeNo: null,
+			employeeName: null,
 			[event.target.name]: event.target.value
 		},() => {
 			this.searchData(this.state.fileNo);
@@ -63,6 +66,7 @@ class dataShare extends React.Component {
 		dataStatus: '0',
 		yearAndMonth: null,
 		shareStatusAll : [{code:"0",value:"upload済み"},{code:"1",value:"共有済み"},{code:"2",value:"upload済み"},{code:"3",value:"承認済み"}],
+		employeeNameDrop: store.getState().dropDown[38].slice(1),
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
 	
@@ -120,7 +124,9 @@ class dataShare extends React.Component {
     searchData = (fileNo) => {
     	let model = {
     			dataStatus: this.state.dataStatus,
-    			updateTime: this.state.yearAndMonth === null ? null : this.state.yearAndMonth.getFullYear() + (this.state.yearAndMonth.getMonth() + 1).toString().padStart(2, "0") + "00"
+    			shareUser: this.state.employeeName,
+    			updateTime: this.state.yearAndMonth === null ? null : this.state.yearAndMonth.getFullYear() + (this.state.yearAndMonth.getMonth() + 1).toString().padStart(2, "0") + "00",
+    			nextMonthTime: this.state.yearAndMonth === null ? null : this.state.yearAndMonth.getFullYear() + (this.state.yearAndMonth.getMonth() + 2).toString().padStart(2, "0") + "00",
     			}
     	
     	axios.post(this.state.serverIP + "dataShare/selectDataShareFile", model)
@@ -141,7 +147,7 @@ class dataShare extends React.Component {
 			
 			let rowNo = this.state.rowNo;
 			
-			if(this.state.rowNo !== ''){
+			if(this.state.rowNo !== '' && data.length > 0){
 				if(this.state.rowNo > data.length){
 					this.setState({ 
 						rowShareStatus: data[data.length - 1].shareStatus,
@@ -407,6 +413,24 @@ class dataShare extends React.Component {
 		}
 	}
 	
+	employeeNameChange = (event, values) => {
+        if (values !== null) {
+        	this.setState({
+                employeeNo: values.code,
+                employeeName: values.text,
+            }, () => {
+    			this.searchData(this.state.fileNo);
+            })
+        }else{
+        	this.setState({
+                employeeNo: null,
+                employeeName: null,
+            }, () => {
+    			this.searchData(this.state.fileNo);
+            })
+        }
+	}
+	
 	render() {
 		const {dataShareList} = this.state;
 		// テーブルの行の選択
@@ -437,6 +461,7 @@ class dataShare extends React.Component {
 			approvalBtn: this.createCustomApprovalButton,
 			onApprovalRow: this.onApprovalRow,
 			handleConfirmApprovalRow: this.customConfirm,
+			sortIndicator: false, // 隐藏初始排序箭头
 		};
 		return (
 			<div>
@@ -488,6 +513,35 @@ class dataShare extends React.Component {
 								/>
 							</InputGroup>
 						</Col>
+						
+						<Col style={{marginLeft:"-120px"}} hidden={this.state.dataStatus === "0"}>
+							<InputGroup size="sm" className="mb-3">
+				                <InputGroup.Prepend>
+									<InputGroup.Text >社員</InputGroup.Text>
+								</InputGroup.Prepend>
+								<Autocomplete
+									id="employeeNo"
+		                            name="employeeNo"
+		                            value={this.state.employeeNameDrop.find(v => v.code === this.state.employeeNo) || {}}
+		                            options={this.state.employeeNameDrop}
+		                            getOptionDisabled={(option) => option.name}
+		                            getOptionLabel={(option) => option.text}
+		                            onChange={(event, values) => this.employeeNameChange(event, values)}
+		                            renderOption={(option) => {
+		                                return (
+		                                    <React.Fragment>
+		                                        {option.name}
+		                                    </React.Fragment>
+		                                )
+		                            }}
+		                            renderInput={(params) => (
+		                                <div ref={params.InputProps.ref}>
+		                                    <input placeholder="  例：佐藤真一" type="text" {...params.inputProps} className="auto form-control Autocompletestyle-salaryDetailSend" />
+		                                </div>
+		                            )}
+								/>
+							</InputGroup>
+					</Col>
                 	</Row>
 					<Row>
                         <Col sm={4}>
@@ -511,10 +565,11 @@ class dataShare extends React.Component {
                     </Row>
 					<Col >
 					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey>番号</TableHeaderColumn>
-						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' >日付</TableHeaderColumn>
+						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey dataSort>番号</TableHeaderColumn>
+						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } }   dataField='employeeNo' dataSort>社員番号</TableHeaderColumn>
+						<TableHeaderColumn width='35%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='15%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
+						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' dataSort>日付</TableHeaderColumn>
 						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus'>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>

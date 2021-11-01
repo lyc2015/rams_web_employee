@@ -691,7 +691,7 @@ P-mark：第21004525(02)号
 	                <Col>
 	                	<InputGroup size="sm" className="mb-3">
 			                <InputGroup.Prepend>
-								<InputGroup.Text id="sanKanji">社員</InputGroup.Text>
+								<InputGroup.Text id="inputGroup-sizing-sm">社員</InputGroup.Text>
 							</InputGroup.Prepend>
 							<Autocomplete
 								id="employeeNo"
