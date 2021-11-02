@@ -61,9 +61,11 @@ class workRepot extends React.Component {
 			.then((data) => {
 				if (data.length!=0) {
 					for(var i=0;i<data.length;i++){
-						if(data[i].workingTimeReport!=null){
+						if(data[i].workingTimeReport != null){
 							let fileName=data[i].workingTimeReport.split("/");
-							data[i].workingTimeReportFile=fileName[fileName.length-1];
+							data[i].workingTimeReportFile = fileName[fileName.length-1];
+						}else{
+							data[i].workingTimeReportFile = "ファイルをアップロードしてください"
 						}
 					}
 				} else {
@@ -189,7 +191,7 @@ class workRepot extends React.Component {
 				{	
 					rowId: '',
 					rowSelectWorkingTimeReport: '',
-					rowSelectAttendanceYearAndMonth: '',
+					//rowSelectAttendanceYearAndMonth: '',
 					rowSelectSumWorkTime: '',
 					rowSelectapproval: '',
 					rowApprovalStatus: '',

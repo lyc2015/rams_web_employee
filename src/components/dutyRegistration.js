@@ -348,7 +348,8 @@ class DutyRegistration extends React.Component {
 							breakTimeFlag: false,
 						});
 					} else {
-						alert("休憩時間を登録してください。");
+						if(!this.state.disabledFlag)
+							alert("休憩時間を登録してください。");
 						this.setState({
 							breakTimeFlag: true,
 						});
@@ -545,29 +546,39 @@ class DutyRegistration extends React.Component {
 	}
 	startTimeFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && !this.state.disabledFlag && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
 			//returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="startTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
 			returnItem = (
 			<div>
+				<Row style={{padding: "0px",margin: "0px"}}>
+				<Col style={{padding: "0px",margin: "0px"}}>
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
-					<select class=" form-control editor edit-select" name="startTimeHours" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+					<select class=" form-control editor edit-select" name="startTimeHours" value={row.startTimeHours} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.hours.map(date =>
 						<option key={date} value={date}>
 							{date}
 						</option>)}
 					</select>
 				</span>
-				
+				</Col>
+				<font style={{padding: "0px",margin: "0px"}} hidden={(row.startTimeHours === null || row.startTimeHours === "" ||row.startTimeHours === "00") && (row.startTimeMinutes === null || row.startTimeMinutes === "" || row.startTimeMinutes === "00")}>
+				：
+				</font>
+				<Col style={{padding: "0px",margin: "0px"}}>
 				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
-					<select class=" form-control editor edit-select" name="startTimeMinutes" value={cell} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+					<select class=" form-control editor edit-select" name="startTimeMinutes" value={row.startTimeMinutes} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.minutes.map(date =>
 						<option key={date} value={date}>
 							{date}
 						</option>)}
 					</select>
 				</span>
+				</Col>
+				</Row>
 			</div>
 			)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell === ":" ? "" : cell}</span>)
 		}
 		return returnItem;
 	}
@@ -612,8 +623,37 @@ class DutyRegistration extends React.Component {
 	
 	endTimeFormatter = (cell, row) => {
 		let returnItem = cell;
-		if (!this.state.isConfirmedPage && !this.state.disabledFlag && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
-			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="endTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
+			returnItem =
+			(<div>
+				<Row style={{padding: "0px",margin: "0px"}}>
+				<Col style={{padding: "0px",margin: "0px"}}>
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="endTimeHours" value={row.endTimeHours} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.hours.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+				</Col>
+				<font style={{padding: "0px",margin: "0px"}} hidden={(row.endTimeHours === null || row.endTimeHours === "" ||row.endTimeHours === "00") && (row.endTimeMinutes === null || row.endTimeMinutes === "" || row.endTimeMinutes === "00")}>
+				：
+				</font>
+				<Col style={{padding: "0px",margin: "0px"}}>
+				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+					<select class=" form-control editor edit-select" name="endTimeMinutes" value={row.endTimeMinutes} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
+						{this.state.minutes.map(date =>
+						<option key={date} value={date}>
+							{date}
+						</option>)}
+					</select>
+				</span>
+				</Col>
+				</Row>
+			</div>)
+		}else{
+			returnItem = (<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >&nbsp;{cell === ":" ? "" : cell}</span>)
 		}
 		return returnItem;
 	}
@@ -966,12 +1006,14 @@ class DutyRegistration extends React.Component {
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='50' dataField='hasWork' dataFormat={this.hasWorkFormatter} >勤務</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='30' dataField='day' isKey>日</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='40' dataField='week' >曜日</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='startTime' dataFormat={this.startTimeFormatter} hidden>作業開始時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderRight: 'none' }} width='50' dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderLeft: 'none' }} width='50' dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em' }} width='100' dataField='endTime' dataFormat={this.endTimeFormatter} hidden>作業終了時刻</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderRight: 'none' }} width='50' dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
-									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black', borderLeft: 'none' }} width='50' dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
+									
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black'}} width='100' dataField='startTime' dataFormat={this.startTimeFormatter}>出勤時間</TableHeaderColumn>
+									<TableHeaderColumn hidden dataField='startTimeHours' dataFormat={this.startTimeHoursFormatter}>開始時</TableHeaderColumn>
+									<TableHeaderColumn hidden dataField='startTimeMinutes' dataFormat={this.startTimeMinutesFormatter}>開始分</TableHeaderColumn>
+									
+									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black'}} width='100' dataField='endTime' dataFormat={this.endTimeFormatter}>退勤時間</TableHeaderColumn>
+									<TableHeaderColumn hidden dataField='endTimeHours' dataFormat={this.endTimeHoursFormatter} >終了時</TableHeaderColumn>
+									<TableHeaderColumn hidden dataField='endTimeMinutes' dataFormat={this.endTimeMinutesFormatter} >終了分</TableHeaderColumn>
 
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='70' dataField='sleepHour' dataFormat={this.sleepHourFormatter} hidden >休憩時間</TableHeaderColumn>
 									<TableHeaderColumn tdStyle={{ padding: '.20em', border: '0.01rem solid black' }} width='60' dataField='workHour'  dataFormat={this.workHourFormatter}>作業時間</TableHeaderColumn>
