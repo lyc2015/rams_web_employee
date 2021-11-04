@@ -431,6 +431,28 @@ class dataShare extends React.Component {
         }
 	}
 	
+	nameReset = () => {
+		var model = {};
+		model["fileNo"] = this.state.fileNo;
+		model["fileName"] = this.state.dataShareList[this.state.rowNo - 1].fileName;
+		model["filePath"] = this.state.dataShareList[this.state.rowNo - 1].filePath;
+
+		axios.post(this.state.serverIP + "dataShare/updateFileName",model)
+		.then(response => {
+			if (response.data != null && response.data.flag) {
+				this.setState({
+					rowFilePath: response.data.newFilePath,
+				},()=>{
+						this.searchData();
+					})
+				this.setState({ "myToastShow": true, message: "更新成功！", });
+				setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+			} else {
+				alert("err")
+			}
+		});
+	}
+	
 	render() {
 		const {dataShareList} = this.state;
 		// テーブルの行の選択
@@ -463,6 +485,11 @@ class dataShare extends React.Component {
 			handleConfirmApprovalRow: this.customConfirm,
 			sortIndicator: false, // 隐藏初始排序箭头
 		};
+		
+		const cellEdit = {
+				mode: 'click',
+				blurToSave: true,
+			}
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -552,7 +579,10 @@ class dataShare extends React.Component {
 								<Button variant="info" size="sm" onClick={this.selectAll} disabled={this.state.dataStatus === "0"} hidden={this.state.dataStatus === "0"}>すべて選択</Button>{' '}
 								<Button variant="info" size="sm" onClick={this.state.dataStatus === "0" ? publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP) : this.downLoad} id="workRepotDownload" disabled={this.state.rowShareStatus === "" || this.state.rowShareStatus.length === 0}>
 	                          		 <FontAwesomeIcon icon={faDownload} /> Download
-		                        </Button>
+		                        </Button>{' '}
+								<Button variant="info" size="sm" onClick={this.nameReset} disabled={this.state.rowClickFlag}>
+									<FontAwesomeIcon icon={faUpload} />ファイル名修正
+								</Button>
 	 						</div>
 						</Col>
                         <Col sm={8}>
@@ -564,13 +594,13 @@ class dataShare extends React.Component {
 					</Col>
                     </Row>
 					<Col >
-					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey dataSort>番号</TableHeaderColumn>
-						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } }   dataField='employeeNo' dataSort>社員番号</TableHeaderColumn>
-						<TableHeaderColumn width='35%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='15%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' dataSort>日付</TableHeaderColumn>
-						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus'>ステータス</TableHeaderColumn>
+					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} cellEdit={cellEdit} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
+						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' editable={false} isKey dataSort>番号</TableHeaderColumn>
+						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } }   dataField='employeeNo' editable={false} dataSort>社員番号</TableHeaderColumn>
+						<TableHeaderColumn width='35%' tdStyle={ { padding: '.45em' } }   dataField='fileName' editColumnClassName="dutyRegistration-DataTableEditingCell">ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='15%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' editable={false} >共有者</TableHeaderColumn>
+						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false} dataSort>日付</TableHeaderColumn>
+						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus' editable={false}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
 				</div>

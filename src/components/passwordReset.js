@@ -38,7 +38,7 @@ class passwordReset extends Component {
             .then(resultMap =>{
                 if(resultMap.data === 0){
                     alert("パスワードリセット成功しました");
-                    this.props.history.push("/login2");
+                    this.props.history.push("/");
                 }else if(resultMap.data === 1){
                     alert("パスワードリセット失敗しました");
                 }else if(resultMap.data === 2){
@@ -56,19 +56,20 @@ class passwordReset extends Component {
     render() {
         return (
             <div className="mainBody">
+            	<br/>
                 <Row inline="true">
                     <Col  className="text-center">
                     <h2>パースワードリセット</h2>
                     </Col>
                 </Row>
-                <Row>
-                </Row>
+                <br/>
                 <Form id="passwordSetForm" className="passwordForm">
                 <Row>
-                    <Col>
+                <Col sm={2}></Col>
+                    <Col sm={8}>
                         <InputGroup size="sm" className="mb-3">
                             <InputGroup.Prepend>
-                                <InputGroup.Text>パスワード設定{'\u00A0'}{'\u00A0'}{'\u00A0'}</InputGroup.Text>
+                                <InputGroup.Text id="nineKanji">パスワード設定{'\u00A0'}{'\u00A0'}{'\u00A0'}</InputGroup.Text>
                             </InputGroup.Prepend>
                                 <Form.Control type="password" id="newPassword" name="newPassword" />
                         </InputGroup>
@@ -77,10 +78,11 @@ class passwordReset extends Component {
 				                >★</font>
                 </Row>
                 <Row>
-                    <Col>
+                <Col sm={2}></Col>
+                    <Col sm={8}>
                         <InputGroup size="sm" className="mb-3">
                             <InputGroup.Prepend>
-                                <InputGroup.Text>パスワード再確認</InputGroup.Text>
+                                <InputGroup.Text id="nineKanji">パスワード再確認</InputGroup.Text>
                             </InputGroup.Prepend>
                                 <Form.Control type="password" id="passwordCheck"a name="passwordCheck" />
                         </InputGroup>                       
@@ -91,7 +93,7 @@ class passwordReset extends Component {
                     <Col sm={4}></Col>
                         <Col sm={4} className="text-center">
                                 <Button block size="sm" variant="info" onClick={this.passwordReset} id="toroku" type="button">
-                                <FontAwesomeIcon icon={faEdit} />パスワードリセット
+                                	<FontAwesomeIcon icon={faEdit} />パスワードリセット
                                 </Button>
                         </Col>
                 </Row>

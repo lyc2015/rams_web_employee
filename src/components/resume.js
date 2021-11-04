@@ -76,7 +76,7 @@ class resume extends React.Component {
 			this.setState({ "errorsMessageShow": true, "method": "put", "message": "変更ありません" });
 			return;
 		}
-		if (this.state.employeeList[0].filePath != undefined) {
+		/*if (this.state.employeeList[0].filePath != undefined) {
 			if (!a.test(this.state.employeeList[0].resumeName1)){
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名修正してください" });
 				return;
@@ -87,7 +87,21 @@ class resume extends React.Component {
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名修正してください" });
 				return;
 			}
+		}*/
+		if(!(this.state.employeeList[0].resumeInfo1 === undefined || this.state.employeeList[0].resumeInfo1 === null || this.state.employeeList[0].resumeInfo1 === "")){
+			if(this.state.employeeList[0].resumeName1 === undefined || this.state.employeeList[0].resumeName1 === null || this.state.employeeList[0].resumeName1 === ""){
+				this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名を入力してください。" });
+				return;
+			}
 		}
+
+		if(!(this.state.employeeList[1].resumeInfo1 === undefined || this.state.employeeList[1].resumeInfo1 === null || this.state.employeeList[1].resumeInfo1 === "")){
+			if(this.state.employeeList[1].resumeName1 === undefined || this.state.employeeList[1].resumeName1 === null || this.state.employeeList[1].resumeName1 === ""){
+				this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名を入力してください。" });
+				return;
+			}
+		}
+		
 		if (this.state.employeeList[0].resumeName1 === this.state.employeeList[1].resumeName1) {
 			this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名が同じです" });
 			return;
@@ -185,6 +199,7 @@ class resume extends React.Component {
 		data[row.rowNo - 1]["filePath"] = filePath;
 		data[row.rowNo - 1]["haveFile"] = true;
 		if (!row.fileSts) {
+			data[row.rowNo - 1]["resumeInfo1"] = this.state.employeeName+"_";
 			data[row.rowNo - 1]["resumeName1"] = this.state.employeeName+"_";
 		}
 		this.setState({
@@ -205,7 +220,7 @@ class resume extends React.Component {
 };
 	resumeNameChange = (event, cell, row) => {
 		let data = this.state.employeeList;
-		var a = new RegExp("^" + this.state.employeeName + "_")
+		/*var a = new RegExp("^" + this.state.employeeName + "_")
 		var b = new RegExp(".*[\u4e00-\u9fa5]+.*$")
 		if (b.test((event.target.value).substring((this.state.employeeName + "_").length))) {
 			alert("漢字は使えません")
@@ -222,7 +237,7 @@ class resume extends React.Component {
 				employeeList: data,
 			})
 			return;
-		}
+		}*/
 		data[row.rowNo - 1][event.target.name] = event.target.value;
 		this.setState({
 			haveChange: true,

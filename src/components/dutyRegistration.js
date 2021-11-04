@@ -837,14 +837,33 @@ class DutyRegistration extends React.Component {
 			now = String(new Date().getFullYear()) + (new Date().getMonth()).toString().padStart(2, "0");
 		}
 
-		this.setState({
-			yearMonth: date,
-			year: year,
-			month: month,
-			disabledFlag: temp < now,
-		}, () => {
-	    	this.getWorkData();
-		});
+		let disabledFlag = temp < now;
+		if(temp === now){
+			let postData = {
+    				yearMonth: temp,
+    			}
+        	axios.post(this.state.serverIP + "dutyRegistration/getFlag",postData)
+			.then(response => {
+				disabledFlag = response.data.flag;
+				this.setState({
+					yearMonth: date,
+					year: year,
+					month: month,
+					disabledFlag: disabledFlag,
+				}, () => {
+			    	this.getWorkData();
+				});
+			});
+		}else{
+			this.setState({
+				yearMonth: date,
+				year: year,
+				month: month,
+				disabledFlag: disabledFlag,
+			}, () => {
+		    	this.getWorkData();
+			});
+		}
 	}
 
 	render() {

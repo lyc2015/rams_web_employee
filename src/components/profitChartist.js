@@ -266,10 +266,10 @@ class profitChartist extends Component {
 									spGrossProfitTotal[i] = utils.addComma(spGrossProfitTotal[i]);
 									bpGrossProfitTotal[i] = utils.addComma(bpGrossProfitTotal[i]);
 
-									textData.push("稼働人数<br/><div style='color:blue'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+									textData.push("稼働人数<br/><div style='color:#25C2B7'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 												  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 												  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")</div><br/>" + 
-												  "<div style='color:red'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+												  "<div style='color:#FD6FC4'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 												  "2.事業主：" + spGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spGrossProfitPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 												  "3.BP：" + bpGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpGrossProfitPercent[i] + "(" + bpPeoData[i] + ")</div>");
 								}
@@ -419,10 +419,10 @@ class profitChartist extends Component {
 									spGrossProfitTotal[i] = utils.addComma(spGrossProfitTotal[i]);
 									bpGrossProfitTotal[i] = utils.addComma(bpGrossProfitTotal[i]);
 
-									textData.push("稼働人数<br/><div style='color:blue'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+									textData.push("稼働人数<br/><div style='color:#25C2B7'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 												  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 												  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")</div><br/>" + 
-												  "<div style='color:red'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+												  "<div style='color:#FD6FC4'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 												  "2.事業主：" + spGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spGrossProfitPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 												  "3.BP：" + bpGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpGrossProfitPercent[i] + "(" + bpPeoData[i] + ")</div>");
 								}
@@ -517,10 +517,10 @@ class profitChartist extends Component {
 							grossProfitTotal[i] = parseInt(response.data.data[i].grossProfit / 100000);
 							
 							countPeoData[i] = response.data.data[i].workPeoSum;
-							textData.push("稼働人数<br/><div style='color:blue'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+							textData.push("稼働人数<br/><div style='color:#25C2B7'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 									  	  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 									  	  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")</div><br/>" + 
-										  "<div style='color:red'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+										  "<div style='color:#FD6FC4'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 										  "2.事業主：" + spGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spGrossProfitPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 										  "3.BP：" + bpGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpGrossProfitPercent[i] + "(" + bpPeoData[i] + ")</div>");
 	                    }
@@ -622,10 +622,10 @@ class profitChartist extends Component {
 							unitPirceTotal[i] = parseInt(unitPirceTotal[i] / 100000);
 							grossProfitTotal[i] = parseInt(grossProfitTotal[i] / 100000);
 							
-							textData.push("稼働人数<br/><div style='color:blue'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+							textData.push("稼働人数<br/><div style='color:#25C2B7'>売上：<br/>1.社員：" + employeeTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeePercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 								  	  "2.事業主：" + spTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 								  	  "3.BP：" + bpTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpPercent[i] + "(" + bpPeoData[i] + ")<br/></div>" + 
-									  "<div style='color:red'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
+									  "<div style='color:#FD6FC4'>粗利：<br/>1.社員：" + employeeGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + employeeGrossProfitPercent[i] + "(" + employeePeoData[i] + ")<br/>" + 
 									  "2.事業主：" + spGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + spGrossProfitPercent[i] + "(" + spPeoData[i] + ")<br/>" + 
 									  "3.BP：" + bpGrossProfitTotal[i] + "<br/>&nbsp;&nbsp;&nbsp;比率：" + bpGrossProfitPercent[i] + "(" + bpPeoData[i] + ")</div>");
 						}
@@ -1015,7 +1015,7 @@ class profitChartist extends Component {
                     name: this.state.targetStatus !== '3' ? '売上' : '稼働',
                     type:'bar',
                     barWidth: this.state.targetStatus === '2' ? '70%' : '30%',
-                    color: 'blue',
+                    color: '#25C2B7',
                     label: {
                     	show: true,
                     	position: 'top',
@@ -1027,7 +1027,7 @@ class profitChartist extends Component {
                     name:this.state.targetStatus !== '3' ? '純利益' : '非稼働',
                     type:'bar',
                     barWidth: this.state.targetStatus === '2' ? '70%' : '30%',
-                    color: '#D25050',
+                    color: '#FD6FC4',
                     label: {
                     	show: true,
                     	position: 'top',

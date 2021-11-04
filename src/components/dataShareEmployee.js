@@ -64,6 +64,7 @@ class dataShareEmployee extends React.Component {
 		dataStatus: "0",
 		addDisabledFlag: false,
 		rowClickFlag: true,
+		editFlag: false,
 		rowNo: '',
 		rowFilePath : '',
 		rowShareStatus: '',
@@ -108,10 +109,12 @@ class dataShareEmployee extends React.Component {
 			if(row.shareUser === "" || (row.shareUser === (this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName) && row.shareStatus === "2")){
 				this.setState({
 					rowClickFlag: false,
+					editFlag: true,
 				})
 			}else{
 				this.setState({
 					rowClickFlag: true,
+					editFlag: false,
 				})
 			}
 		} else {
@@ -121,6 +124,7 @@ class dataShareEmployee extends React.Component {
 				rowFilePath: '',
 				rowShareStatus: '',
 				rowClickFlag: true,
+				editFlag: false,
 			})
 		}
 	}
@@ -249,6 +253,38 @@ class dataShareEmployee extends React.Component {
         }
 	}
 	
+	//onChange
+	tableValueChange = (event, cell, row) => {
+		let dataShareList = this.state.dataShareList;
+		dataShareList[row.rowNo - 1][event.target.name] = event.target.value;
+
+		this.setState({
+			dataShareList: dataShareList
+		})
+	}
+	
+	nameReset = () => {
+		var model = {};
+		model["fileNo"] = this.state.fileNo;
+		model["fileName"] = this.state.dataShareList[this.state.rowNo - 1].fileName;
+		model["filePath"] = this.state.dataShareList[this.state.rowNo - 1].filePath;
+
+		axios.post(this.state.serverIP + "dataShare/updateFileName",model)
+		.then(response => {
+			if (response.data != null && response.data.flag) {
+				this.setState({
+					rowFilePath: response.data.newFilePath,
+				},()=>{
+						this.searchData();
+					})
+				this.setState({ "myToastShow": true, message: "更新成功！", });
+				setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+			} else {
+				alert("err")
+			}
+		});
+	}
+	
 	render() {
 		const {dataShareList} = this.state;
 		// テーブルの行の選択
@@ -280,11 +316,11 @@ class dataShareEmployee extends React.Component {
 			onApprovalRow: this.onApprovalRow,
 			handleConfirmApprovalRow: this.customConfirm,
 		};
+		
 		const cellEdit = {
-			mode: 'click',
-			blurToSave: true,
-			afterSaveCell: this.sumWorkTimeChange,
-		}
+				mode: 'click',
+				blurToSave: true,
+			}
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -322,6 +358,9 @@ class dataShareEmployee extends React.Component {
 		                    <div>
 		                       <Button variant="info" size="sm" title="複数のファイルは一つのzip化にしてください。" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
 									<FontAwesomeIcon icon={faUpload} />Upload
+								</Button>{' '}
+								<Button variant="info" size="sm" onClick={this.nameReset} disabled={this.state.rowClickFlag}>
+									<FontAwesomeIcon icon={faUpload} />ファイル名修正
 								</Button>
 							</div>
 						</Col>
@@ -336,12 +375,12 @@ class dataShareEmployee extends React.Component {
 						</Col>
                     </Row>
 					<Col >
-					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey>番号</TableHeaderColumn>
-						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' >ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' >日付</TableHeaderColumn>
-						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus'>ステータス</TableHeaderColumn>
+					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} cellEdit={cellEdit} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
+						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' editable={false} isKey>番号</TableHeaderColumn>
+						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' editColumnClassName="dutyRegistration-DataTableEditingCell" editable={this.state.editFlag}>ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' editable={false}>共有者</TableHeaderColumn>
+						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false}>日付</TableHeaderColumn>
+						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus' editable={false}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
 				</div>

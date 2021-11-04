@@ -15,7 +15,7 @@ class Login2 extends Component {
 	state = {
 		yztime: 59,
 		btnDisable: false,
-		time: 60,
+		time: 180,
 		buttonText: "パスワード忘れたの場合",
 		message: '',
 		type: '',
@@ -132,7 +132,7 @@ class Login2 extends Component {
 				clearInterval(timeChange);
 				this.setState({
 					btnDisable: false,
-					time: 60,
+					time: 180,
 					buttonText: "パスワード忘れたの場合",
 				});
 			}
@@ -141,6 +141,7 @@ class Login2 extends Component {
 		const sendMail = () => {
 			var loginModel = {};
 			loginModel["employeeNo"] = $("#employeeNo").val();
+			loginModel["serverIP"] = this.state.serverIP;
 			axios.post(this.state.serverIP + "login2/sendMail", loginModel)
 				.then(result => {
 					if (result.data.errorsMessage !== null && result.data.errorsMessage !== undefined) {
@@ -150,7 +151,7 @@ class Login2 extends Component {
 						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 						this.setState({
 							btnDisable: true,
-							buttonText: "60s後再発行",
+							buttonText: "180s後再発行",
 						});
 						$("#verificationCode").attr("readOnly", false);
 						$("#login").attr("disabled", false);
