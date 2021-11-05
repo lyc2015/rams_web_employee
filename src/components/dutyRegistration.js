@@ -22,8 +22,7 @@ import { string } from 'prop-types';
 axios.defaults.withCredentials = true;
 
 /**
- * 勤務->勤務登録 の画面
- * 20201019 謝
+ * 勤務->勤務登録 の画面 20201019 謝
  */
 class DutyRegistration extends React.Component {
 	constructor(props) {
@@ -39,14 +38,16 @@ class DutyRegistration extends React.Component {
 			yearMonth: new Date(),
 			year: new Date().getFullYear(),
 			month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
-			//			status: {sleep2sleep: 0 ,work2work: 1, sleep2work: 2, work2sleep: 3},
+			// status: {sleep2sleep: 0 ,work2work: 1, sleep2work: 2, work2sleep:
+			// 3},
 			workDays: 0,
 			workHours: 0,
 			isConfirmedPage: false,
 			disabledFlag: false,
 			breakTimeFlag: false,
 			breakTime: {},
-			serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],//劉林涛　テスト
+			serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],// 劉林涛
+																						// テスト
 			sleepHour: 0,
 			loading: true,
 		}
@@ -66,18 +67,20 @@ class DutyRegistration extends React.Component {
 		};
 		this.valueChange = this.valueChange.bind(this);
 	}
-	//onChange
+	// onChange
 	valueChange = event => {
 		this.setState({
 			[event.target.name]: event.target.value
 		})
 	}
-	//onChange
+	// onChange
 	tableValueChange = (event, cell, row) => {
 		let dataData = this.state.dateData;
-		/* 		if (publicUtils.isNull(event.target.dataset["beforevalue"])) {
-					event.target.dataset["beforevalue"] = dataData[row.id][event.target.name];
-				} */
+		/*
+		 * if (publicUtils.isNull(event.target.dataset["beforevalue"])) {
+		 * event.target.dataset["beforevalue"] =
+		 * dataData[row.id][event.target.name]; }
+		 */
 		dataData[row.id][event.target.name] = event.target.value;
 
 		if (dataData[row.id]["hasWork"] === this.state.hasWork[0]) {
@@ -108,7 +111,7 @@ class DutyRegistration extends React.Component {
 			dateData: dataData
 		})
 	}
-	//onChangeAfter
+	// onChangeAfter
 	tableValueChangeAfter = (event, cell, row) => {
 
 		this.setTableStyle(row.id);
@@ -238,11 +241,11 @@ class DutyRegistration extends React.Component {
 			}
 		}
 	}
-	//リセット化
+	// リセット化
 	resetState = {
 		siteCustomer: "",
 	};
-	//初期化メソッド
+	// 初期化メソッド
 	componentDidMount() {
 		this.getWorkData();
 	}
@@ -298,7 +301,7 @@ class DutyRegistration extends React.Component {
 						if (publicUtils.isNull(resultMap.data.breakTime)) {
 							resultMap.data.breakTime = {};
 						}
-						//					console.log(resultMap.data);
+						// console.log(resultMap.data);
 						if (!publicUtils.isNull(resultMap.data.breakTime) && resultMap.data.breakTime["breakTimeFixedStatus"] === "1" && resultMap.data.breakTime !== "0") {
 							sleepHour = resultMap.data.breakTime["totalBreakTime"];
 						}
@@ -359,21 +362,32 @@ class DutyRegistration extends React.Component {
 				.catch(function (e) {
 					alert("error");
 				})
+		
+		axios.post(this.state.serverIP + "dutyRegistration/selectWorkRepot",postData)
+		.then(response => response.data)
+		.then((data) => {
+			if(data){
+				alert("作業報告書データすでに存在しています、クリアしてください。")
+			}
+			this.setState({ 
+				disabledFlag: data
+			})
+		});
 	}
 	/**
-	* 小さい画面の閉め 
-	*/
+	 * 小さい画面の閉め
+	 */
 	handleHideModal = (kbn) => {
-		if (kbn === "breakTime") {//PW設定
+		if (kbn === "breakTime") {// PW設定
 			this.setState({ showbreakTimeModal: false })
 		}
 	}
 
 	/**
- 　　　* 小さい画面の開き
-    */
+	 * * 小さい画面の開き
+	 */
 	handleShowModal = (kbn) => {
-		if (kbn === "breakTime") {//PW設定
+		if (kbn === "breakTime") {// PW設定
 			this.setState({ showbreakTimeModal: true })
 		}
 	}
@@ -405,7 +419,7 @@ class DutyRegistration extends React.Component {
 		dataInfo["siteResponsiblePerson"] = this.state.siteResponsiblePerson;
 		dataInfo["systemName"] = this.state.systemName;
 		let submitData = [];
-/* 		let j = 0; */
+/* let j = 0; */
 		let nowDay = new Date().getDate();
 		for (let i = 0; i < dataInfo["dateData"].length; i++) {
 			dataInfo["dateData"][i]["isWork"] = (dataInfo["dateData"][i]["hasWork"] == this.state.hasWork[0]) ? 0 : 1;
@@ -414,8 +428,9 @@ class DutyRegistration extends React.Component {
 			}
 			/* if (dataInfo["dateData"][i]["isChanged"]) { */
 				submitData[i] = JSON.parse(JSON.stringify(dataInfo["dateData"][i]));
-/* 				j++;
-			} */
+/*
+ * j++; }
+ */
 		}
 		dataInfo["dateData"] = submitData;
 		console.log(dataInfo);
@@ -436,7 +451,7 @@ class DutyRegistration extends React.Component {
 						this.setState({ "errorsMessageShow": true, errorsMessageValue: "更新失敗！", });
 						setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 					}
-					//window.location.reload();
+					// window.location.reload();
 					this.onBack();
 					this.getWorkData();
 				})
@@ -447,8 +462,8 @@ class DutyRegistration extends React.Component {
 		}
 	}
 	beforeSubmit = (event) => {
-		//		let arrWorkContent = $("input[name=workContent]");
-		//		console.log(arrWorkContent[0].value);
+		// let arrWorkContent = $("input[name=workContent]");
+		// console.log(arrWorkContent[0].value);
 		let errorMessage = "";
 		let nowDay = new Date().getDate();
 	
@@ -514,7 +529,7 @@ class DutyRegistration extends React.Component {
 			.then(resultMap => {
 				if (resultMap.data) {
 					publicUtils.handleDownload(resultMap.data, this.state.serverIP);
-					//			        alert(resultMap.data);
+					// alert(resultMap.data);
 				} else {
 					alert("更新失败");
 				}
@@ -547,12 +562,17 @@ class DutyRegistration extends React.Component {
 	startTimeFormatter = (cell, row) => {
 		let returnItem = cell;
 		if (!this.state.isConfirmedPage && !this.state.disabledFlag && row.confirmFlag !== "1" && this.state.dateData[row.id].hasWork === this.state.hasWork[1]) {
-			//returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="startTime" value={cell} maxLength="5" onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.tableValueChangeAfter(event, cell, row)} /></span>;
+			// returnItem = <span
+			// class="dutyRegistration-DataTableEditingCell"><input type="text"
+			// class=" form-control editor edit-text" name="startTime"
+			// value={cell} maxLength="5" onChange={(event) =>
+			// this.tableValueChange(event, cell, row)} onBlur={(event) =>
+			// this.tableValueChangeAfter(event, cell, row)} /></span>;
 			returnItem = (
 			<div>
 				<Row style={{padding: "0px",margin: "0px"}}>
 				<Col style={{padding: "0px",margin: "0px"}}>
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"}  >
 					<select class=" form-control editor edit-select" name="startTimeHours" value={row.startTimeHours} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.hours.map(date =>
 						<option key={date} value={date}>
@@ -565,7 +585,7 @@ class DutyRegistration extends React.Component {
 				：
 				</font>
 				<Col style={{padding: "0px",margin: "0px"}}>
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"}  >
 					<select class=" form-control editor edit-select" name="startTimeMinutes" value={row.startTimeMinutes} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.minutes.map(date =>
 						<option key={date} value={date}>
@@ -628,7 +648,7 @@ class DutyRegistration extends React.Component {
 			(<div>
 				<Row style={{padding: "0px",margin: "0px"}}>
 				<Col style={{padding: "0px",margin: "0px"}}>
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="endTimeHours" value={row.endTimeHours} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.hours.map(date =>
 						<option key={date} value={date}>
@@ -641,7 +661,7 @@ class DutyRegistration extends React.Component {
 				：
 				</font>
 				<Col style={{padding: "0px",margin: "0px"}}>
-				<span id={"dutyDataRowNumber-" + row.id} class="dutyRegistration-DataTableEditingCell" >
+				<span id={"dutyDataRowNumber-" + row.id} class={row.errorFlag === "Time" ? "dutyRegistration-DataTableEditingCellError" : "dutyRegistration-DataTableEditingCell"} >
 					<select class=" form-control editor edit-select" name="endTimeMinutes" value={row.endTimeMinutes} onChange={(event) => { this.tableValueChange(event, cell, row); this.tableValueChangeAfter(event, cell, row) }} >
 						{this.state.minutes.map(date =>
 						<option key={date} value={date}>
@@ -790,7 +810,7 @@ class DutyRegistration extends React.Component {
         this.props.history.push(path);
     }
     
-	//行Selectファンクション
+	// 行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
 		if(row.confirmFlag === "1"){
 			if (isSelected) {
@@ -884,8 +904,8 @@ class DutyRegistration extends React.Component {
 					<MyToast myToastShow={this.state.myToastShow} message={this.state.message} type={"success"} />
 				</div>
 				<div>
-					{/*　 開始 */}
-					{/*　 休憩時間 */}
+					{/* 開始 */}
+					{/* 休憩時間 */}
 					<Modal aria-labelledby="contained-modal-title-vcenter" centered backdrop="static"
 						onHide={this.handleHideModal.bind(this, "breakTime")} show={this.state.showbreakTimeModal} dialogClassName="modal-breakTime">
 						<Modal.Header closeButton>
@@ -895,26 +915,34 @@ class DutyRegistration extends React.Component {
 						</Modal.Body>
 					</Modal>
 					{/* 終了 */}
-					{/*　 休憩時間 ボタン*/}
-					{/* 					<div style={{ "textAlign": "center" }}>
-						<Button size="sm" className="btn btn-info btn-sm" onClick={this.handleShowModal.bind(this, "breakTime")}>休憩時間</Button>{' '}
-					</div> */}
+					{/* 休憩時間 ボタン */}
+					{/*
+						 * <div style={{ "textAlign": "center" }}> <Button
+						 * size="sm" className="btn btn-info btn-sm"
+						 * onClick={this.handleShowModal.bind(this,
+						 * "breakTime")}>休憩時間</Button>{' '} </div>
+						 */}
 				</div>
 				<div>
 					<Form.Group>
 						<Row>
-							{/*<Col sm={3} hidden>
-								<InputGroup size="sm" className="mb-3">
-									<input style={{ width: "150px" }} value={this.state.siteCustomer} name="siteCustomer" onChange={this.valueChange} className="inputWithoutBorder" />
-									&nbsp;御中
-								</InputGroup>
-							</Col>
-							<Col sm={3} md={{ span: 3, offset: 6 }} hidden>
-								<InputGroup size="sm" className="mb-3">
-									会社名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<input style={{ width: "150px" }} value={this.state.customer} name="customer" onChange={this.valueChange} className="inputWithoutBorder" />
-								</InputGroup>
-							</Col>*/}
+							{/*
+								 * <Col sm={3} hidden> <InputGroup size="sm"
+								 * className="mb-3"> <input style={{ width:
+								 * "150px" }} value={this.state.siteCustomer}
+								 * name="siteCustomer"
+								 * onChange={this.valueChange}
+								 * className="inputWithoutBorder" /> &nbsp;御中
+								 * </InputGroup> </Col> <Col sm={3} md={{ span:
+								 * 3, offset: 6 }} hidden> <InputGroup size="sm"
+								 * className="mb-3">
+								 * 会社名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								 * <input style={{ width: "150px" }}
+								 * value={this.state.customer} name="customer"
+								 * onChange={this.valueChange}
+								 * className="inputWithoutBorder" />
+								 * </InputGroup> </Col>
+								 */}
 							<Col sm={3}>
 								<InputGroup size="sm" className="mb-3">
 									<Form.Control type="text" value={this.state.siteCustomer} disabled={this.state.disabledFlag || this.state.isConfirmedPage} name="siteCustomer" autoComplete="off" size="sm" onChange={this.valueChange} />
@@ -954,9 +982,11 @@ class DutyRegistration extends React.Component {
 								/>
 								<h3>作業報告書</h3>
 								</InputGroup.Append>
-								{/*<span size="lg" className="mb-3">
-									{this.state.year}年{this.state.month}月　
-								</span>*/}
+								{/*
+									 * <span size="lg" className="mb-3">
+									 * {this.state.year}年{this.state.month}月
+									 * </span>
+									 */}
 							</Col>
 							<Col sm={3} md={{ span: 3, offset: 1 }} hidden>
 								<InputGroup size="sm" className="mb-3">
@@ -975,18 +1005,23 @@ class DutyRegistration extends React.Component {
 							</Col>
 						</Row>
 						<Row>
-							{/*<Col sm={3} hidden>
-								<InputGroup size="sm" className="mb-3">
-									業務名称&nbsp;
-									<input style={{ width: "120px" }} value={this.state.systemName} name="systemName" onChange={this.valueChange} className="inputWithoutBorder" />
-								</InputGroup>
-							</Col>
-							<Col sm={3} md={{ span: 3, offset: 6 }} hidden>
-								<InputGroup size="sm" className="mb-3">
-									作業担当者&nbsp;
-									<input style={{ width: "150px" }} value={this.state.employeeName} name="employeeName" onChange={this.valueChange} className="inputWithoutBorder" disabled />
-								</InputGroup>
-							</Col>*/}
+							{/*
+								 * <Col sm={3} hidden> <InputGroup size="sm"
+								 * className="mb-3"> 業務名称&nbsp; <input style={{
+								 * width: "120px" }}
+								 * value={this.state.systemName}
+								 * name="systemName" onChange={this.valueChange}
+								 * className="inputWithoutBorder" />
+								 * </InputGroup> </Col> <Col sm={3} md={{ span:
+								 * 3, offset: 6 }} hidden> <InputGroup size="sm"
+								 * className="mb-3"> 作業担当者&nbsp; <input style={{
+								 * width: "150px" }}
+								 * value={this.state.employeeName}
+								 * name="employeeName"
+								 * onChange={this.valueChange}
+								 * className="inputWithoutBorder" disabled />
+								 * </InputGroup> </Col>
+								 */}
 							<Col sm={3}>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>

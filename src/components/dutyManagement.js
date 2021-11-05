@@ -49,6 +49,7 @@ class dutyManagement extends React.Component {
 		})
 		this.setState({
 			rowSelectEmployeeNo: "",
+			rowSelectEmployeeName: "",
 		})
 		this.refs.table.setState({
 			selectedRowKeys: []
@@ -67,11 +68,13 @@ class dutyManagement extends React.Component {
 		averageWorkingTime:"",
 		totalWorkingTime: "",
 		rowSelectEmployeeNo: "",
+		rowSelectEmployeeName: "",
 		authorityCode: "",
 		rowWorkTime: '',
 		rowApprovalStatus: '',
 		rowSelectWorkingTimeReport: '',
 		rowDownload: "",
+		loading: true,
 		approvalStatuslist: store.getState().dropDown[27],
 		checkSectionlist: store.getState().dropDown[28],
 		costClassification: store.getState().dropDown[30],
@@ -159,6 +162,7 @@ class dutyManagement extends React.Component {
 					if(rowNo > response.data.length){
 						this.setState({
 							rowSelectEmployeeNo: "",
+							rowSelectEmployeeName: "",
 						})
 						this.refs.table.setState({
 							selectedRowKeys: []
@@ -187,6 +191,7 @@ class dutyManagement extends React.Component {
 				if(!flag){
 					this.setState({
 						rowSelectEmployeeNo: "",
+						rowSelectEmployeeName: "",
 					})
 					this.refs.table.setState({
 						selectedRowKeys: []
@@ -244,6 +249,9 @@ class dutyManagement extends React.Component {
 			month: date.getMonth() + 1,
 		});
 		$("#datePicker").val(date);
+		this.refs.table.setState({
+			selectedRowKeys: []
+		});
 		this.searchDutyManagement();
 	};
 	
@@ -262,6 +270,7 @@ class dutyManagement extends React.Component {
 				{
 					rowNo:row.rowNo,
 					rowSelectEmployeeNo: row.employeeNo,
+					rowSelectEmployeeName: row.employeeName,
 					rowSelectCheckSection: row.checkSection,
 					rowSelectDeductionsAndOvertimePay: row.deductionsAndOvertimePay,
 					rowSelectDeductionsAndOvertimePayOfUnitPrice: row.deductionsAndOvertimePayOfUnitPrice,
@@ -291,6 +300,7 @@ class dutyManagement extends React.Component {
 				{
 					rowNo: '',
 					rowSelectEmployeeNo: '',
+					rowSelectEmployeeName: '',
 					rowSelectCheckSection: '',
 					rowSelectDeductionsAndOvertimePay: '',
 					rowSelectDdeductionsAndOvertimePayOfUnitPrice: '',
@@ -411,11 +421,28 @@ class dutyManagement extends React.Component {
 		return row.costClassificationCode === "0" ? "transportationExpenses" : "otherCost";
 	}
 	
-	test = () => {
-		/*this.refs.table.store.selected = ["LYC001"]
-		this.refs.table.setState({
-			selectedRowKeys: ["LYC001"]
-		});*/
+	downloadTest = () => {
+		if(this.state.rowSelectWorkingTimeReport === undefined || this.state.rowSelectWorkingTimeReport === null || this.state.rowSelectWorkingTimeReport === ""){
+			this.setState({ loading: false, });
+			let dataInfo = {};
+			dataInfo["yearMonth"] = String(this.state.yearAndMonth.getFullYear()) + String(this.state.yearAndMonth.getMonth() + 1);
+			dataInfo["employeeName"] = this.state.rowSelectEmployeeName;
+			axios.post(this.state.serverIP + "dutyRegistration/downloadPDF", dataInfo)
+				.then(resultMap => {
+					if (resultMap.data) {
+						publicUtils.handleDownload(resultMap.data, this.state.serverIP);
+					} else {
+						alert("download失败");
+					}
+					this.setState({ loading: true, });
+				})
+				.catch(function () {
+					alert("download错误，请检查程序");
+					this.setState({ loading: true, });
+				});
+		}else{
+			publicUtils.handleDownload(this.state.rowSelectWorkingTimeReport, this.state.serverIP);
+		}
 	}
 	
 	costFormat = (cell,row) => {
@@ -440,7 +467,7 @@ class dutyManagement extends React.Component {
             overlay={
             <Popover className="popoverC">
                 <Popover.Content >
-                <div onClick={this.test}>
+                <div>
                     <Row>
 	                    <Col style={{"padding": "0px","marginTop": "10px"}}>
 		                	<font>{this.state.month + "月"}</font>
@@ -623,7 +650,7 @@ class dutyManagement extends React.Component {
 
                         <Col sm={3}>
                             <div style={{ "float": "right" }}>
-		                        <Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowSelectWorkingTimeReport, this.state.serverIP)} id="workRepot">
+		                        <Button variant="info" size="sm" onClick={this.downloadTest} id="workRepot">
 		                     		 <FontAwesomeIcon icon={faDownload} />報告書
 		                       </Button>{' '}
 	                            <Button variant="info" size="sm" id="update" onClick={this.listApproval.bind(this,2)}>
@@ -653,6 +680,7 @@ class dutyManagement extends React.Component {
 						</BootstrapTable>
 					</Col>  
 				</div>
+		         <div className='loadingImage' hidden={this.state.loading} style = {{"position": "absolute","top":"60%","left":"60%","margin-left":"-200px", "margin-top":"-150px",}}></div>
 			</div >
 		);
 	}

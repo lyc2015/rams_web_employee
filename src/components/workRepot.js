@@ -28,6 +28,7 @@ class workRepot extends React.Component {
 		$("#workRepotUpload").attr("disabled",true);
 		$("#workRepotDownload").attr("disabled",true);
 		$("#workRepotClear").attr("disabled",true);
+		this.selectWorkTime();
 		this.searchWorkRepot();
 	}
 	//onchange
@@ -36,11 +37,30 @@ class workRepot extends React.Component {
 			[event.target.name]: event.target.value
 		})
 	}
+	selectWorkTime = () => {
+		let now = new Date();
+		let dataInfo = {};
+		dataInfo["attendanceYearAndMonth"] = String(now.getFullYear()) + String(now.getMonth() + 1);
+		axios.post(this.state.serverIP + "workRepot/selectWorkTime",dataInfo)
+		.then(response => response.data)
+		.then((data) => {
+			let disabledFlag = this.state.disabledFlag;
+			if (data != null) {
+				disabledFlag[0] = data.nowMonth;
+				disabledFlag[1] = data.lastMonth;
+			}
+			this.setState({ 
+				disabledFlag: disabledFlag
+			})
+		});
+	}
+	
 	//　初期化データ
 	initialState = {
 		employeeList: [],
 		rowApprovalStatus: '',
 		approvalStatuslist: [{code:"0",name: "アップロード済み"},{code:"1",name: "承認済み"}],
+		disabledFlag: [false,false],
 		costClassificationCode: store.getState().dropDown[30],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
@@ -67,6 +87,10 @@ class workRepot extends React.Component {
 						}else{
 							data[i].workingTimeReportFile = "ファイルをアップロードしてください"
 						}
+						if(i < 2 && this.state.disabledFlag[i]){
+							data[i].disabledFlag = true;
+							data[i].workingTimeReportFile = "勤務時間データすでに存在しています"
+						}
 					}
 				} else {
 					data.push({"approvalStatus":0,"approvalStatusName":"アップロード済み","attendanceYearAndMonth":publicUtils.setFullYearMonth(new Date())});
@@ -78,6 +102,8 @@ class workRepot extends React.Component {
 	};
 	//　変更
 	sumWorkTimeChange = (sumWorkTime) =>{
+		if(sumWorkTime === null || sumWorkTime === "")
+			return;
 		if(sumWorkTime !== null){
 			if(sumWorkTime.length > 6){
 				alert("稼働時間をチェックしてください。");
@@ -156,7 +182,10 @@ class workRepot extends React.Component {
     }
 	getFile=()=>{
 		if(this.state.rowSelectSumWorkTime === undefined || this.state.rowSelectSumWorkTime === null || this.state.rowSelectSumWorkTime === "")
-			alert("稼働時間を入力してください。")
+			if(this.state.rowDisabledFlag)
+				alert("勤務時間データすでに存在しているため、初期化してください。")
+			else
+				alert("稼働時間を入力してください。")
 		else
 			$("#getFile").click();
 	}
@@ -175,6 +204,7 @@ class workRepot extends React.Component {
 					rowSelectSumWorkTime: row.sumWorkTime,
 					rowSelectapproval:row.attendanceYearAndMonth-0>=TheYearMonth && row.approvalStatus !== "1"?true:false,
 					rowApprovalStatus: row.approvalStatus,
+					rowDisabledFlag: row.disabledFlag,
 				}
 			);
 			if(row.attendanceYearAndMonth-0>=TheYearMonth && row.approvalStatus !== "1"){
@@ -195,6 +225,7 @@ class workRepot extends React.Component {
 					rowSelectSumWorkTime: '',
 					rowSelectapproval: '',
 					rowApprovalStatus: '',
+					rowDisabledFlag: false,
 				}
 			);
 		}
@@ -280,7 +311,7 @@ class workRepot extends React.Component {
 	sumWorkTimeFormatter = (cell, row) => {
 		let returnItem = cell;
 		let lastMonth = new Date(new Date().getFullYear(),new Date().getMonth(),0)
-		if(row.approvalStatus !== "1" && Number(row.attendanceYearAndMonth) >= Number(lastMonth.getFullYear() + (lastMonth.getMonth() + 1).toString().padStart(2, "0")))
+		if((row.id < 2 && !this.state.disabledFlag[row.id] )&& row.approvalStatus !== "1" && Number(row.attendanceYearAndMonth) >= Number(lastMonth.getFullYear() + (lastMonth.getMonth() + 1).toString().padStart(2, "0")))
 			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sumWorkTime" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.sumWorkTimeChange(cell)} /></span>;
 		return returnItem;
 	}
