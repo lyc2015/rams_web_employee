@@ -15,7 +15,7 @@ class mainIn extends Component {
         return (
             <Router>
                 <>
-                    <Route exact path="/" component={Gate} />
+                    <Route exact path="/" component={LoginEmployee} />
                     <Route path="/loginManager" component={LoginManager} />
                     <Route path="/loginEmployee" component={LoginEmployee} />
                     <Route path="/subMenuManager" component={SubMenuManager} />
