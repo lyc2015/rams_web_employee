@@ -29,7 +29,6 @@ class workRepot extends React.Component {
 		$("#workRepotDownload").attr("disabled",true);
 		$("#workRepotClear").attr("disabled",true);
 		this.selectWorkTime();
-		this.searchWorkRepot();
 	}
 	//onchange
 	valueChange = event => {
@@ -51,6 +50,8 @@ class workRepot extends React.Component {
 			}
 			this.setState({ 
 				disabledFlag: disabledFlag
+			},() => {
+				this.searchWorkRepot();
 			})
 		});
 	}
@@ -64,9 +65,13 @@ class workRepot extends React.Component {
 		costClassificationCode: store.getState().dropDown[30],
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
-	approvalStatus(code,row) {
+	approvalStatus = (code,row) => {
+		if(row.workingTimeReportFile === "勤務時間データすでに存在しています")
+			return "";
 		if(row.sumWorkTime === "" || row.sumWorkTime === null)
 			return "";
+		if(row.workingTimeReportFile === "ファイルをアップロードしてください")
+			return "時間入力済み";
 		let approvalStatuss = this.state.approvalStatuslist;
         for (var i in approvalStatuss) {
             if (code === approvalStatuss[i].code) {
@@ -316,6 +321,13 @@ class workRepot extends React.Component {
 		return returnItem;
 	}
 	
+	fileNameFormatter = (cell) => {
+		if(cell === "勤務時間データすでに存在しています")
+			return <font style={{color: "red"}}>勤務時間データすでに存在しています</font>;
+		else
+			return cell
+	}
+	
 	render() {
 		const {employeeList} = this.state;
 		//　テーブルの行の選択
@@ -387,11 +399,11 @@ class workRepot extends React.Component {
 					<Col >
 					<BootstrapTable data={employeeList} ref="table" pagination={true}  options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
 						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth'  isKey>年月</TableHeaderColumn>
-						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' >ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' dataFormat={this.fileNameFormatter}>ファイル名</TableHeaderColumn>
 						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }   dataField='sumWorkTime' dataFormat={this.sumWorkTimeFormatter}>稼働時間（必）</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' >登録者</TableHeaderColumn>
 						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime'  dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
-						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus'  dataFormat={this.approvalStatus.bind(this)}>ステータス</TableHeaderColumn>
+						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus'  dataFormat={this.approvalStatus}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
 				</div>

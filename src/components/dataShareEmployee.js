@@ -35,7 +35,7 @@ class dataShareEmployee extends React.Component {
 				})
 			})
 			.catch(function(error) {
-				alert(error);
+				//alert(error);
 			});
 	}
 	
@@ -64,7 +64,6 @@ class dataShareEmployee extends React.Component {
 		dataStatus: "0",
 		addDisabledFlag: false,
 		rowClickFlag: true,
-		editFlag: false,
 		rowNo: '',
 		rowFilePath : '',
 		rowShareStatus: '',
@@ -93,6 +92,9 @@ class dataShareEmployee extends React.Component {
 			this.setState({ 
 				dataShareList: data,
 				addDisabledFlag: false,
+				rowShareStatus: "",
+				rowChangeFlag: false,
+				rowClickFlag: true,
 			})
 		});
     }
@@ -105,16 +107,15 @@ class dataShareEmployee extends React.Component {
 				fileNo: row.fileNo,
 				rowFilePath: row.filePath,
 				rowShareStatus: row.shareStatus,
+				rowChangeFlag: row.changeFlag,
 			})
 			if(row.shareUser === "" || (row.shareUser === (this.state.loginUserInfo[0].employeeFristName + this.state.loginUserInfo[0].employeeLastName) && row.shareStatus === "2")){
 				this.setState({
 					rowClickFlag: false,
-					editFlag: true,
 				})
 			}else{
 				this.setState({
 					rowClickFlag: true,
-					editFlag: false,
 				})
 			}
 		} else {
@@ -124,7 +125,7 @@ class dataShareEmployee extends React.Component {
 				rowFilePath: '',
 				rowShareStatus: '',
 				rowClickFlag: true,
-				editFlag: false,
+				rowChangeFlag: false,
 			})
 		}
 	}
@@ -263,7 +264,22 @@ class dataShareEmployee extends React.Component {
 		})
 	}
 	
-	nameReset = () => {
+	
+	fileNameChange = () => {
+		let dataShareList = this.state.dataShareList;
+		dataShareList[this.state.rowNo - 1].changeFlag = true;
+		this.setState({
+			dataShareList: dataShareList,
+			rowChangeFlag: true,
+		});
+	}
+	
+	fileNameReset = () => {
+		if(this.state.dataShareList[this.state.rowNo - 1].fileName === null || this.state.dataShareList[this.state.rowNo - 1].fileName === ""){
+			alert("ファイル名を入力してください。")
+			return;
+		}
+			
 		var model = {};
 		model["fileNo"] = this.state.fileNo;
 		model["fileName"] = this.state.dataShareList[this.state.rowNo - 1].fileName;
@@ -274,6 +290,7 @@ class dataShareEmployee extends React.Component {
 			if (response.data != null && response.data.flag) {
 				this.setState({
 					rowFilePath: response.data.newFilePath,
+					rowChangeFlag: false,
 				},()=>{
 						this.searchData();
 					})
@@ -283,6 +300,14 @@ class dataShareEmployee extends React.Component {
 				alert("err")
 			}
 		});
+	}
+	
+	fileNameFormat = (cell,row) => {
+		if(row.changeFlag){
+			return (<span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="fileName" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} /></span>)
+		}else{
+			return cell;
+		}
 	}
 	
 	render() {
@@ -316,11 +341,6 @@ class dataShareEmployee extends React.Component {
 			onApprovalRow: this.onApprovalRow,
 			handleConfirmApprovalRow: this.customConfirm,
 		};
-		
-		const cellEdit = {
-				mode: 'click',
-				blurToSave: true,
-			}
 		return (
 			<div>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -359,8 +379,8 @@ class dataShareEmployee extends React.Component {
 		                       <Button variant="info" size="sm" title="複数のファイルは一つのzip化にしてください。" onClick={this.getFile} id="workRepotUpload" disabled={this.state.rowClickFlag}>
 									<FontAwesomeIcon icon={faUpload} />Upload
 								</Button>{' '}
-								<Button variant="info" size="sm" onClick={this.nameReset} disabled={this.state.rowClickFlag}>
-									<FontAwesomeIcon icon={faUpload} />ファイル名修正
+								<Button variant="info" size="sm" onClick={this.state.rowChangeFlag ? this.fileNameReset : this.fileNameChange} disabled={this.state.rowClickFlag || this.state.rowShareStatus === ""}>
+									<FontAwesomeIcon icon={faUpload} />{this.state.rowChangeFlag ? "ファイル名更新" : "ファイル名修正"}
 								</Button>
 							</div>
 						</Col>
@@ -375,12 +395,12 @@ class dataShareEmployee extends React.Component {
 						</Col>
                     </Row>
 					<Col >
-					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} cellEdit={cellEdit} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
-						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' editable={false} isKey>番号</TableHeaderColumn>
-						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' editColumnClassName="dutyRegistration-DataTableEditingCell" editable={this.state.editFlag}>ファイル名</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' editable={false}>共有者</TableHeaderColumn>
-						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime' editable={false}>日付</TableHeaderColumn>
-						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus' editable={false}>ステータス</TableHeaderColumn>
+					<BootstrapTable data={dataShareList} pagination={true}  ref='table' options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
+						<TableHeaderColumn width='10%'　tdStyle={ { padding: '.45em' } }   dataField='rowNo' isKey>番号</TableHeaderColumn>
+						<TableHeaderColumn width='40%' tdStyle={ { padding: '.45em' } }   dataField='fileName' dataFormat={this.fileNameFormat}>ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='shareUser' >共有者</TableHeaderColumn>
+						<TableHeaderColumn width='20%' tdStyle={ { padding: '.45em' } }   dataField='updateTime'>日付</TableHeaderColumn>
+						<TableHeaderColumn width='10%' tdStyle={ { padding: '.45em' } } dataFormat={this.shareStatus.bind(this)} dataField='shareStatus'>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
 				</div>

@@ -335,7 +335,7 @@ class otherCost extends React.Component {
 
 		} else if (this.state.costClassificationCode > 1) {
 			if (this.state.yearAndMonth == "" || this.state.yearAndMonth == null || this.state.detailedNameOrLine2 == "" ||
-				this.state.stationCode5 == "" || this.state.cost2 == "" || this.state.cost2 == null) {
+				(this.state.stationCode5 == "" && this.state.costClassificationCode != 4) || this.state.cost2 == "" || this.state.cost2 == null) {
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": this.costClassificationCode(this.state.costClassificationCode) + "関連の項目入力してください"  });
 				if(this.state.yearAndMonth == "" || this.state.yearAndMonth == null){
 					this.setState({ errorItem: "yearAndMonth" });
@@ -345,7 +345,7 @@ class otherCost extends React.Component {
 					this.setState({ errorItem: "detailedNameOrLine2" });
 					return;
 				}
-				if(this.state.stationCode5 == ""){
+				if(this.state.stationCode5 == "" && this.state.costClassificationCode != 4){
 					this.setState({ errorItem: "stationCode5" });
 					return;
 				}

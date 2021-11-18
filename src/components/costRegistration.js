@@ -232,7 +232,7 @@ class costRegistration extends React.Component {
 					this.resetBook();
 					this.searchCostRegistration();
 				} else {
-					this.setState({ "errorsMessageShow": true, "method": "put", "message": (this.state.regularStatus === "0" ? "定期通勤":"非定期通勤") + "データはすでに存在している" });
+					this.setState({ "errorsMessageShow": true, "method": "put", "message": (this.state.employeeList[0].regularStatus === "0" ? "定期通勤":"非定期通勤") + "データはすでに存在している" });
 					setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
 				}
 			}).catch((error) => {
