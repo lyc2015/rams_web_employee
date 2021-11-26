@@ -106,12 +106,17 @@ class workRepot extends React.Component {
 			});
 	};
 	//　変更
-	sumWorkTimeChange = (sumWorkTime) =>{
+	sumWorkTimeChange = (sumWorkTime, row) =>{
+		var re = /^[0-9]+.?[0-9]*/;
 		if(sumWorkTime === null || sumWorkTime === "")
 			return;
 		if(sumWorkTime !== null){
 			if(sumWorkTime.length > 6){
 				alert("稼働時間をチェックしてください。");
+				return;
+			}else if(!re.test(sumWorkTime)){
+				alert("数字のみを入力してください。");
+				row.sumWorkTime = "";
 				return;
 			}else{
 				if(sumWorkTime.split(".").length > 1){
@@ -317,7 +322,7 @@ class workRepot extends React.Component {
 		let returnItem = cell;
 		let lastMonth = new Date(new Date().getFullYear(),new Date().getMonth(),0)
 		if((row.id < 2 && !this.state.disabledFlag[row.id] )&& row.approvalStatus !== "1" && Number(row.attendanceYearAndMonth) >= Number(lastMonth.getFullYear() + (lastMonth.getMonth() + 1).toString().padStart(2, "0")))
-			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sumWorkTime" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.sumWorkTimeChange(cell)} /></span>;
+			returnItem = <span class="dutyRegistration-DataTableEditingCell"><input type="text" class=" form-control editor edit-text" name="sumWorkTime" value={cell} onChange={(event) => this.tableValueChange(event, cell, row)} onBlur={(event) => this.sumWorkTimeChange(cell, row)} /></span>;
 		return returnItem;
 	}
 	

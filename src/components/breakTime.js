@@ -36,7 +36,7 @@ class BreakTime extends Component {
             month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         };
 
-        for (var i = 0; i <= 13; i++) {
+        for (var i = 0; i <= 14; i++) {
             this.state.breakTimeDayHourStart[i] = i.toString();
             this.state.breakTimeDayHourEnd[i] = i.toString();
         }
@@ -50,7 +50,6 @@ class BreakTime extends Component {
             this.state.breakTimeNightMinuteStart[k] = k.toString();
             this.state.breakTimeNightMinuteEnd[k] = k.toString();
         }
-
     }
     /**
      * 画面の初期化
@@ -112,6 +111,15 @@ class BreakTime extends Component {
     }
     
     beferBreakTimeRegister = () => {
+    	if(Number($("#breakTimeDaybreakTimeHour").val()) <= 0){
+    		alert("昼休憩時間を0時間以上入力してください。")
+    		return;
+    	}
+    	if(Number($("#breakTimeNightbreakTimeHour").val()) <= 0){
+    		alert("夜休憩時間を0時間以上入力してください。")
+    		return;
+    	}
+    	
     	if(!this.state.flag){
 			var a = window.confirm("休憩時間更新すると、作業時間再計算します、よろしいでしょうか？");
 			if(a){
@@ -400,7 +408,7 @@ class BreakTime extends Component {
                             <Col sm={4}></Col>
                             <Col sm={4} className="text-center">
                                 <div >
-                                    <Button size="sm" className="btn btn-info btn-sm" onClick={this.beferBreakTimeRegister.bind(this)} variant="info" id="toroku" type="button">
+                                    <Button size="sm" className="btn btn-info btn-sm" onClick={this.beferBreakTimeRegister} variant="info" id="toroku" type="button">
                                         <FontAwesomeIcon icon={faSave} /> 登録
 										</Button>
 										&nbsp;&nbsp;
@@ -408,7 +416,7 @@ class BreakTime extends Component {
                                         <FontAwesomeIcon icon={faUndo} /> リセット
 										</Button>
 										&nbsp;&nbsp;
-                                        <Button size="sm" variant="info" type="button" onClick={this.back}>
+                                        <Button size="sm" variant="info" type="button" onClick={this.back} hidden={this.state.backPage === ""}>
         								<FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
         								</Button>
                                 </div>

@@ -26,6 +26,9 @@ class SubMenu extends Component {
     state = {
         nowDate: '',//今の期日
 		hover: '',
+		year: new Date().getFullYear(),
+		month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+		dutyRegistrationFlag: false,
         serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],//劉林涛　テスト
     }
     
@@ -43,6 +46,8 @@ class SubMenu extends Component {
      * 画面の初期化
      */
     componentDidMount() {
+		this.getDutyRegistrationFlag();
+
         var dateNow = new Date();
         let month = dateNow.getMonth() + 1;
         let day = dateNow.getDate();
@@ -51,6 +56,28 @@ class SubMenu extends Component {
             hover: '',click: "",
         })
     }
+    
+    getDutyRegistrationFlag = () => {
+		let postData = {
+				yearMonth: this.state.year + this.state.month,
+			}
+    	axios.post(this.state.serverIP + "dutyRegistration/selectWorkRepot",postData)
+		.then(response => response.data)
+		.then((data) => {
+			this.setState({ 
+				dutyRegistrationFlag: data
+			})
+		});
+		axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
+		.then(resultMap => {
+			if (resultMap.data.breakTime === null) {
+				this.setState({
+					breakTimeFlag: true,
+				});
+			}
+		})
+    }
+    
     logout = () => {
         axios.post(this.state.serverIP + "subMenuEmployee/logout")
             .then(resultMap => {
@@ -70,6 +97,27 @@ class SubMenu extends Component {
 			click:name,
 		})
 	}
+	
+	test = () => {
+		if(this.state.dutyRegistrationFlag){
+			alert("作業報告書データすでに存在しています、クリアしてください。")
+		}else{
+	         var sendValue = {
+	        		 flag: this.state.breakTimeFlag,
+	         };
+			if(this.state.breakTimeFlag){
+				alert("休憩時間を登録してください。")
+				this.shuseiTo({ pathname: '/subMenuEmployee/breakTime',
+					state: {
+ 						backPage: "",
+ 						sendValue: sendValue,
+ 					},})
+			}else{
+				this.shuseiTo({ pathname: '/subMenuEmployee/dutyRegistration'})
+			}
+		}
+	}
+	
     render() {
         //お客様情報画面の追加パラメータ
         var customerInfoPath = {
@@ -105,7 +153,7 @@ class SubMenu extends Component {
                     </div>
 
                 </Row>
-                <Row>
+                <Row onClick={() => this.getDutyRegistrationFlag()}>
                     <Col sm={2}>
                         <br />
                         <Row>
@@ -129,14 +177,11 @@ class SubMenu extends Component {
 											return <div>
 											<ListGroup>
 												<Accordion className="menuCol">
-													{/*<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-1")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/breakTime'})} block>
-														<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/breakTime', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faUserClock}/> 休憩時間</Link></div>
-													</ListGroup.Item>*/}
 													<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-1")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workRepot'})} block>
 														<div><Link className={this.state.hover.search("1") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/workRepot', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileExcel}/> 作業報告書</Link></div>
 													</ListGroup.Item>
-													<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-2")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/dutyRegistration'})} block>
-														<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/dutyRegistration', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faUserEdit}/> 勤務時間入力</Link></div>
+													<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-2")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.test} block>
+														<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '', state: { actionType: 'insert' } }} disabled><FontAwesomeIcon className="fa-fw" size="lg" icon={faUserEdit}/> 勤務時間入力</Link></div>
 													</ListGroup.Item>
 													<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-3")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/costRegistration'})} block>
 														<div><Link className={this.state.hover.search("3") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/costRegistration', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faMoneyCheckAlt}/> 費用登録</Link></div>
