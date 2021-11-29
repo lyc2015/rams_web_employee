@@ -463,13 +463,6 @@ class otherCost extends React.Component {
 								</InputGroup>
 							</Col>
 							<Col sm={6}>
-								<InputGroup size="sm" className="mb-3">
-									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">備考</InputGroup.Text>
-									</InputGroup.Prepend>
-									<FormControl placeholder="例：XXXXX" name="remark" value={this.state.remark} autoComplete="off" disabled={this.state.costClassificationCode === ""}
-										onChange={this.valueChange} type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm"/>
-								</InputGroup>
 							</Col>
 						</Row>
 						<Row>
@@ -595,6 +588,17 @@ class otherCost extends React.Component {
 								</InputGroup>
 							</Col>
 							<Col></Col>
+						</Row>
+						<Row>
+							<Col>
+								<InputGroup size="sm" className="mb-3">
+									<InputGroup.Prepend>
+										<InputGroup.Text id="threeKanji">備考</InputGroup.Text>
+									</InputGroup.Prepend>
+									<FormControl placeholder="例：XXXXX" name="remark" value={this.state.remark} autoComplete="off" disabled={this.state.costClassificationCode === ""} maxLength="20"
+										onChange={this.valueChange} type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm"/>
+								</InputGroup>
+							</Col>
 						</Row>
 					</Form.Group>
 					<div style={{ "textAlign": "center" }}>

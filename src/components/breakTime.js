@@ -36,11 +36,11 @@ class BreakTime extends Component {
             month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         };
 
-        for (var i = 0; i <= 14; i++) {
+        for (var i = 0; i < 24; i++) {
             this.state.breakTimeDayHourStart[i] = i.toString();
             this.state.breakTimeDayHourEnd[i] = i.toString();
         }
-        for (var j = 17; j < 24; j++) {
+        for (var j = 0; j < 24; j++) {
             this.state.breakTimeNightHourStart[j] = j.toString();
             this.state.breakTimeNightHourEnd[j] = j.toString();
         }
@@ -92,7 +92,7 @@ class BreakTime extends Component {
                 alert("error");
             })
     }
-    calculateTime() {
+    calculateTime = () => {
         var breakTimeDayHourStart = Number($("#breakTimeDayHourStart").val());
         var breakTimeDayHourEnd = Number($("#breakTimeDayHourEnd").val());
         var breakTimeDayMinuteStart = Number($("#breakTimeDayMinuteStart").val());
@@ -108,6 +108,12 @@ class BreakTime extends Component {
         $("#breakTimeDaybreakTimeHour").val(breakTimeDaybreakTimeHour / 60);
         $("#breakTimeNightbreakTimeHour").val(breakTimeNightbreakTimeHour / 60);
         $("#breakTimeSumHour").val(Number($("#breakTimeDaybreakTimeHour").val()) + Number($("#breakTimeNightbreakTimeHour").val()));
+        
+        this.setState({
+        	breakTimeDaybreakTimeHour: Number(breakTimeDaybreakTimeHour) / 60,
+            breakTimeNightbreakTimeHour: Number(breakTimeNightbreakTimeHour) / 60,
+            breakTimeSumHour: Number($("#breakTimeDaybreakTimeHour").val()) + Number($("#breakTimeNightbreakTimeHour").val()),
+        });
     }
     
     beferBreakTimeRegister = () => {

@@ -153,7 +153,7 @@ class SubMenu extends Component {
                     </div>
 
                 </Row>
-                <Row onClick={() => this.getDutyRegistrationFlag()}>
+                <Row /*onClick={() => this.getDutyRegistrationFlag()}*/>
                     <Col sm={2}>
                         <br />
                         <Row>
@@ -235,54 +235,6 @@ class SubMenu extends Component {
 										</ListGroup.Item>
 								</Accordion>
 								</ListGroup>
-                                {/*<ListGroup >
-                                    <Accordion className="menuCol">
-                                        <ListGroup.Item style={{ "backgroundColor": "#17a2b8" }} block>
-                                            <Accordion.Toggle as={Link} to="/subMenuEmployee/passwordSetEmployee" style={{ "marginLeft": "6%" }}>
-                                                <font className="linkFont"><FontAwesomeIcon className="fa-fw" size="lg" icon={faHistory} />ほかの設定</font></Accordion.Toggle>
-                                        </ListGroup.Item>
-                                        <ListGroup.Item style={{ "backgroundColor": "#1a94a8" }}>
-                                            <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                                                <font className="linkFont"><FontAwesomeIcon className="fa-fw" size="lg" icon={faFile} />勤務登録</font></Accordion.Toggle>
-                                            <Accordion.Collapse eventKey="0">
-                                                <ListGroup variant="flush">
-                                                    <ListGroup.Item style={{ "backgroundColor": "#1a94a8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/breakTime/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faThList} />休憩時間</Link></ListGroup.Item>
-                                                    <ListGroup.Item style={{ "backgroundColor": "#1a94a8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/dutyRegistration/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faThList} />勤務時間入力</Link></ListGroup.Item>
-                                                    <ListGroup.Item style={{ "backgroundColor": "#1a94a8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/costRegistration/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faSave} />費用登録</Link></ListGroup.Item>
-                                                    <ListGroup.Item style={{ "backgroundColor": "#1a94a8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faSearch} />履歴検索</Link></ListGroup.Item>
-                                                </ListGroup>
-                                            </Accordion.Collapse>
-                                        </ListGroup.Item>
-                                        
-
-											
-                                        <ListGroup.Item style={{ "backgroundColor": "#17a2b8" }}>
-                                            <Accordion.Toggle as={Button} variant="link" eventKey="1">
-                                                <font className="linkFont"><FontAwesomeIcon className="fa-fw" size="lg" icon={faFile} />ファイル管理</font></Accordion.Toggle>
-                                            <Accordion.Collapse eventKey="1">
-                                                <ListGroup variant="flush">
-                                                    <ListGroup.Item style={{ "backgroundColor": "#17a2b8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/workRepot/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faFileExcel} />作業報告書</Link></ListGroup.Item>
-                                                    <ListGroup.Item style={{ "backgroundColor": "#17a2b8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/resume/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faFileWord} />履歴書</Link></ListGroup.Item>
-                                                    <ListGroup.Item style={{ "backgroundColor": "#17a2b8" }}>
-                                                        <Link className="linkFont" to="/subMenuEmployee/workTimeSearch/">
-                                                            <FontAwesomeIcon className="fa-fw" size="lg" icon={faFileWord} />作業時間検索</Link></ListGroup.Item>
-                                                </ListGroup>
-                                            </Accordion.Collapse>
-                                        </ListGroup.Item>
-                                    </Accordion>
-                                </ListGroup>*/}
                             </Col>
                         </Row>
                     </Col>

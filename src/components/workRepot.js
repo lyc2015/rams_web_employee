@@ -117,6 +117,11 @@ class workRepot extends React.Component {
 			}else if(!re.test(sumWorkTime)){
 				alert("数字のみを入力してください。");
 				row.sumWorkTime = "";
+				let employeeList = this.state.employeeList;
+				employeeList[row.id].sumWorkTime = "";
+				this.setState({ 
+					employeeList: employeeList
+				})
 				return;
 			}else{
 				if(sumWorkTime.split(".").length > 1){

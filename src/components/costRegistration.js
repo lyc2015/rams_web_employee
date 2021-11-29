@@ -875,9 +875,6 @@ class costRegistration extends React.Component {
 									<FontAwesomeIcon icon={faUndo} /> Reset
 								</Button>{' '}
 								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
-								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={this.handleShowModal.bind(this)}>
-									<FontAwesomeIcon /> {" 他の費用"}
-								</Button>{' '}
 								<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
 							</div>
 						 </Col>
@@ -889,16 +886,17 @@ class costRegistration extends React.Component {
 									<font style={{ whiteSpace: 'nowrap' }}>総額：{this.state.sumCost}</font>
 								</div>
 							</Col>
-							<Col sm={6}><div style={{ "float": "center" }}>
-							</div></Col>
 							
-							<Col sm={2}>
+							<Col sm={8}>
 								<div style={{ "float": "right" }}>
-										<Button variant="info" size="sm" disabled={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={this.listChange} id="costRegistrationChange">
+										<Button variant="info" size="sm" hidden={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={this.listChange} id="costRegistrationChange">
 											<FontAwesomeIcon icon={faEdit} /> 修正
 										</Button>{' '}
 										<Button variant="info" size="sm" disabled={this.state.disabledFlag} onClick={this.listDel}id="costRegistrationDel">
 											<FontAwesomeIcon icon={faTrash} /> 削除
+										</Button>{' '}
+										<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={this.handleShowModal.bind(this)}>
+											<FontAwesomeIcon /> {" 他の費用"}
 										</Button>
 	 							</div>
 							</Col>
