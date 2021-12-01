@@ -121,7 +121,7 @@ class BreakTime extends Component {
     		alert("昼休憩時間を0時間以上入力してください。")
     		return;
     	}
-    	if(Number($("#breakTimeNightbreakTimeHour").val()) <= 0){
+    	if(Number($("#breakTimeNightbreakTimeHour").val()) < 0){
     		alert("夜休憩時間を0時間以上入力してください。")
     		return;
     	}

@@ -37,6 +37,7 @@ class costRegistration extends React.Component {
 		super(props);
 		this.state = this.initialState;//初期化
 		this.valueChange = this.valueChange.bind(this);
+		this.valueChangeOnlyNum = this.valueChangeOnlyNum.bind(this);
 		this.regularStatusChange = this.regularStatusChange.bind(this);
 		this.handleShowModal = this.handleShowModal.bind(this);
 		this.searchCostRegistration = this.searchCostRegistration.bind(this);
@@ -51,6 +52,20 @@ class costRegistration extends React.Component {
 	
 	//onchange
 	valueChange = event => {
+		this.setState({
+			[event.target.name]: event.target.value
+		})
+	}
+	
+	valueChangeOnlyNum = event => {
+		var re = /^[0-9]+$/;
+		var str = event.target.value;
+		if(str === null || str === ""){
+			
+		}
+		else if(!re.test(str)){
+			return;
+		}
 		this.setState({
 			[event.target.name]: event.target.value
 		})
@@ -161,11 +176,6 @@ class costRegistration extends React.Component {
 
 	//登録と修正
 	InsertCost = () => {
-	/*	if ($('#costRegistrationFile').val() == "" &&
-			!this.state.changeData) {
-			this.setState({ "errorsMessageShow": true, "method": "put", "message": "添付ファイルを入れてください" });
-			return;
-        }*/
 		const formData = new FormData()
 		if (this.state.cost === "" ||
 			this.state.stationCode1 == "" ||
@@ -207,8 +217,6 @@ class costRegistration extends React.Component {
 			costClassificationName: this.state.regularStatus === "0" ? "定期" : "非定期",
 			regularStatus: this.state.regularStatus,
 			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
-			//happendDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth1, true) : (publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01"),
-			//dueDate: this.state.regularStatus === "0" ? publicUtils.formateDate(this.state.yearAndMonth2, true) : null,
 			happendDate: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01",
 			dueDate: null,
 			transportationCode: this.state.stationCode1,
@@ -239,6 +247,7 @@ class costRegistration extends React.Component {
 				console.error("Error - " + error);
 			});
 	};
+	
 /**
 *修正ボタン
 */
@@ -352,7 +361,7 @@ class costRegistration extends React.Component {
 	};
 	//リセット　reset
 	resetStates = {
-		yearMonth: new Date(),regularStatus: "0",
+		/*yearMonth: new Date(),*/regularStatus: "0",
 		yearAndMonth1: null, yearAndMonth2: null, stationCode1: null, stationCode2: null, detailedNameOrLine: '',
 		cost: '', costRegistrationFile: null, changeData: false,oldCostClassification1: null,oldHappendDate1: null,
 		changeFile: false, costRegistrationFileFlag: false, costClassification1: null,rowSelectHappendDate: '',
@@ -411,6 +420,11 @@ class costRegistration extends React.Component {
 	addFile = (event) => {
 		$("#costRegistrationFile").click();
 	}
+	
+	addOtherFile = (event) => {
+		$("#otherFile").click();
+	}
+	
 	changeFile = (event) => {
 		var filePath = event.target.value;
 		var arr = filePath.split('\\');
@@ -428,6 +442,51 @@ class costRegistration extends React.Component {
 				})
 			}
 	}
+	
+	changeOtherFile = (event) => {
+		var filePath = event.target.value;
+		var arr = filePath.split('\\');
+		var fileName = arr[arr.length - 1];
+			this.setState({
+				otherFile: filePath,
+				otherFileName: fileName,
+			}, () => {
+				if (filePath != null) {
+					this.changeOtherCost()
+				}
+			})
+	}
+	
+	// 他の費用添付ファイル
+	changeOtherCost = () => {
+		const formData = new FormData()
+		
+		this.setState({ errorItem: "" });
+		var theUrl = "costRegistration/updateCostRegistration"
+
+		const emp = {
+			costClassificationCode: this.state.rowSelectCostClassificationCode,
+			happendDate: this.state.rowSelectHappendDate,
+		}
+		formData.append('emp', JSON.stringify(emp))
+		formData.append('costFile', publicUtils.nullToEmpty($('#otherFile').get(0).files[0]))
+		axios.post(this.state.serverIP + theUrl, formData)
+			.then(response => {
+				if (response.data) {
+					this.setState({changeData: false, "errorsMessageShow": false})
+					this.setState({ "myToastShow": true, "method": "put", "message": "添付成功!" });
+					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					this.resetBook();
+					this.searchCostRegistration();
+				} else {
+					this.setState({ "errorsMessageShow": true, "method": "put", "message": "添付失敗!" });
+					setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
+				}
+			}).catch((error) => {
+				console.error("Error - " + error);
+			});
+	};
+	
 	//行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
 		if (isSelected) {
@@ -845,7 +904,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.valueChange} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>
@@ -876,6 +935,7 @@ class costRegistration extends React.Component {
 								</Button>{' '}
 								<Button variant="info" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onClick={(event) => this.addFile(event)}><FontAwesomeIcon icon={faFile} />{this.state.costRegistrationFileFlag !== true ? " 添付    " : " 済み"}</Button>{' '}
 								<Form.File id="costRegistrationFile" hidden value={this.state.costRegistrationFile}  onChange={(event) => this.changeFile(event)} />
+								<Form.File id="otherFile" hidden value={this.state.otherFile}  onChange={(event) => this.changeOtherFile(event)} />
 							</div>
 						 </Col>
 					</Row>
@@ -889,6 +949,9 @@ class costRegistration extends React.Component {
 							
 							<Col sm={8}>
 								<div style={{ "float": "right" }}>
+										<Button size="sm" variant="info" type="reset" hidden={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={(event) => this.addOtherFile(event)}>
+											<FontAwesomeIcon icon={faFile} /> {"" === "" ? "添付" : "済み"}
+										</Button>{' '}
 										<Button variant="info" size="sm" hidden={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={this.listChange} id="costRegistrationChange">
 											<FontAwesomeIcon icon={faEdit} /> 修正
 										</Button>{' '}

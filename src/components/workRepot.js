@@ -145,7 +145,7 @@ class workRepot extends React.Component {
 			.then(response => {
 				if (response.data != null) {
 					this.searchWorkRepot();
-					this.setState({ "myToastShow": true, message: "アップロード成功！", });
+					this.setState({ "myToastShow": true, message: "更新成功！", });
 					this.setState({ rowSelectSumWorkTime: sumWorkTime, });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
 				} else {
