@@ -97,6 +97,16 @@ class workRepot extends React.Component {
 							data[i].workingTimeReportFile = "勤務時間データすでに存在しています"
 						}
 					}
+					if(this.state.rowId !== ""){
+						for(var i=0;i<data.length;i++){
+							if(String(data[i].id) === String(this.state.rowId)){
+								this.setState({ 
+									rowSelectWorkingTimeReport: data[i].workingTimeReport
+								})
+								break;
+							}
+						}
+					}
 				} else {
 					data.push({"approvalStatus":0,"approvalStatusName":"アップロード済み","attendanceYearAndMonth":publicUtils.setFullYearMonth(new Date())});
 					}
@@ -148,6 +158,7 @@ class workRepot extends React.Component {
 					this.setState({ "myToastShow": true, message: "更新成功！", });
 					this.setState({ rowSelectSumWorkTime: sumWorkTime, });
 					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+					setTimeout(() => window.location.reload(), 1000);
 				} else {
 					alert("err")
 				}
@@ -225,9 +236,6 @@ class workRepot extends React.Component {
 			if(row.attendanceYearAndMonth-0>=TheYearMonth && row.approvalStatus !== "1"){
 				$("#workRepotUpload").attr("disabled",false);
 			}
-			/*if(row.attendanceYearAndMonth-0>TheYearMonth){
-				$("#workRepotDownload").attr("disabled",true);
-			}*/
 		} else {
 			$("#workRepotUpload").attr("disabled",true);
 			$("#workRepotDownload").attr("disabled",true);
@@ -279,6 +287,7 @@ class workRepot extends React.Component {
 								this.searchWorkRepot();
 								this.setState({ "myToastShow": true, message: "クリア完成！",  });
 								setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+								setTimeout(() => window.location.reload(), 1000);
 							} else {
 								alert("err")
 							}

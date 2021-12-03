@@ -167,7 +167,7 @@ class BreakTime extends Component {
                     } else {
                         alert("更新失败");
                     }
-                    //window.location.reload();
+                    setTimeout(() => window.location.reload(), 1000);
                 })
                 .catch(function () {
                     alert("更新错误，请检查程序");

@@ -848,6 +848,7 @@ class DutyRegistration extends React.Component {
     			}
         	axios.post(this.state.serverIP + "dutyRegistration/clearData",postData)
 			.then(response => {
+				setTimeout(() => window.location.reload(), 1000);
 	        	this.getWorkData();
 			});
         }

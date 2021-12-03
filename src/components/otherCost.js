@@ -608,7 +608,7 @@ class otherCost extends React.Component {
 						<Button size="sm" variant="info" type="reset" onClick={this.resetBook}>
 							<FontAwesomeIcon icon={faUndo} /> Reset
 						</Button>{' '}
-						<Button size="sm" variant="info" type="reset" onClick={(event) => this.addFile(event, 'otherCostFile')} disabled={this.state.costClassificationCode === ""}>
+						<Button size="sm" variant="info" onClick={(event) => this.addFile(event, 'otherCostFile')} disabled={this.state.costClassificationCode === ""}>
 							<FontAwesomeIcon icon={faFile} /> {this.state.otherCostFilePath === "" ? "添付" : "済み"}
 						</Button>{' '}
 					</div>

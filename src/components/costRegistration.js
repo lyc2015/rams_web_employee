@@ -464,9 +464,14 @@ class costRegistration extends React.Component {
 		this.setState({ errorItem: "" });
 		var theUrl = "costRegistration/updateCostRegistration"
 
+		let costClassificationName = this.costClassificationCode(this.state.rowSelectCostClassificationCode);
 		const emp = {
+			costClassificationName: costClassificationName,
 			costClassificationCode: this.state.rowSelectCostClassificationCode,
 			happendDate: this.state.rowSelectHappendDate,
+			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
+			oldHappendDate: this.state.rowSelectHappendDate,
+			oldCostClassificationCode: this.state.rowSelectCostClassificationCode,
 		}
 		formData.append('emp', JSON.stringify(emp))
 		formData.append('costFile', publicUtils.nullToEmpty($('#otherFile').get(0).files[0]))
@@ -949,7 +954,7 @@ class costRegistration extends React.Component {
 							
 							<Col sm={8}>
 								<div style={{ "float": "right" }}>
-										<Button size="sm" variant="info" type="reset" hidden={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={(event) => this.addOtherFile(event)}>
+										<Button size="sm" variant="info" hidden={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={(event) => this.addOtherFile(event)}>
 											<FontAwesomeIcon icon={faFile} /> {"" === "" ? "添付" : "済み"}
 										</Button>{' '}
 										<Button variant="info" size="sm" hidden={this.state.disabledFlag || this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0"} onClick={this.listChange} id="costRegistrationChange">
