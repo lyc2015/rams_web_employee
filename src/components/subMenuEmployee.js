@@ -12,6 +12,7 @@ import { faHistory, faFile, faUser, faFileExcel, faFileWord, faSearch, faSave, f
 faAddressCard, faFolderOpen, faFileContract, faFileAlt, faMoneyCheckAlt, faUserEdit , faUserClock} from '@fortawesome/free-solid-svg-icons';
 import '../asserts/css/subMenu.css';
 import DutyRegistration from './dutyRegistration';
+import dutyManagement from './dutyManagement';
 import CostRegistration from './costRegistration';
 import Resume from './resume';
 import store from './redux/store';
