@@ -710,6 +710,16 @@ class costRegistration extends React.Component {
 		}
 	};
 	
+	test = (code) => {
+		let destinationCode = this.state.station;
+		for (var i in destinationCode) {
+			if (code == destinationCode[i].code) {
+				return destinationCode[i].name;
+			}
+		}
+		
+	}
+	
 	// 年月変更後、レコ＾ド再取る
 	setEndDate = (date) => {
 		if(date < new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1)).getTime()){
