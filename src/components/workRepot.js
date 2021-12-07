@@ -109,7 +109,7 @@ class workRepot extends React.Component {
 					}
 				} else {
 					data.push({"approvalStatus":0,"approvalStatusName":"アップロード済み","attendanceYearAndMonth":publicUtils.setFullYearMonth(new Date())});
-					}
+				}
 				this.setState({ 
 					employeeList: data
 				})

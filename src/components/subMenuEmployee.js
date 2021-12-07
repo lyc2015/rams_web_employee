@@ -119,6 +119,16 @@ class SubMenu extends Component {
 		}
 	}
 	
+	checkSession = () =>{
+		axios.post(this.state.serverIP + "subMenu/checkSession")
+		.then(resultMap => {
+			if (resultMap.data === null || resultMap.data === ''){
+				alert("セッションの有効期限が切れています。再度ログインを行なってください。")
+				this.props.history.push("/loginEmployee");
+			}
+		})
+	}
+	
     render() {
         //お客様情報画面の追加パラメータ
         var customerInfoPath = {
@@ -154,7 +164,7 @@ class SubMenu extends Component {
                     </div>
 
                 </Row>
-                <Row /*onClick={() => this.getDutyRegistrationFlag()}*/>
+                <Row  onClick={() => this.checkSession()}>
                     <Col sm={2}>
                         <br />
                         <Row>
