@@ -7,7 +7,8 @@ import * as utils from './utils/publicUtils.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faUndo, faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
 import store from './redux/store';
-
+import MyToast from './myToast';
+import ErrorsMessageToast from './errorsMessageToast';
 import '../asserts/css/style.css';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -163,9 +164,11 @@ class BreakTime extends Component {
             axios.post(this.state.serverIP + "dutyRegistration/breakTimeInsert", breakTimeInfo)
                 .then(resultMap => {
                     if (resultMap.data) {
-                        alert("更新成功");
+                    	this.setState({ "myToastShow": true, "method": "put", "message": "更新成功!" });
+    					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
                     } else {
-                        alert("更新失败");
+                    	this.setState({ "errorsMessageShow": true, "method": "put", "message": "更新失敗!" });
+    					setTimeout(() => this.setState({ "errorsMessageShow": false }), 3000);
                     }
                     setTimeout(() => window.location.reload(), 1000);
                 })
@@ -212,6 +215,12 @@ class BreakTime extends Component {
         const { actionType } = this.state;
         return (
             <div >
+				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
+					<MyToast myToastShow={this.state.myToastShow} message={this.state.message}  type={"success"} />
+				</div>
+				<div style={{ "display": this.state.errorsMessageShow ? "block" : "none" }}>
+					<ErrorsMessageToast errorsMessageShow={this.state.errorsMessageShow} message={this.state.message} type={"danger"} />
+				</div>
                 <div >
                     <Row inline="true">
                         <Col className="text-center">

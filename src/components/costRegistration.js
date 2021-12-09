@@ -205,6 +205,11 @@ class costRegistration extends React.Component {
 			this.setState({ errorItem: "cost" });
 			return;
 		}
+		if(Number(utils.deleteComma(this.state.cost)) <= 0){
+			this.setState({ "errorsMessageShow": true, "method": "put", "message": "料金は0以上を入力してください。" });
+			this.setState({ errorItem: "cost" });
+			return;
+		}
 		
 		this.setState({ errorItem: "" });
 		if (this.state.rowSelectCostClassificationCode === "0") {
@@ -222,7 +227,7 @@ class costRegistration extends React.Component {
 			transportationCode: this.state.stationCode1,
 			destinationCode: this.state.stationCode2,
 			detailedNameOrLine: this.state.detailedNameOrLine,
-			cost: utils.deleteComma(this.state.cost),
+			cost: Number(utils.deleteComma(this.state.cost)),
 			oldHappendDate: this.state.rowSelectHappendDate,
 			oldCostClassificationCode: 0,
 			oldCostFile: this.state.rowSelectCostFile,
@@ -859,9 +864,9 @@ class costRegistration extends React.Component {
 						<font style={{ marginRight: "30px" }}></font>
 						
 							<InputGroup.Prepend>
-								<InputGroup.Text id="inputGroup-sizing-sm">区分</InputGroup.Text>
+								<InputGroup.Text id="inputGroup-sizing-sm" title={"定期と非定期のどちらかしか入力できません。"}>区分</InputGroup.Text>
 							</InputGroup.Prepend>
-							<Form.Control id="regularStatus" as="select" size="sm" onChange={this.regularStatusChange} disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
+							<Form.Control id="regularStatus" as="select" size="sm" title={"定期と非定期のどちらかしか入力できません。"} onChange={this.regularStatusChange} disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
 								<option value="0">定期</option>
 								<option value="1">非定期</option>
 							</Form.Control>
@@ -919,7 +924,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" maxLength='20'　disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>

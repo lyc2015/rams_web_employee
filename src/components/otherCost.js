@@ -314,6 +314,11 @@ class otherCost extends React.Component {
 				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": "料金は半角数字のみ入力してください。" });
 				return;
 			}
+			if(Number(utils.deleteComma(this.state.cost1)) <= 0){
+				this.setState({ "errorsMessageShow": true, "method": "put", "message": "料金は0以上を入力してください。" });
+				this.setState({ errorItem: "cost1" });
+				return;
+			}
 			const emp = {
 				yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 				costClassificationName: this.costClassificationCode(this.state.costClassificationCode),
@@ -326,7 +331,7 @@ class otherCost extends React.Component {
 				originCode: this.state.stationCode3,
 				destinationCode: this.state.stationCode4,
 				remark: this.state.remark,
-				cost: utils.deleteComma(this.state.cost1),
+				cost: Number(utils.deleteComma(this.state.cost1)),
 				changeFile: this.state.changeFile,
 				oldCostFile: this.state.oldCostFile,
 			}
@@ -360,6 +365,11 @@ class otherCost extends React.Component {
 				this.setState({ "errorsMessageShow": true, "type": "fail", "method": "put", "message": "料金は半角数字のみ入力してください。" });
 				return;
 			}
+			if(Number(utils.deleteComma(this.state.cost2)) <= 0){
+				this.setState({ "errorsMessageShow": true, "method": "put", "message": "料金は0以上を入力してください。" });
+				this.setState({ errorItem: "cost2" });
+				return;
+			}
 			const emp = {
 				yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 				costClassificationName: this.costClassificationCode(this.state.costClassificationCode),
@@ -372,7 +382,7 @@ class otherCost extends React.Component {
 				stationCode: this.state.stationCode5,
 				transportationCode: this.state.transportationCode,
 				remark: this.state.remark,
-				cost: utils.deleteComma(this.state.cost2),
+				cost: Number(utils.deleteComma(this.state.cost2)),
 				changeFile: this.state.changeFile,
 				oldCostFile: this.state.oldCostFile,
 			}
@@ -556,7 +566,7 @@ class otherCost extends React.Component {
 										<InputGroup.Text id="inputGroup-sizing-sm">名称</InputGroup.Text>
 									</InputGroup.Prepend>
 									<FormControl placeholder="" autoComplete="off" name="detailedNameOrLine2" value={this.state.detailedNameOrLine2} style={this.state.errorItem === "detailedNameOrLine2" ? {borderColor: "red"} : {borderColor: ""}}
-										onChange={this.valueChange} type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
+										onChange={this.valueChange} type="text" aria-label="Small" size="sm" maxLength='20' aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
 								</InputGroup>
 							</Col>
 							<Col>

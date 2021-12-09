@@ -45,14 +45,19 @@ class PasswordSetEmployee extends Component {
         $.each(formArray, function (i, item) {
             passwordSetEmployeeModel[item.name] = item.value;
         });
+        if(passwordSetEmployeeModel.oldPassword === "" || passwordSetEmployeeModel.newPassword === "" || passwordSetEmployeeModel.passwordCheck === ""){
+            this.setState({ "errorsMessageShow": true, errorsMessageValue: "全項目を入力してください。" });
+        	return;
+        }
+
         axios.post(this.state.serverIP + "passwordSetEmployee/passwordReset" , passwordSetEmployeeModel)
         .then(resultMap => {
-            if (resultMap.data.errorsMessage !== null && resultMap.data.errorsMessage !== undefined ) {
-                this.setState({ "errorsMessageShow": true, errorsMessageValue: resultMap.data.errorsMessage });
+            if (resultMap.data.errorMessage !== null && resultMap.data.errorMessage !== undefined ) {
+                this.setState({ "errorsMessageShow": true, errorsMessageValue: resultMap.data.errorMessage });
             }else{
                 this.setState({ "myToastShow": true, "type": "success", "errorsMessageShow": false, message: resultMap.data.message });
                 setTimeout(() => this.setState({ "myToastShow": false }), 3000);
-                window.location.reload();
+                //window.location.reload();
             }
         })
     }
