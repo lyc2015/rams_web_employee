@@ -924,7 +924,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" maxLength='20'　disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" maxLength={this.state.regularStatus === "0" ? '20' : '3'}　disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>

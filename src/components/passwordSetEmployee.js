@@ -52,8 +52,8 @@ class PasswordSetEmployee extends Component {
 
         axios.post(this.state.serverIP + "passwordSetEmployee/passwordReset" , passwordSetEmployeeModel)
         .then(resultMap => {
-            if (resultMap.data.errorMessage !== null && resultMap.data.errorMessage !== undefined ) {
-                this.setState({ "errorsMessageShow": true, errorsMessageValue: resultMap.data.errorMessage });
+            if (resultMap.data.errorsMessage !== null && resultMap.data.errorsMessage !== undefined ) {
+                this.setState({ "errorsMessageShow": true, errorsMessageValue: resultMap.data.errorsMessage });
             }else{
                 this.setState({ "myToastShow": true, "type": "success", "errorsMessageShow": false, message: resultMap.data.message });
                 setTimeout(() => this.setState({ "myToastShow": false }), 3000);

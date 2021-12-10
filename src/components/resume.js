@@ -139,12 +139,12 @@ class resume extends React.Component {
 		}
 	}
 	
-	downloadResume = (resumeInfo, no) => {
+	downloadResume = (resumeInfo, no, resumeName) => {
 		let fileKey = "";
 		let downLoadPath = "";
 		if(resumeInfo !== null && resumeInfo.split("file/").length > 1){
 			fileKey = resumeInfo.split("file/")[1];
-			downLoadPath = (resumeInfo.substring(0, resumeInfo.lastIndexOf("_") + 1) + ( no === 1 ? this.state.resumeName1 : this.state.resumeName2 ) + "." + resumeInfo.split(".")[resumeInfo.split(".").length - 1]).replaceAll("/","//");
+			downLoadPath = (resumeInfo.substring(0, resumeInfo.lastIndexOf("_") + 1) + resumeName + "." + resumeInfo.split(".")[resumeInfo.split(".").length - 1]).replaceAll("/","//");
 		}
 		axios.post(this.state.serverIP + "s3Controller/downloadFile", {fileKey:fileKey , downLoadPath:downLoadPath})
 		.then(result => {
@@ -162,7 +162,7 @@ class resume extends React.Component {
 	
 	setDownButton = (cell, row) => {
 		return (
-				<Button variant="info" size="sm" onClick={this.downloadResume.bind(this,row.resumeInfo1,row.rowNo)} id={"resumeDownload" + row.rowNo} >
+				<Button variant="info" size="sm" onClick={this.downloadResume.bind(this,row.resumeInfo1,row.rowNo,row.resumeName1)} id={"resumeDownload" + row.rowNo} >
 					<FontAwesomeIcon icon={faDownload} />Download
 				</Button>
 		)
