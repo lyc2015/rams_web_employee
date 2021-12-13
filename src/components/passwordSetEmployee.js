@@ -57,7 +57,10 @@ class PasswordSetEmployee extends Component {
             }else{
                 this.setState({ "myToastShow": true, "type": "success", "errorsMessageShow": false, message: resultMap.data.message });
                 setTimeout(() => this.setState({ "myToastShow": false }), 3000);
-                //window.location.reload();
+                axios.post(this.state.serverIP + "subMenuEmployee/logout")
+                .then(resultMap => {
+                	window.location.reload();
+                })
             }
         })
     }
