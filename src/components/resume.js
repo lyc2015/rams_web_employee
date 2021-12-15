@@ -43,7 +43,7 @@ class resume extends React.Component {
 		axios.post(this.state.serverIP + "resume/selectResume")
 			.then(response => response.data)
 			.then((data) => {
-				data.push({ "rowNo": 2, "resumeInfo1": data[0].resumeInfo2, "resumeName1": data[0].resumeName2, "updateTime": data[0].updateTime, "updateUser": data[0].updateUser });
+				//data.push({ "rowNo": 2, "resumeInfo1": data[0].resumeInfo2, "resumeName1": data[0].resumeName2, "updateTime": data[0].updateTime, "updateUser": data[0].updateUser });
 				if (data[0].resumeInfo1 == null || data[0].resumeInfo1 =="") {
 					data[0]["fileSts"]=false ;
 				} else {
@@ -76,30 +76,30 @@ class resume extends React.Component {
 			this.setState({ "errorsMessageShow": true, "method": "put", "message": "変更ありません" });
 			return;
 		}
-		if(!(this.state.employeeList[0].resumeInfo1 === undefined || this.state.employeeList[0].resumeInfo1 === null || this.state.employeeList[0].resumeInfo1 === "")){
-			if(this.state.employeeList[0].resumeName1 === undefined || this.state.employeeList[0].resumeName1 === null || this.state.employeeList[0].resumeName1 === ""){
+		if(!(this.state.employeeList[0].resumeInfo === undefined || this.state.employeeList[0].resumeInfo === null || this.state.employeeList[0].resumeInfo === "")){
+			if(this.state.employeeList[0].resumeName === undefined || this.state.employeeList[0].resumeName === null || this.state.employeeList[0].resumeName === ""){
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名を入力してください。" });
 				return;
 			}
 		}
 
-		if(!(this.state.employeeList[1].resumeInfo1 === undefined || this.state.employeeList[1].resumeInfo1 === null || this.state.employeeList[1].resumeInfo1 === "")){
-			if(this.state.employeeList[1].resumeName1 === undefined || this.state.employeeList[1].resumeName1 === null || this.state.employeeList[1].resumeName1 === ""){
+		if(!(this.state.employeeList[1].resumeInfo === undefined || this.state.employeeList[1].resumeInfo === null || this.state.employeeList[1].resumeInfo === "")){
+			if(this.state.employeeList[1].resumeName === undefined || this.state.employeeList[1].resumeName === null || this.state.employeeList[1].resumeName === ""){
 				this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名を入力してください。" });
 				return;
 			}
 		}
 		
-		if (this.state.employeeList[0].resumeName1 === this.state.employeeList[1].resumeName1) {
+		if (this.state.employeeList[0].resumeName === this.state.employeeList[1].resumeName) {
 			this.setState({ "errorsMessageShow": true, "method": "put", "message": "ファイル名が同じです" });
 			return;
         }
 		const formData = new FormData()
 		const emp = {
-			resumeInfo1: this.state.employeeList[0].resumeInfo1,
-			resumeInfo2: this.state.employeeList[1].resumeInfo1,
-			resumeName1: this.state.employeeList[0].resumeName1,
-			resumeName2: this.state.employeeList[1].resumeName1,
+			resumeInfo1: this.state.employeeList[0].resumeInfo,
+			resumeInfo2: this.state.employeeList[1].resumeInfo,
+			resumeName1: this.state.employeeList[0].resumeName,
+			resumeName2: this.state.employeeList[1].resumeName,
 		};
 		formData.append('emp', JSON.stringify(emp))
 		formData.append('filePath1', publicUtils.nullToEmpty($('#filePath1').get(0).files[0]))
@@ -144,7 +144,7 @@ class resume extends React.Component {
 		let downLoadPath = "";
 		if(resumeInfo !== null && resumeInfo.split("file/").length > 1){
 			fileKey = resumeInfo.split("file/")[1];
-			downLoadPath = (resumeInfo.substring(0, resumeInfo.lastIndexOf("_") + 1) + resumeName + "." + resumeInfo.split(".")[resumeInfo.split(".").length - 1]).replaceAll("/","//");
+			downLoadPath = (resumeInfo.substring(0, resumeInfo.lastIndexOf("_") + 1) + resumeName.replace(this.state.employeeName+"_","") + "." + resumeInfo.split(".")[resumeInfo.split(".").length - 1]).replaceAll("/","//");
 		}
 		axios.post(this.state.serverIP + "s3Controller/downloadFile", {fileKey:fileKey , downLoadPath:downLoadPath})
 		.then(result => {
@@ -162,7 +162,7 @@ class resume extends React.Component {
 	
 	setDownButton = (cell, row) => {
 		return (
-				<Button variant="info" size="sm" onClick={this.downloadResume.bind(this,row.resumeInfo1,row.rowNo,row.resumeName1)} id={"resumeDownload" + row.rowNo} >
+				<Button variant="info" size="sm" onClick={this.downloadResume.bind(this,row.resumeInfo,row.rowNo,row.resumeName)} id={"resumeDownload" + row.rowNo} >
 					<FontAwesomeIcon icon={faDownload} />Download
 				</Button>
 		)
@@ -209,8 +209,8 @@ class resume extends React.Component {
 		data[row.rowNo - 1]["filePath"] = filePath;
 		data[row.rowNo - 1]["haveFile"] = true;
 		if (!row.fileSts) {
-			data[row.rowNo - 1]["resumeInfo1"] = this.state.employeeName+"_";
-			data[row.rowNo - 1]["resumeName1"] = this.state.employeeName+"_";
+			//data[row.rowNo - 1]["resumeInfo"] = this.state.employeeName+"_";
+			data[row.rowNo - 1]["resumeName"] = this.state.employeeName+"_";
 		}
 		this.setState({
 			employeeList: data,
@@ -218,8 +218,8 @@ class resume extends React.Component {
 		})
 	}
 
-	setSts(flag) {
-		if (flag === true) {
+	setSts(cell, row) {
+		if (row.resumeInfo !== "") {
 			return "存在";
 		} else {
 			return "存在なし";
@@ -230,34 +230,16 @@ class resume extends React.Component {
 };
 	resumeNameChange = (event, cell, row) => {
 		let data = this.state.employeeList;
-		/*var a = new RegExp("^" + this.state.employeeName + "_")
-		var b = new RegExp(".*[\u4e00-\u9fa5]+.*$")
-		if (b.test((event.target.value).substring((this.state.employeeName + "_").length))) {
-			alert("漢字は使えません")
-			data[row.rowNo - 1]["resumeName1"] = this.state.employeeName + "_";
-			this.setState({
-				employeeList: data,
-			})
-			return;
-		}
-		if (!a.test(event.target.value)) {
-			alert(this.state.employeeName + "_は変更できません")
-			data[row.rowNo - 1]["resumeName1"] = this.state.employeeName + "_";
-			this.setState({
-				employeeList: data,
-			})
-			return;
-		}*/
 		data[row.rowNo - 1][event.target.name] = event.target.value;
 		this.setState({
 			haveChange: true,
 		})
 		
 	};
-	test = (cell, row) => {
+	getResumeName = (cell, row) => {
 		let returnItem = cell;
 		returnItem = <span>
-			<input type="text" class=" form-control editor edit-text" name="resumeName1" maxLength="25" value={cell}
+			<input type="text" class=" form-control editor edit-text" name="resumeName" maxLength="25" value={cell}
 				onChange={(event) => this.resumeNameChange(event, cell, row)} />
 		</span>;
 		return returnItem;
@@ -330,7 +312,7 @@ class resume extends React.Component {
 								<TableHeaderColumn width='5%' tdStyle={{ padding: '.45em' }}  dataField='rowNo' isKey>番号</TableHeaderColumn>
 								<TableHeaderColumn width='15%' tdStyle={{ padding: '.45em' }} dataField='nodata' dataFormat={this.setUpButton.bind(this)}>添付状況</TableHeaderColumn>
 								<TableHeaderColumn width='15%' tdStyle={{ padding: '.45em' }} dataField='fileSts' dataFormat={this.setSts}  >ファイルステータス</TableHeaderColumn>
-								<TableHeaderColumn width='25%' tdStyle={{ padding: '.45em' }} dataField='resumeName1' dataFormat={this.test}>履歴書名</TableHeaderColumn>
+								<TableHeaderColumn width='25%' tdStyle={{ padding: '.45em' }} dataField='resumeName' dataFormat={this.getResumeName}>履歴書名</TableHeaderColumn>
 								<TableHeaderColumn width='20%' tdStyle={{ padding: '.45em' }} dataField='nodata' dataFormat={this.setDownButton}>履歴書DownLoad</TableHeaderColumn>
 								<TableHeaderColumn width='10%' tdStyle={{ padding: '.45em' }} dataField='updateUser' >更新者</TableHeaderColumn>
 								<TableHeaderColumn width='15%' tdStyle={{ padding: '.45em' }} dataField='updateTime' dataFormat={this.setUpDate.bind(this)}>更新日</TableHeaderColumn>

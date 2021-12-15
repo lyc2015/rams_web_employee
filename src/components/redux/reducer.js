@@ -13,13 +13,13 @@ export function fetchDropDown() {
 		"getVisa",// 6在留資格
 		"getNationality",// 7国籍
 		"getDevelopLanguage", // 8開発言語
-		"getEmployeeName",// 9社員名
+		"getDevelopLanguage", // 9開発言語
 		"getOccupation",// 10 職種
 		"getDepartment",// 11部署
 		"getAuthority", // 12 権限
 		"getEnglishLevel",// 13英語
 		"getStation",// 14駅
-		"getCustomer",// 15BP所属
+		"getStation",// 15駅
 		"getSalesProgress",// 16営業状況
 		"getListedCompany",// 17上場会社
 		"getLevel",// 18レベル
@@ -42,8 +42,8 @@ export function fetchDropDown() {
 		"getTopCustomer",// 35トップお客様を取得する
 		"getTypeOfIndustry",// 36業種を取得する
 		"getRound",// 37片往を取得する
-		"getEmployeeNameNoBP",// 38社員氏名（BP社員ない）を取得する
-		"getSituationChange",// 39状況変動を取得する
+		"getRound",// 38片往を取得する
+		"getRound",// 39片往を取得する
 		"getSiteStateStatus",// 40现场状态
 		"getSalesPriorityStatus",// 41営業優先度
 		"getSalesPerson",// 42営業者
@@ -57,18 +57,18 @@ export function fetchDropDown() {
 		"getNoOfInterview",// 50面談回数取得
 		"getProjectNo",// 51入場期限取得
 		"getProjectType",// 52案件タイプ取得
-		"getCustomerName",// 53お客様名
+		"getProjectType",// 53案件タイプ取得
 		"getQualification",// 54資格
-        "getCustomerDepartment",// 55お客様部門
-        "getEmployeeNameByOccupationName",// 56社員名(営業、管理者)
+		"getCustomerDepartment",// 55お客様部門
+		"getCustomerDepartment",// 56お客様部門
 		"getBankInfo",// 57銀行名
-		"getTheSelectProjectperiodStatus",// 58案件期間選択ステータス
+		"getBankInfo",// 58銀行名
 		"getProjectPeriod",// 59案件期限取得
 		"getSendWorkReportStatus",// 60作業報告書送信ステータス
 		"getSendReportOfDateSeting",// 61送信日付設定ステータス
 		"getAdmissionMonth",// 62入場期日取得
 		"getStorageListName",// 63送信対象格納リスト
-		"getPurchasingManagers",// 64お客様担当者取得
+		"getStorageListName",// 64送信対象格納リスト
 		"getTypteOfContract",// 65契約形態取得
 		"getRetirementResonClassification",// 66退職区分取得
 		"getEmploymentInsuranceStatus",// 67雇用保険加入取得
@@ -77,14 +77,14 @@ export function fetchDropDown() {
 		"getDealDistinction",// 70処理区分取得
 		"getFrameWork",// 71フレームワーク取得
 		"getBasicContractStatus",// 72 基本契約取得
-		"getCustomerAbbreviation",// 73 お客様略称取得
+		"getBasicContractStatus",// 73 基本契約取得
 		"getWorkingConditionStatus",// 74 稼働ステータス取得
 		"getProposeClassification",// 75 提案区分取得
 		"getInterviewClassification",// 76 面談区分取得
-		"getCustomerNameWithMail",// 77お客様名(メールなし抜く)
-		"getPurchasingManagersWithMail",// 78お客様担当者取得(メールなし抜く)
-		"getWorkingEmployeeNo",// 79稼働中社員番号取得
-		"getNotWorkingEmployeeNo",// 80稼働してなの社員番号取得
+		"getInterviewClassification",// 77 面談区分取得
+		"getInterviewClassification",// 78 面談区分取得
+		"getInterviewClassification",// 79 面談区分取得
+		"getInterviewClassification",// 80 面談区分取得
 		"getBpGrossProfit",// 81 BP粗利取得
 		"getBankBranch",// 82 銀行支店名、支店番号取得
 		"getServerIP",// 最後
