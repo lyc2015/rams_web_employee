@@ -436,7 +436,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">区分</InputGroup.Text>
+										<InputGroup.Text id="niKanjiFor150">区分</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Form.Control as="select"
 										onChange={this.valueChangeAndFlag.bind(this)}
@@ -456,7 +456,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">日付</InputGroup.Text>
+										<InputGroup.Text id="threeKanjiFor150">日付</InputGroup.Text>
 										<DatePicker
 											value={this.state.yearAndMonth}
 											selected={this.state.yearAndMonth}
@@ -484,7 +484,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">交通手段</InputGroup.Text>
+										<InputGroup.Text id="fourKanjiFor150">交通手段</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Form.Control as="select"
 										onChange={this.valueChange}
@@ -506,7 +506,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">出発</InputGroup.Text>
+										<InputGroup.Text id="threeKanjiFor150">出発</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode3)) || {}}
@@ -527,7 +527,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3" >
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">到着</InputGroup.Text>
+										<InputGroup.Text id="threeKanjiFor150">到着</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode4)) || {}}
@@ -548,7 +548,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">料金</InputGroup.Text>
+										<InputGroup.Text id="threeKanjiFor150">料金</InputGroup.Text>
 									</InputGroup.Prepend>
 									<FormControl value={cost1} name='cost1' maxLength='7' onChange={(e) => this.costValueChange(e)} style={this.state.errorItem === "cost1" ? {borderColor: "red"} : {borderColor: ""}}  disabled={this.state.costClassificationCode != 1 ? true : false} placeholder="例：XXXXX" autoComplete="off"  type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" />
 								</InputGroup>
@@ -563,7 +563,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">名称</InputGroup.Text>
+										<InputGroup.Text id="niKanjiFor150">名称</InputGroup.Text>
 									</InputGroup.Prepend>
 									<FormControl placeholder="" autoComplete="off" name="detailedNameOrLine2" value={this.state.detailedNameOrLine2} style={this.state.errorItem === "detailedNameOrLine2" ? {borderColor: "red"} : {borderColor: ""}}
 										onChange={this.valueChange} type="text" aria-label="Small" size="sm" maxLength='20' aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
@@ -572,7 +572,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3" >
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">場所</InputGroup.Text>
+										<InputGroup.Text id="threeKanjiFor150">場所</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode5)) || {}}
@@ -592,7 +592,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">料金</InputGroup.Text>
+										<InputGroup.Text id="threeKanjiFor150">料金</InputGroup.Text>
 									</InputGroup.Prepend>
 									<FormControl value={cost2} name='cost2' maxLength='7' style={this.state.errorItem === "cost2" ? {borderColor: "red"} : {borderColor: ""}} onChange={(e) => this.costValueChange(e)}  value={this.state.cost2} placeholder="例：XXXXX" autoComplete="off" type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm" disabled={this.state.costClassificationCode > 1 ? false : true} />
 								</InputGroup>
@@ -603,7 +603,7 @@ class otherCost extends React.Component {
 							<Col>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="threeKanji">備考</InputGroup.Text>
+										<InputGroup.Text id="niKanjiFor150">備考</InputGroup.Text>
 									</InputGroup.Prepend>
 									<FormControl placeholder="例：XXXXX" name="remark" value={this.state.remark} autoComplete="off" disabled={this.state.costClassificationCode === ""} maxLength="20"
 										onChange={this.valueChange} type="text" aria-label="Small" size="sm" aria-describedby="inputGroup-sizing-sm"/>

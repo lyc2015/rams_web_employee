@@ -248,7 +248,7 @@ class BreakTime extends Component {
                             <Col sm={2}>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">氏名</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">氏名</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <Form.Control readOnly id="breakTimeUser" value={this.state.breakTimeUser} name="breakTimeUser" />
                                 </InputGroup>
@@ -256,7 +256,7 @@ class BreakTime extends Component {
                             <Col sm={3}>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">年月</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">年月</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <InputGroup.Append>
                                         <DatePicker
@@ -279,7 +279,7 @@ class BreakTime extends Component {
                             <Col>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">お昼</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">お昼</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <Form.Control id="breakTimeDayHourStart" name="breakTimeDayHourStart" as="select" onChange={this.calculateTime} >
                                         {this.state.breakTimeDayHourStart.map(data =>
@@ -289,7 +289,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
                                     <Form.Control id="breakTimeDayMinuteStart" name="breakTimeDayMinuteStart" as="select" onChange={this.calculateTime} >
@@ -300,7 +300,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">分</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <font style={{ marginLeft: "10px", marginRight: "10px", marginTop: "5px" }}>～</font>
                                     <Form.Control id="breakTimeDayHourEnd" name="breakTimeDayHourEnd" as="select" onChange={this.calculateTime} >
@@ -311,7 +311,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
                                     <Form.Control id="breakTimeDayMinuteEnd" name="breakTimeDayMinuteEnd" as="select" onChange={this.calculateTime} >
@@ -322,7 +322,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">分</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
                                     </InputGroup.Prepend>
                                 </InputGroup>
                             </Col>
@@ -335,7 +335,7 @@ class BreakTime extends Component {
                             <Col>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">夜　</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">夜　</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <Form.Control id="breakTimeNightHourStart" name="breakTimeNightHourStart" as="select" onChange={this.calculateTime} >
                                         {this.state.breakTimeNightHourStart.map(data =>
@@ -345,7 +345,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
                                     <Form.Control id="breakTimeNightMinuteStart" name="breakTimeNightMinuteStart" as="select" onChange={this.calculateTime} >
@@ -356,7 +356,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">分</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <font style={{ marginLeft: "10px", marginRight: "10px", marginTop: "5px" }}>～</font>
                                     <Form.Control id="breakTimeNightHourEnd" name="breakTimeNightHourEnd" as="select" onChange={this.calculateTime} >
@@ -367,7 +367,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">時</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
                                     <Form.Control id="breakTimeNightMinuteEnd" name="breakTimeNightMinuteEnd" as="select" onChange={this.calculateTime} >
@@ -378,7 +378,7 @@ class BreakTime extends Component {
                                         )}
                                     </Form.Control>
                                     <InputGroup.Prepend>
-                                        <InputGroup.Text id="inputGroup-sizing-sm">分</InputGroup.Text>
+                                        <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     </InputGroup>
                             </Col>

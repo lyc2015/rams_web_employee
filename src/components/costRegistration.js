@@ -845,7 +845,7 @@ class costRegistration extends React.Component {
 						<Col  sm={4}>
 						<InputGroup size="sm" className="mb-3">
 							<InputGroup.Prepend>
-								<InputGroup.Text id="inputGroup-sizing-sm">年月</InputGroup.Text>
+								<InputGroup.Text id="niKanjiFor150">年月</InputGroup.Text>
 							</InputGroup.Prepend>
 							<InputGroup.Append>
 								<DatePicker
@@ -864,7 +864,7 @@ class costRegistration extends React.Component {
 						<font style={{ marginRight: "30px" }}></font>
 						
 							<InputGroup.Prepend>
-								<InputGroup.Text id="inputGroup-sizing-sm" title={"定期と非定期のどちらかしか入力できません。"}>区分</InputGroup.Text>
+								<InputGroup.Text id="niKanjiFor150" title={"定期と非定期のどちらかしか入力できません。"}>区分</InputGroup.Text>
 							</InputGroup.Prepend>
 							<Form.Control id="regularStatus" as="select" size="sm" title={"定期と非定期のどちらかしか入力できません。"} onChange={this.regularStatusChange} disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} name="regularStatus" value={this.state.regularStatus} autoComplete="off" >
 								<option value="0">定期</option>
@@ -882,7 +882,7 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 								<InputGroup size="sm" className="mb-3">
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">出発</InputGroup.Text>
+										<InputGroup.Text id="niKanjiFor150">出発</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode1)) || {}}
@@ -902,7 +902,7 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 								<InputGroup size="sm" className="mb-3" >
 									<InputGroup.Prepend>
-										<InputGroup.Text id="inputGroup-sizing-sm">到着</InputGroup.Text>
+										<InputGroup.Text id="niKanjiFor150">到着</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode2)) || {}}
@@ -922,7 +922,7 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
-									<InputGroup.Text id="inputGroup-sizing-sm">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
+									<InputGroup.Text id="niKanjiFor150">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
 								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" maxLength={this.state.regularStatus === "0" ? '20' : '3'}　disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
@@ -930,7 +930,7 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
-									<InputGroup.Text id="inputGroup-sizing-sm">料金</InputGroup.Text>
+									<InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
 								</InputGroup.Prepend>
 								<Form.Control type="text" value={this.state.cost} style={this.state.errorItem === "cost" ? {borderColor: "red"} : {borderColor: ""}} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
 							</InputGroup>
@@ -938,7 +938,7 @@ class costRegistration extends React.Component {
 						<Col sm={4}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
-									<InputGroup.Text id="inputGroup-sizing-sm">備考</InputGroup.Text>
+									<InputGroup.Text id="niKanjiFor150">備考</InputGroup.Text>
 								</InputGroup.Prepend>
 								<Form.Control type="text" value={this.state.remark} name='remark' autoComplete="off" size="sm" maxLength='20' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.valueChange}  placeholder="備考" />
 							</InputGroup>

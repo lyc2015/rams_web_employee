@@ -192,13 +192,13 @@ h2 {
 @media screen and (max-width: 1550px) {
 	.linkFont {
 		font-family: "黑体", Sans-serif;
-		font-size: 1.2rem;
+		font-size: 1.0rem;
 		color: rgb(247, 226, 248);
 		margin-left: -0.8rem;
 	}
 	.linkFont-click {
 		font-family: "黑体", Sans-serif;
-		font-size: 1.2rem;
+		font-size: 1.0rem;
 		color: rgb(0, 0, 0);
 		margin-left: -0.8rem;
 	}
@@ -241,3 +241,34 @@ h2 {
 		text-decoration: none;
 	}
 }
+
+@media screen and (max-width: 1300px) {
+	.linkFont {
+		font-family: "黑体", Sans-serif;
+		font-size: 0.75rem;
+		color: rgb(247, 226, 248);
+		margin-left: -0.8rem;
+	}
+	.linkFont-click {
+		font-family: "黑体", Sans-serif;
+		font-size: 0.75rem;
+		color: rgb(0, 0, 0);
+		margin-left: -0.8rem;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	.linkFont {
+		font-family: "黑体", Sans-serif;
+		font-size: 0.45rem;
+		color: rgb(247, 226, 248);
+		margin-left: -1.4rem;
+	}
+	.linkFont-click {
+		font-family: "黑体", Sans-serif;
+		font-size: 0.45rem;
+		color: rgb(0, 0, 0);
+		margin-left: -1.4rem;
+	}
+}
+
