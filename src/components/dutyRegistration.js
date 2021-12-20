@@ -987,7 +987,7 @@ class DutyRegistration extends React.Component {
 									dateFormat="yyyy年MM月"
 									maxDate={new Date()}
 									disabled={this.state.isConfirmedPage}
-									id={this.state.isConfirmedPage ? "datePickerReadonlyDefault" : "datePicker"}
+									id={this.state.isConfirmedPage ? "datePickerReadonlyDefault-duty" : "datePicker-duty"}
 								/>
 								<h3>作業報告書</h3>
 								</InputGroup.Append>
