@@ -13,7 +13,7 @@ export default class errorsMessageToast extends Component {
 
         return (
             <div style={this.props.errorsMessageShow ? toastCss : null}>
-                <Toast  errorsMessageShow={this.props.errorsMessageShow}>
+                <Toast show={this.props.errorsMessageShow}>
                     <Toast.Body>
                         {this.props.message}
                     </Toast.Body>

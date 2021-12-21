@@ -13,7 +13,7 @@ export default class myToast extends Component {
 
         return (
             <div style={this.props.myToastShow ? toastCss : null}>
-                <Toast className={`border text-white ${this.props.type === "success" ? "border-success bg-success" : "border-danger bg-danger"}`} myToastShow={this.props.myToastShow}>
+                <Toast className={`border text-white ${this.props.type === "success" ? "border-success bg-success" : "border-danger bg-danger"}`} /*myToastShow*/ show={this.props.myToastShow}>
                     <Toast.Body>
                         {this.props.message}
                     </Toast.Body>

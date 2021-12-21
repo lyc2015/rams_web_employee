@@ -62,7 +62,8 @@ class dutyManagement extends React.Component {
 	}
 	//　初期化データ
 	initialState = {
-		yearAndMonth: new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1))).getTime(),
+		//yearAndMonth: new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1))).getTime(),
+		yearAndMonth: new Date(),
 		month: new Date().getMonth() + 1,
 		employeeList: [],
 		totalPersons:"",
