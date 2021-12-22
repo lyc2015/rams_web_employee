@@ -224,8 +224,8 @@ class costRegistration extends React.Component {
 			yearMonth: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6),
 			happendDate: publicUtils.formateDate(this.state.yearMonth, true).substring(0,6) + "01",
 			dueDate: null,
-			transportationCode: this.state.stationCode1,
-			destinationCode: this.state.stationCode2,
+			transportationCode: this.state.station.find((v) => (v.name === $("#stationName1").val())).code,
+			destinationCode: this.state.station.find((v) => (v.name === $("#stationName2").val())).code,
 			detailedNameOrLine: this.state.detailedNameOrLine,
 			cost: Number(utils.deleteComma(this.state.cost)),
 			oldHappendDate: this.state.rowSelectHappendDate,
@@ -359,6 +359,8 @@ class costRegistration extends React.Component {
 	//reset
 	resetBook = () => {
 		this.setState(() => this.resetStates);
+		$("#stationName1").val("");
+		$("#stationName2").val("");
 		this.refs.table.setState({
 			selectedRowKeys: [],
 		});
@@ -370,6 +372,7 @@ class costRegistration extends React.Component {
 		yearAndMonth1: null, yearAndMonth2: null, stationCode1: null, stationCode2: null, detailedNameOrLine: '',
 		cost: '', costRegistrationFile: null, changeData: false,oldCostClassification1: null,oldHappendDate1: null,
 		changeFile: false, costRegistrationFileFlag: false, costClassification1: null,rowSelectHappendDate: '',
+		stationName1: "", stationName2: "",
 		rowSelectCostClassificationCode: '',
 		rowSelectDetailedNameOrLine: '',
 		rowSelectStationCode: '',
@@ -521,11 +524,15 @@ class costRegistration extends React.Component {
 							regularStatus: row.regularStatus,
 							stationCode1: row.transportationCode,
 							stationCode2: row.destinationCode,
+							stationName1: this.state.station.find((v) => (v.code === row.transportationCode)).name,
+							stationName2: this.state.station.find((v) => (v.code === row.destinationCode)).name,
 							detailedNameOrLine: row.detailedNameOrLine,
 							cost: utils.addComma(row.cost),
 							remark: row.remark,
 							costRegistrationFileFlag: (this.state.rowSelectCostFile == ""?false:true),
 						});
+				$("#stationName1").val(this.state.station.find((v) => (v.code === row.transportationCode)).name);
+				$("#stationName2").val(this.state.station.find((v) => (v.code === row.destinationCode)).name);
 			}else{
 				this.setState(
 						{
@@ -533,11 +540,15 @@ class costRegistration extends React.Component {
 							regularStatus: '0',
 							stationCode1: '',
 							stationCode2: '',
+							stationName1: '',
+							stationName2: '',
 							detailedNameOrLine: '',
 							cost: '',
 							remark: '',
 							costRegistrationFileFlag: false,
 						});
+				$("#stationName1").val("");
+				$("#stationName2").val("");
 			}
 		} else {
 			this.setState(
@@ -571,11 +582,15 @@ class costRegistration extends React.Component {
 					cost2: '',
 					stationCode1: '',
 					stationCode2: '',
+					stationName1: '',
+					stationName2: '',
 					detailedNameOrLine: '',
 					cost: '',
 					costRegistrationFileFlag: false,
 				}
 			);
+			$("#stationName1").val("");
+			$("#stationName2").val("");
 		}
 	}
 
@@ -613,14 +628,16 @@ class costRegistration extends React.Component {
 		} else {
 			if (fieldName === "station" && this.state.station.find((v) => (v.name === value)) !== undefined) {
 				switch (id) {
-					case 'stationCode1':
+					case 'stationName1':
 						this.setState({
 							stationCode1: this.state.station.find((v) => (v.name === value)).code,
+							stationName1: value,
 						})
 						break;
-					case 'stationCode2':
+					case 'stationName2':
 						this.setState({
 							stationCode2: this.state.station.find((v) => (v.name === value)).code,
+							stationName2: value,
 						})
 						break;
 					default:
@@ -744,6 +761,8 @@ class costRegistration extends React.Component {
 			rowRemark: '',
 			stationCode1: '',
 			stationCode2: '',
+			stationName1: '',
+			stationName2: '',
 			detailedNameOrLine: '',
 			cost: '',
 			remark: '',
@@ -885,15 +904,16 @@ class costRegistration extends React.Component {
 										<InputGroup.Text id="niKanjiFor150">出発</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
-										value={this.state.station.find((v) => (v.code === this.state.stationCode1)) || {}}
+										value={this.state.stationName1}
 										options={this.state.station}
 									 	disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} 
-										name="station"
+										name="stationName1"
+										id="stationName1"
 										getOptionLabel={(option) => option.name}
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  出発" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode1" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode1" />
+												<input placeholder="  出発" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode1" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationName1" />
 											</div>
 										)}
 									/>
@@ -905,15 +925,16 @@ class costRegistration extends React.Component {
 										<InputGroup.Text id="niKanjiFor150">到着</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
-										value={this.state.station.find((v) => (v.code === this.state.stationCode2)) || {}}
+										value={this.state.stationName2}
 										options={this.state.station}
 									 	disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} 
-										name="station"
+										name="stationName2"
+										id="stationName2"
 										getOptionLabel={(option) => option.name}
 										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  到着" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode2" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode2" />
+												<input placeholder="  到着" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode2" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationName2" />
 											</div>
 										)}
 									/>
