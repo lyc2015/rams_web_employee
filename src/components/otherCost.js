@@ -225,6 +225,48 @@ class otherCost extends React.Component {
 		);
 	};
 	
+	getStation3 = (event, values) => {
+		this.setState({
+			[event.target.name]: event.target.value,
+		}, () => {
+			let stationCode = null;
+			if (values !== null) {
+				stationCode = values.code;
+			}
+			this.setState({
+				stationCode3: stationCode,
+			})
+		})
+	}
+	
+	getStation4 = (event, values) => {
+		this.setState({
+			[event.target.name]: event.target.value,
+		}, () => {
+			let stationCode = null;
+			if (values !== null) {
+				stationCode = values.code;
+			}
+			this.setState({
+				stationCode4: stationCode,
+			})
+		})
+	}
+	
+	getStation5 = (event, values) => {
+		this.setState({
+			[event.target.name]: event.target.value,
+		}, () => {
+			let stationCode = null;
+			if (values !== null) {
+				stationCode = values.code;
+			}
+			this.setState({
+				stationCode5: stationCode,
+			})
+		})
+	}
+	
 	handleTag = ({ target }, fieldName) => {
 		const { value, id } = target;
 		if (value === '') {
@@ -509,16 +551,17 @@ class otherCost extends React.Component {
 										<InputGroup.Text id="threeKanjiFor150">出発</InputGroup.Text>
 									</InputGroup.Prepend>
 									<Autocomplete
-										value={this.state.station.find((v) => (v.code === this.state.stationCode3)) || {}}
+										id="stationCode3"
+										name="stationCode3"
+										value={this.state.station.find(v => v.code === this.state.stationCode3) || {}}
+										onChange={(event, values) => this.getStation3(event, values)}
 										options={this.state.station}
-										id="station3"
 										disabled={this.state.costClassificationCode != 1 ? true : false}
-										name="station"
 										getOptionLabel={(option) => option.name}
-										onSelect={(event) => this.handleTag(event, 'station')}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
-												<input placeholder="  出発" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode3" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode3" />
+												<input placeholder="  出発" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode3" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode3"
+												/>
 											</div>
 										)}
 									/>
@@ -532,11 +575,11 @@ class otherCost extends React.Component {
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode4)) || {}}
 										options={this.state.station}
-										id="station4"
-										name="station"
+										id="stationCode4"
+										name="stationCode4"
 										disabled={this.state.costClassificationCode != 1 ? true : false}
 										getOptionLabel={(option) => option.name}
-										onSelect={(event) => this.handleTag(event, 'station')}
+										onChange={(event, values) => this.getStation4(event, values)}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
 												<input placeholder="  到着" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode4" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode4" />
@@ -577,10 +620,11 @@ class otherCost extends React.Component {
 									<Autocomplete
 										value={this.state.station.find((v) => (v.code === this.state.stationCode5)) || {}}
 										options={this.state.station}
-										name="station"
+										id="stationCode5"
+										name="stationCode5"
 										disabled={this.state.costClassificationCode > 1 ? false : true}
 										getOptionLabel={(option) => option.name}
-										onSelect={(event) => this.handleTag(event, 'station')}
+										onChange={(event, values) => this.getStation5(event, values)}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
 												<input placeholder="  場所" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode5" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode5" />

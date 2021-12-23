@@ -182,6 +182,25 @@ class dataShareEmployee extends React.Component {
 		});
 	}
 	
+	downLoad = () => {
+		let fileKey = "";
+		let downLoadPath = "";
+		if(this.state.rowFilePath !== null){
+			let path = this.state.rowFilePath.replace(/\\/g,"/");
+			if(path.split("file/").length > 1){
+				fileKey = path.split("file/")[1];
+				downLoadPath = path.replaceAll("/","//");
+			}
+		}
+		axios.post(this.state.serverIP + "s3Controller/downloadFile", {fileKey:fileKey , downLoadPath:downLoadPath})
+		.then(result => {
+			let path = downLoadPath.replaceAll("//","/");
+			publicUtils.handleDownload(path, this.state.serverIP);
+		}).catch(function (error) {
+			alert("ファイルが存在しません。");
+		});
+	}
+	
 	getFile=()=>{
 		$("#getFile").click();
 	}
@@ -387,7 +406,7 @@ class dataShareEmployee extends React.Component {
                         <Col sm={6}>
                             <div style={{ "float": "right" }}>
 								<Button variant="info" size="sm" id="revise" onClick={this.insertRow} disabled={this.state.addDisabledFlag || this.state.dataStatus === "2"} ><FontAwesomeIcon icon={faSave}/> 追加</Button>{' '}
-								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowFilePath, this.state.serverIP)} id="workRepotDownload" disabled={this.state.rowShareStatus === ""}>
+								<Button variant="info" size="sm" onClick={this.downLoad} id="workRepotDownload" disabled={this.state.rowShareStatus === ""}>
 	                          		 <FontAwesomeIcon icon={faDownload} />Download
 		                        </Button>{' '}
 	     						<Button variant="info" size="sm" id="revise" onClick={this.dataDelete} disabled={this.state.rowClickFlag}><FontAwesomeIcon icon={faTrash} /> 削除</Button>{' '}

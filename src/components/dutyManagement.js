@@ -471,7 +471,22 @@ class dutyManagement extends React.Component {
 					this.setState({ loading: true, });
 				});
 		}else{
-			publicUtils.handleDownload(this.state.rowSelectWorkingTimeReport, this.state.serverIP);
+			let fileKey = "";
+			let downLoadPath = "";
+			if(this.state.rowSelectWorkingTimeReport !== null){
+				let path = this.state.rowSelectWorkingTimeReport.replace(/\\/g,"/");
+				if(path.split("file/").length > 1){
+					fileKey = path.split("file/")[1];
+					downLoadPath = path.replaceAll("/","//");
+				}
+			}
+			axios.post(this.state.serverIP + "s3Controller/downloadFile", {fileKey:fileKey , downLoadPath:downLoadPath})
+			.then(result => {
+				let path = downLoadPath.replaceAll("//","/");
+				publicUtils.handleDownload(path, this.state.serverIP);
+			}).catch(function (error) {
+				alert("ファイルが存在しません。");
+			});
 		}
 	}
 	

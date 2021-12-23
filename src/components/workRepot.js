@@ -215,6 +215,26 @@ class workRepot extends React.Component {
 		else
 			$("#getFile").click();
 	}
+	
+	downLoad = () => {
+		let fileKey = "";
+		let downLoadPath = "";
+		if(this.state.rowSelectWorkingTimeReport !== null){
+			let path = this.state.rowSelectWorkingTimeReport.replace(/\\/g,"/");
+			if(path.split("file/").length > 1){
+				fileKey = path.split("file/")[1];
+				downLoadPath = path.replaceAll("/","//");
+			}
+		}
+		axios.post(this.state.serverIP + "s3Controller/downloadFile", {fileKey:fileKey , downLoadPath:downLoadPath})
+		.then(result => {
+			let path = downLoadPath.replaceAll("//","/");
+			publicUtils.handleDownload(path, this.state.serverIP);
+		}).catch(function (error) {
+			alert("ファイルが存在しません。");
+		});
+	}
+	
 	//行Selectファンクション
 	handleRowSelect = (row, isSelected, e) => {
 		if (isSelected) {
@@ -406,7 +426,7 @@ class workRepot extends React.Component {
                                <Button variant="info" size="sm" onClick={this.getFile} id="workRepotUpload">
 									<FontAwesomeIcon icon={faUpload} /> Upload
 								</Button>{' '}
-								<Button variant="info" size="sm" onClick={publicUtils.handleDownload.bind(this, this.state.rowSelectWorkingTimeReport, this.state.serverIP)}id="workRepotDownload">
+								<Button variant="info" size="sm" onClick={this.downLoad}id="workRepotDownload">
 	                          		 <FontAwesomeIcon icon={faDownload} /> Download
 		                        </Button>{' '}
 	                          	<Button variant="info" size="sm" onClick={this.clear} id="workRepotClear">
