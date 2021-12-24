@@ -747,7 +747,7 @@ class dutyManagement extends React.Component {
 		                     		 <FontAwesomeIcon icon={faDownload} />報告書
 		                       </Button>{' '}
 	                            <Button variant="info" size="sm" id="update" onClick={this.listApproval.bind(this,2)}>
-									<FontAwesomeIcon icon={faEdit} />残業控除更新
+									<FontAwesomeIcon icon={faEdit} />残控更新
 								</Button>{' '}
                                <Button variant="info" size="sm" id="syounin" onClick={this.state.rowApprovalStatus !== "1" ? this.listApproval.bind(this,1) : this.listApproval.bind(this,0)}>
 									<FontAwesomeIcon icon={faEdit} />{this.state.rowApprovalStatus !== "1" ? "承認" : "取消" }
