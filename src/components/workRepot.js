@@ -413,7 +413,7 @@ class workRepot extends React.Component {
 					</div>
 				</Form>
 				<div >
-				<Form.File id="getFile" accept="application/pdf,application/vnd.ms-excel" custom hidden="hidden" onChange={this.workRepotUpload}/>
+				<Form.File id="getFile" custom hidden="hidden" onChange={this.workRepotUpload}/>
 	                <br/>
                     <Row>
   						<Col sm={6}>

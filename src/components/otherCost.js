@@ -225,6 +225,33 @@ class otherCost extends React.Component {
 		);
 	};
 	
+	station3 = (event, values) => {
+		let station = this.state.station.find(v => v.name === event.target.value);
+		if(station !== null && station !== undefined){
+			this.setState({
+				stationCode3: station.code,
+			})
+		}
+	}
+	
+	station4 = (event, values) => {
+		let station = this.state.station.find(v => v.name === event.target.value);
+		if(station !== null && station !== undefined){
+			this.setState({
+				stationCode4: station.code,
+			})
+		}
+	}
+	
+	station5 = (event, values) => {
+		let station = this.state.station.find(v => v.name === event.target.value);
+		if(station !== null && station !== undefined){
+			this.setState({
+				stationCode5: station.code,
+			})
+		}
+	}
+	
 	getStation3 = (event, values) => {
 		this.setState({
 			[event.target.name]: event.target.value,
@@ -555,6 +582,7 @@ class otherCost extends React.Component {
 										name="stationCode3"
 										value={this.state.station.find(v => v.code === this.state.stationCode3) || {}}
 										onChange={(event, values) => this.getStation3(event, values)}
+										onInput={this.station3}
 										options={this.state.station}
 										disabled={this.state.costClassificationCode != 1 ? true : false}
 										getOptionLabel={(option) => option.name}
@@ -580,6 +608,7 @@ class otherCost extends React.Component {
 										disabled={this.state.costClassificationCode != 1 ? true : false}
 										getOptionLabel={(option) => option.name}
 										onChange={(event, values) => this.getStation4(event, values)}
+										onInput={this.station4}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
 												<input placeholder="  到着" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode4" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode4" />
@@ -625,6 +654,7 @@ class otherCost extends React.Component {
 										disabled={this.state.costClassificationCode > 1 ? false : true}
 										getOptionLabel={(option) => option.name}
 										onChange={(event, values) => this.getStation5(event, values)}
+										onInput={this.station5}
 										renderInput={(params) => (
 											<div ref={params.InputProps.ref}>
 												<input placeholder="  場所" type="text" {...params.inputProps} style={this.state.errorItem === "stationCode5" ? {borderColor: "red"} : {borderColor: ""}} className="auto form-control Autocompletestyle-costRegistration" id="stationCode5" />

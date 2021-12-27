@@ -603,6 +603,25 @@ class costRegistration extends React.Component {
 		this.searchCostRegistration();
 
 	}
+	
+	station1 = (event, values) => {
+		let station = this.state.station.find(v => v.name === event.target.value);
+		if(station !== null && station !== undefined){
+			this.setState({
+				stationCode1: station.code,
+			})
+		}
+	}
+	
+	station2 = (event, values) => {
+		let station = this.state.station.find(v => v.name === event.target.value);
+		if(station !== null && station !== undefined){
+			this.setState({
+				stationCode2: station.code,
+			})
+		}
+	}
+	
 	getStation1 = (event, values) => {
 		this.setState({
 			[event.target.name]: event.target.value,
@@ -915,6 +934,7 @@ class costRegistration extends React.Component {
 									name="stationCode1"
 									value={this.state.station.find(v => v.code === this.state.stationCode1) || {}}
 									onChange={(event, values) => this.getStation1(event, values)}
+									onInput={this.station1}
 									options={this.state.station}
 							 		disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} 
 									getOptionLabel={(option) => option.name}
@@ -937,6 +957,7 @@ class costRegistration extends React.Component {
 										name="stationCode2"
 										value={this.state.station.find((v) => (v.code === this.state.stationCode2)) || {}}
 										onChange={(event, values) => this.getStation2(event, values)}
+										onInput={this.station2}
 										options={this.state.station}
 									 	disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} 
 										getOptionLabel={(option) => option.name}

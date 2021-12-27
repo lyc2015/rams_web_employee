@@ -222,7 +222,7 @@ class dutyManagement extends React.Component {
 	listApproval = (approvalStatus) => {
 		const emp = {
 			yearAndMonth: publicUtils.formateDate(this.state.yearAndMonth, false),
-			employeeNo: this.state.rowSelectEmployeeNo,
+			employeeNo: this.state.rowFSelectEmployeeNo,
 			checkSection: this.state.rowSelectCheckSection,
 			deductionsAndOvertimePay: publicUtils.deleteComma((this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePay)),
 			deductionsAndOvertimePayOfUnitPrice: publicUtils.deleteComma(this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePayOfUnitPrice),
@@ -290,6 +290,8 @@ class dutyManagement extends React.Component {
 					rowWorkTime: row.workTime,
 					rowApprovalStatus: row.approvalStatus,
 					rowSelectWorkingTimeReport: row.workingTimeReport,
+					downloadEmployeeNo: row.employeeNo,
+					downloadEmployeeName: row.employeeName.replaceAll("\n\t\t",""),
 				}
 			);
 			if(!(row.workTime === "" || row.workTime === null)){
@@ -490,6 +492,26 @@ class dutyManagement extends React.Component {
 		}
 	}
 	
+	rowDownload = () => {
+		let fileKey = "";
+		let downLoadPath = "";
+		if(this.state.rowDownload !== null){
+			let path = this.state.rowDownload.replace(/\\/g,"/");
+			if(path.split("file/").length > 1){
+				fileKey = path.split("file/")[1];
+				downLoadPath = path.replaceAll("/","//");
+			}
+		}
+		fileKey = fileKey.substring(0,fileKey.lastIndexOf("/") + 1) + this.state.downloadEmployeeNo + "_" + this.state.downloadEmployeeName + "_" + fileKey.substring(fileKey.lastIndexOf("/") + 1,fileKey.length);
+		axios.post(this.state.serverIP + "s3Controller/downloadFile", {fileKey:fileKey , downLoadPath:downLoadPath})
+		.then(result => {
+			let path = downLoadPath.replaceAll("//","/");
+			publicUtils.handleDownload(path, this.state.serverIP);
+		}).catch(function (error) {
+			alert("ファイルが存在しません。");
+		});
+	}
+	
     /**
      * 社員名連想
      * @param {} event 
@@ -543,7 +565,7 @@ class dutyManagement extends React.Component {
 						</Col>
 	                    <Col style={{"padding": "0px"}}>
 	                        <div style={{ "float": "right" }}>
-		                        <Button variant="info" size="sm" disabled={this.state.rowDownload === ""} onClick={publicUtils.handleDownload.bind(this, this.state.rowDownload, this.state.serverIP)} id="workRepot">
+		                        <Button variant="info" size="sm" disabled={this.state.rowDownload === ""} onClick={this.rowDownload} id="workRepot">
 		                			<FontAwesomeIcon icon={faDownload} />download
 		                		</Button>
 		                	</div>
