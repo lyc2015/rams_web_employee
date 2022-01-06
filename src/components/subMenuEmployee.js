@@ -155,13 +155,17 @@ class SubMenu extends Component {
         return (
             <div className="mainBody">
                 <Row style={{ "backgroundColor": "#FFFAF0" }}>
-                    <Navbar inline>
-                        <img className="titleImg" alt="title" src={title} /><a className="loginMark" inline>LYC株式会社</a>{" "}
-                    </Navbar>
-                    <div style={{ "marginTop": "2%", "marginLeft": "auto", }}>
-                        <font className="loginPeople">{this.state.nowDate}{" "}<FontAwesomeIcon className="fa-fw" size="lg" icon={faUser} /><a id="kanriSha"></a></font>{" "}
-                        <Link as="button" className="logout" to="/" id="logout" onClick={this.logout}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCaretSquareLeft} />sign out</Link>
-                    </div>
+                	<Col sm={8}>
+	                    <Navbar inline>
+	                        <img className="titleImg" alt="title" src={title} /><a className="loginMark" inline>LYC株式会社</a>{" "}
+	                    </Navbar>
+                    </Col>
+                    <Col sm={4}>
+	                    <div style={{ "marginTop": "8%", }}>
+	                        <font className="loginPeople">{this.state.nowDate}{" "}<FontAwesomeIcon className="fa-fw" size="lg" icon={faUser} /><a id="kanriSha"></a></font>{" "}
+	                        <Link as="button" className="loginPeople" to="/" id="logout" onClick={this.logout}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCaretSquareLeft} />sign out</Link>
+	                    </div>
+                    </Col>
 
                 </Row>
                 <Row  onClick={() => this.checkSession()}>
@@ -194,11 +198,11 @@ class SubMenu extends Component {
 													<ListGroup.Item style={this.state.hover.search("2") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-2")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.test} block>
 														<div><Link className={this.state.hover.search("2") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '', state: { actionType: 'insert' } }} disabled><FontAwesomeIcon className="fa-fw" size="lg" icon={faUserEdit}/> 勤務時間入力</Link></div>
 													</ListGroup.Item>
-													<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-3")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/costRegistration'})} block>
-														<div><Link className={this.state.hover.search("3") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/costRegistration', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faMoneyCheckAlt}/> 費用登録</Link></div>
-													</ListGroup.Item>
 													<ListGroup.Item style={this.state.hover.search("4") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-4")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workTimeSearch'})} block>
 														<div><Link className={this.state.hover.search("4") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/workTimeSearch', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faFileAlt}/> 作業時間検索</Link></div>
+													</ListGroup.Item>
+													<ListGroup.Item style={this.state.hover.search("3") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-3")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/costRegistration'})} block>
+														<div><Link className={this.state.hover.search("3") !== -1 ? "my-tabcolor-font-hover" : "my-tabcolor-font"} to={{ pathname: '/subMenuEmployee/costRegistration', state: { actionType: 'insert' } }}><FontAwesomeIcon className="fa-fw" size="lg" icon={faMoneyCheckAlt}/> 費用登録</Link></div>
 													</ListGroup.Item>
 												</Accordion>
 											</ListGroup>

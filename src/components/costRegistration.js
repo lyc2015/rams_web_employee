@@ -322,7 +322,7 @@ class costRegistration extends React.Component {
 		if (this.state.rowSelectCostClassificationCode == "") {
 			return;
 		}
-		var a = window.confirm("削除していただきますか？");
+		var a = window.confirm("削除してもよろしいでしょうか？");
 		if (!a) {
 			return;
 		}
@@ -980,9 +980,9 @@ class costRegistration extends React.Component {
 						<Col sm={2}>
 							<InputGroup size="sm" className="mb-3">
 								<InputGroup.Prepend>
-									<InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
+									<InputGroup.Text id="niKanjiFor150">{this.state.regularStatus === "0" ? "料金" : "合計料金"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.cost} style={this.state.errorItem === "cost" ? {borderColor: "red"} : {borderColor: ""}} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={(e) => this.costValueChange(e)}  placeholder="料金" />
+								<Form.Control type="text" value={this.state.cost} style={this.state.errorItem === "cost" ? {borderColor: "red"} : {borderColor: ""}} name='cost' autoComplete="off" size="sm" maxLength='7' disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={(e) => this.costValueChange(e)}  placeholder={this.state.regularStatus === "0" ? "料金" : "回数合計料金"} />
 							</InputGroup>
 						</Col>
 						<Col sm={4}>
