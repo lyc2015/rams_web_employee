@@ -27,6 +27,7 @@ class SubMenu extends Component {
     state = {
         nowDate: '',//今の期日
 		hover: '',
+		className: '',
 		year: new Date().getFullYear(),
 		month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
 		dutyRegistrationFlag: false,
@@ -54,7 +55,7 @@ class SubMenu extends Component {
         let day = dateNow.getDate();
         this.setState({
             nowDate: (dateNow.getFullYear() + '年' + (month < 10 ? '0' + month : month) + '月' + (day < 10 ? '0' + day : day) + "日"),
-            hover: '',click: "",
+            hover: '',click: "", className: '',
         })
     }
     
@@ -129,6 +130,31 @@ class SubMenu extends Component {
 		})
 	}
 	
+	setClassName = (className) => {
+		this.setState({
+			className: className,
+		})
+	}
+	
+	changePage = (name) => {
+		switch (name) {
+		case "勤務登録":
+			this.setClassName("勤務登録");
+			this.shuseiTo({ pathname: '/subMenuEmployee/workRepot'});
+			break;
+		case "ファイル管理":
+			this.setClassName("ファイル管理");
+			this.shuseiTo({ pathname: '/subMenuEmployee/dataShareEmployee'});
+			break;
+		case "ほかの設定":
+			this.setClassName("ほかの設定");
+			this.shuseiTo({ pathname: '/subMenuEmployee/passwordSetEmployee'});
+			break;
+		default:
+			break;
+		}
+	}
+	
     render() {
         //お客様情報画面の追加パラメータ
         var customerInfoPath = {
@@ -155,18 +181,19 @@ class SubMenu extends Component {
         return (
             <div className="mainBody">
                 <Row style={{ "backgroundColor": "#FFFAF0" }}>
-                	<Col sm={8}>
-	                    <Navbar inline>
-	                        <img className="titleImg" alt="title" src={title} /><a className="loginMark" inline>LYC株式会社</a>{" "}
-	                    </Navbar>
-                    </Col>
-                    <Col sm={4}>
-	                    <div style={{ "marginTop": "8%", }}>
+                	<Col>
+                		<div style={{  "float": "left" }}>
+		                    <Navbar inline>
+		                        <img className="titleImg" alt="title" src={title} /><a className="loginMark" inline>LYC株式会社</a>{" "}
+		                    </Navbar>
+	                    </div>
+	                    <div style={{ "marginTop": "50px", "float": "right" }}>
 	                        <font className="loginPeople">{this.state.nowDate}{" "}<FontAwesomeIcon className="fa-fw" size="lg" icon={faUser} /><a id="kanriSha"></a></font>{" "}
 	                        <Link as="button" className="loginPeople" to="/" id="logout" onClick={this.logout}><FontAwesomeIcon className="fa-fw" size="lg" icon={faCaretSquareLeft} />sign out</Link>
 	                    </div>
+	                </Col>
+                    <Col sm={1}>
                     </Col>
-
                 </Row>
                 <Row  onClick={() => this.checkSession()}>
                     <Col sm={2}>
@@ -186,10 +213,10 @@ class SubMenu extends Component {
 									
 									<ListGroup.Item style={this.state.hover.search("勤務登録") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="勤務登録" data-class="my-tabcolor" data-effect="solid"
 										onMouseEnter={this.toggleHover.bind(this,"勤務登録")} onMouseLeave={this.toggleHover.bind(this,"")}>
-										<Accordion.Toggle as={Button} variant="link" eventKey="0"><font
-										className={this.state.hover.search("勤務登録") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faAddressCard} /> 勤務登録</font></Accordion.Toggle>
+										<Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={this.changePage.bind(this,"勤務登録")}><font
+										className={this.state.hover.search("勤務登録") !== -1 || this.state.className.search("勤務登録") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faAddressCard} /> 勤務登録</font></Accordion.Toggle>
 										<ReactTooltip id="勤務登録"  delayUpdate={1000} getContent={() => {
-											return <div>
+											return <div onClick={this.setClassName.bind(this,"勤務登録")}>
 											<ListGroup>
 												<Accordion className="menuCol">
 													<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"勤務登録-1")} onMouseLeave={this.toggleHover.bind(this,"勤務登録")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/workRepot'})} block>
@@ -212,10 +239,10 @@ class SubMenu extends Component {
 										
 										<ListGroup.Item style={this.state.hover.search("ファイル管理") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="ファイル管理" data-class="my-tabcolor" data-effect="solid"
 											onMouseEnter={this.toggleHover.bind(this,"ファイル管理")} onMouseLeave={this.toggleHover.bind(this,"")}>
-											<Accordion.Toggle as={Button} variant="link" eventKey="0"><font
-											className={this.state.hover.search("ファイル管理") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faFolderOpen} /> ファイル管理</font></Accordion.Toggle>
+											<Accordion.Toggle as={Button} variant="link" eventKey="1" onClick={this.changePage.bind(this,"ファイル管理")}><font
+											className={this.state.hover.search("ファイル管理") !== -1 || this.state.className.search("ファイル管理") !== -1  ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faFolderOpen} /> ファイル管理</font></Accordion.Toggle>
 											<ReactTooltip id="ファイル管理"  delayUpdate={1000} getContent={() => {
-												return <div>
+												return <div onClick={this.setClassName.bind(this,"ファイル管理")}>
 												<ListGroup>
 													<Accordion className="menuCol">
 														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ファイル管理-1")} onMouseLeave={this.toggleHover.bind(this,"ファイル管理")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/dataShareEmployee'})} block>
@@ -234,10 +261,10 @@ class SubMenu extends Component {
 											
 										<ListGroup.Item style={this.state.hover.search("ほかの設定") !== -1 ? menuStyleHover : menuStyle} block data-place="right" data-type="info" data-tip="" data-for="ほかの設定" data-class="my-tabcolor" data-effect="solid"
 											onMouseEnter={this.toggleHover.bind(this,"ほかの設定")} onMouseLeave={this.toggleHover.bind(this,"")}>
-											<Accordion.Toggle as={Button} variant="link" eventKey="0"><font
-											className={this.state.hover.search("ほかの設定") !== -1 ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> ほかの設定</font></Accordion.Toggle>
+											<Accordion.Toggle as={Button} variant="link" eventKey="2" onClick={this.changePage.bind(this,"ほかの設定")}><font
+											className={this.state.hover.search("ほかの設定") !== -1 || this.state.className.search("ほかの設定") !== -1  ? "linkFont-click":"linkFont"} ><FontAwesomeIcon className="fa-fw" size="lg" icon={faCogs} /> ほかの設定</font></Accordion.Toggle>
 											<ReactTooltip id="ほかの設定"  delayUpdate={1000} getContent={() => {
-												return <div>
+												return <div onClick={this.setClassName.bind(this,"ほかの設定")}>
 												<ListGroup>
 													<Accordion className="menuCol">
 														<ListGroup.Item style={this.state.hover.search("1") !== -1 ? subMenuHover : subMenu} onMouseEnter={this.toggleHover.bind(this,"ほかの設定-1")} onMouseLeave={this.toggleHover.bind(this,"ほかの設定")} onClick={this.shuseiTo.bind(this,{ pathname: '/subMenuEmployee/passwordSetEmployee'})} block>

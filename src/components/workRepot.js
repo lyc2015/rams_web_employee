@@ -39,7 +39,8 @@ class workRepot extends React.Component {
 	selectWorkTime = () => {
 		let now = new Date();
 		let dataInfo = {};
-		dataInfo["attendanceYearAndMonth"] = String(now.getFullYear()) + String(now.getMonth() + 1);
+		let month = now.getMonth() + 1;
+		dataInfo["attendanceYearAndMonth"] = String(now.getFullYear()) + String(month < 10 ? "0" + month : month);
 		axios.post(this.state.serverIP + "workRepot/selectWorkTime",dataInfo)
 		.then(response => response.data)
 		.then((data) => {
