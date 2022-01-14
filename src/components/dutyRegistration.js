@@ -143,7 +143,12 @@ class DutyRegistration extends React.Component {
 		
 		let startTimeNum = Number(startTime.replace(":",""));
 		let endTimeNum = Number(endTime.replace(":",""));
-
+		
+		if(nightBreakStartTime == "0000")
+			nightBreakStartTime = "2500";
+		if(nightBreakfinshTime == "0000")
+			nightBreakfinshTime = "2500";
+		
 		if(startTimeNum <= lunchBreakStartTime && endTimeNum <= lunchBreakStartTime)
 			workHour = publicUtils.nullToEmpty(publicUtils.timeDiff(startTime, endTime));
 		else if(lunchBreakStartTime <= startTimeNum && startTimeNum <= lunchBreakFinshTime && lunchBreakStartTime <= endTimeNum && endTimeNum <= lunchBreakFinshTime )

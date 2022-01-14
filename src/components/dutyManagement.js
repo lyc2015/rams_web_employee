@@ -222,7 +222,7 @@ class dutyManagement extends React.Component {
 	listApproval = (approvalStatus) => {
 		const emp = {
 			yearAndMonth: publicUtils.formateDate(this.state.yearAndMonth, false),
-			employeeNo: this.state.rowFSelectEmployeeNo,
+			employeeNo: this.state.rowSelectEmployeeNo,
 			checkSection: this.state.rowSelectCheckSection,
 			deductionsAndOvertimePay: publicUtils.deleteComma((this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePay)),
 			deductionsAndOvertimePayOfUnitPrice: publicUtils.deleteComma(this.state.employeeList[this.state.rowNo - 1].deductionsAndOvertimePayOfUnitPrice),
@@ -331,7 +331,7 @@ class dutyManagement extends React.Component {
 	shuseiTo = (actionType) => {
 		var path = {};
 		const sendValue = {
-				yearAndMonthDate: this.state.yearAndMonthDate,
+				yearAndMonth: this.state.yearAndMonth,
 				enterPeriodKbn: this.state.enterPeriodKbn,
 				employeeName: this.state.employeeName,
 				employeeNo: $("#employeeName").val(),
@@ -364,7 +364,7 @@ class dutyManagement extends React.Component {
 				path = {
 					pathname: '/subMenuManager/sendInvoice',
 					state: {
-						employeeNo: this.state.rowSelectEmployeeNo,
+						yearAndMonth: this.state.yearAndMonth,
 						backPage: "dutyManagement",
 						sendValue: sendValue,
 					},

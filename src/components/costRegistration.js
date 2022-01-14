@@ -57,17 +57,25 @@ class costRegistration extends React.Component {
 		})
 	}
 	
-	valueChangeOnlyNum = event => {
-		var re = /^[0-9]+$/;
-		var str = event.target.value;
-		if(str === null || str === ""){
-			
+	valueChangeOnlyNum  = (e) => {
+		let cost = e.target.value;
+		if(cost.length > 2)
+			return cost;
+		let result = "";
+		for (let i = 0; i < cost.length; i++ )
+		{
+			if (cost.charCodeAt(i)==12288)
+			{
+				result += String.fromCharCode(cost.charCodeAt(i)-12256);
+				continue;
+			}
+			if (cost.charCodeAt(i)>65280 && cost.charCodeAt(i)<65375)
+				result += String.fromCharCode(cost.charCodeAt(i)-65248);
+			else result += String.fromCharCode(cost.charCodeAt(i));
 		}
-		else if(!re.test(str)){
-			return;
-		}
+		cost = utils.addComma(result) 
 		this.setState({
-			[event.target.name]: event.target.value
+			[e.target.name]: cost
 		})
 	}
 	
@@ -974,7 +982,7 @@ class costRegistration extends React.Component {
 								<InputGroup.Prepend>
 									<InputGroup.Text id="niKanjiFor150">{this.state.regularStatus === "0" ? "線路" : "回数"}</InputGroup.Text>
 								</InputGroup.Prepend>
-								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" maxLength={this.state.regularStatus === "0" ? '20' : '3'}　disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : this.valueChangeOnlyNum} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
+								<Form.Control type="text" value={this.state.detailedNameOrLine} style={this.state.errorItem === "detailedNameOrLine" ? {borderColor: "red"} : {borderColor: ""}} title={this.state.regularStatus === "0" ? null : "往復は二回となります"} name="detailedNameOrLine" autoComplete="off" size="sm" maxLength={this.state.regularStatus === "0" ? '20' : '3'}　disabled={this.state.disabledFlag || !(this.state.rowSelectCostClassificationCode === "" || this.state.rowSelectCostClassificationCode === "0")} onChange={this.state.regularStatus === "0" ? this.valueChange : (e) => this.valueChangeOnlyNum(e)} placeholder={this.state.regularStatus === "0" ? "線路" : "回数"} />
 							</InputGroup>
 						</Col>
 						<Col sm={2}>
