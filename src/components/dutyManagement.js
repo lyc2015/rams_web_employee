@@ -46,10 +46,14 @@ class dutyManagement extends React.Component {
 		if(!(location.state === undefined || location.state.yearAndMonth === undefined || location.state.yearAndMonth === null)){
 
 			$("#datePicker").val(location.state.yearAndMonth)
-			this.setState({yearAndMonth: location.state.yearAndMonth,});
+			this.setState({
+				yearAndMonth: location.state.yearAndMonth,
+				}, () => {
+					this.searchDutyManagement();
+				});
+		}else{
+			this.searchDutyManagement();
 		}
-		
-		this.searchDutyManagement();
 	}
 	//onchange
 	approvalStatusChange = event => {
@@ -465,7 +469,7 @@ class dutyManagement extends React.Component {
 		if(this.state.rowSelectWorkingTimeReport === undefined || this.state.rowSelectWorkingTimeReport === null || this.state.rowSelectWorkingTimeReport === ""){
 			this.setState({ loading: false, });
 			let dataInfo = {};
-			dataInfo["yearMonth"] = String(this.state.yearAndMonth.getFullYear()) + String(this.state.yearAndMonth.getMonth() + 1);
+			dataInfo["yearMonth"] = String(this.state.yearAndMonth.getFullYear()) + (this.state.yearAndMonth.getMonth() + 1 < 10 ? "0" + String(this.state.yearAndMonth.getMonth() + 1) : String(this.state.yearAndMonth.getMonth() + 1));
 			dataInfo["employeeName"] = this.state.rowSelectEmployeeName;
 			axios.post(this.state.serverIP + "dutyRegistration/downloadPDF", dataInfo)
 				.then(resultMap => {
