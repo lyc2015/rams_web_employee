@@ -41,6 +41,14 @@ class dutyManagement extends React.Component {
 		.catch(function(error) {
 			//alert(error);
 		});	
+		
+		const { location } = this.props
+		if(!(location.state === undefined || location.state.yearAndMonth === undefined || location.state.yearAndMonth === null)){
+
+			$("#datePicker").val(location.state.yearAndMonth)
+			this.setState({yearAndMonth: location.state.yearAndMonth,});
+		}
+		
 		this.searchDutyManagement();
 	}
 	//onchange

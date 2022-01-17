@@ -846,7 +846,7 @@ class DutyRegistration extends React.Component {
 	}
 	
 	test　= () => {
-		var a = window.confirm("初期化してよろしいでしょうか？");
+		var a = window.confirm("入力したデータを全部初期化してもよろしいでしょうか？");
         if(a){
     		let postData = {
     				yearMonth: this.state.year + this.state.month,
