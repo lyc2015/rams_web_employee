@@ -926,7 +926,7 @@ class costRegistration extends React.Component {
 						</InputGroup>
 						</Col>
 						<Col>
-							<div><font style={{ color: "grey",fontSize: "14px" }}>定期と非定期は家から現場までの費用、出張の場合、ほかの費用で入力してください</font></div>
+							<div><font style={{ color: "grey",fontSize: "14px" }}>定期と非定期は自宅から現場までの費用。それ以外の場合は、「他の費用」の子画面に入力してください</font></div>
 						</Col>
 					</Row>	
 					<Row>
