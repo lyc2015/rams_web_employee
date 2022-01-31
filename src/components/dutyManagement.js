@@ -57,20 +57,20 @@ class dutyManagement extends React.Component {
 	}
 	//onchange
 	approvalStatusChange = event => {
-		this.setState({
-			[event.target.name]: event.target.value
-		})
-		this.setState({
-			rowSelectEmployeeNo: "",
-			rowSelectEmployeeName: "",
-		})
 		this.refs.table.setState({
 			selectedRowKeys: []
 		});
-		$("#update").attr("disabled",true);
-		$("#workRepot").attr("disabled",true);
-		$("#syounin").attr("disabled",true);
-		this.searchDutyManagement();
+		this.setState({
+			[event.target.name]: event.target.value,
+			rowSelectEmployeeNo: "",
+			rowSelectEmployeeName: "",
+		}, () => {
+			$("#update").attr("disabled",true);
+			$("#workRepot").attr("disabled",true);
+			$("#syounin").attr("disabled",true);
+			this.searchDutyManagement();
+		})
+
 	}
 	//　初期化データ
 	initialState = {
@@ -130,7 +130,7 @@ class dutyManagement extends React.Component {
 	searchDutyManagement = (rowNo) => {
 		const emp = {
 			yearAndMonth: publicUtils.formateDate($("#datePicker").val(), false),
-			approvalStatus: $("#approvalStatus").val(),
+			approvalStatus: this.state.approvalStatus,
 			customerNo: this.state.customerNo,
 		};
 		axios.post(this.state.serverIP + "dutyManagement/selectDutyManagement", emp)
