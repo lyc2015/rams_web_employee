@@ -30,6 +30,7 @@ class dutyManagement extends React.Component {
 	componentDidMount(){
 		$("#update").attr("disabled",true);
 		$("#syounin").attr("disabled",true);
+		$("#upload").attr("disabled",true);
 		$("#workRepot").attr("disabled",true);
 		$("#datePicker").attr("readonly","readonly");
 		axios.post(this.state.serverIP + "sendLettersConfirm/getLoginUserInfo")
@@ -68,6 +69,7 @@ class dutyManagement extends React.Component {
 			$("#update").attr("disabled",true);
 			$("#workRepot").attr("disabled",true);
 			$("#syounin").attr("disabled",true);
+			$("#upload").attr("disabled",true);
 			this.searchDutyManagement();
 		})
 
@@ -190,6 +192,7 @@ class dutyManagement extends React.Component {
 						$("#update").attr("disabled",true);
 						$("#workRepot").attr("disabled",true);
 						$("#syounin").attr("disabled",true);
+						$("#upload").attr("disabled",true);
 					}else{
 						this.setState({
 							rowApprovalStatus: response.data[rowNo - 1].approvalStatus,
@@ -224,6 +227,7 @@ class dutyManagement extends React.Component {
 					$("#update").attr("disabled",true);
 					$("#workRepot").attr("disabled",true);
 					$("#syounin").attr("disabled",true);
+					$("#upload").attr("disabled",true);
 				}
 			}
 			);
@@ -308,6 +312,7 @@ class dutyManagement extends React.Component {
 			);
 			if(!(row.workTime === "" || row.workTime === null)){
 				$("#syounin").attr("disabled",false);
+				$("#upload").attr("disabled",false);
 				$("#workRepot").attr("disabled",false);
 				if(row.approvalStatus !== "1")
 					$("#update").attr("disabled",false);
@@ -315,6 +320,7 @@ class dutyManagement extends React.Component {
 					$("#update").attr("disabled",true);
 			}else{
 				$("#syounin").attr("disabled",true);
+				$("#upload").attr("disabled",true);
 				$("#update").attr("disabled",true);
 				$("#workRepot").attr("disabled",true);
 			}
@@ -335,6 +341,7 @@ class dutyManagement extends React.Component {
 				}
 			);
 			$("#syounin").attr("disabled",true);
+			$("#upload").attr("disabled",true);
 			$("#update").attr("disabled",true);
 			$("#workRepot").attr("disabled",true);
 		}
@@ -622,7 +629,54 @@ class dutyManagement extends React.Component {
       else 
     	  return "";
 	}
+	
+	getFile=()=>{
+		$("#getFile").click();
+	}
 
+	  /**
+     * 作業報告書ボタン
+     */
+    workRepotUpload=()=>{
+		let getfile=$("#getFile").val();
+		let fileName = getfile.split('.');
+		if(
+			fileName[fileName.length -1]=== "xlsx" ||
+			fileName[fileName.length -1]=== "xls" ||
+			fileName[fileName.length -1]=== "xltx" ||
+			fileName[fileName.length -1]=== "xlt" ||
+			fileName[fileName.length -1]=== "xlsm" ||
+			fileName[fileName.length -1]=== "xlsb" ||
+			fileName[fileName.length -1]=== "xltm" ||
+			fileName[fileName.length -1]=== "csv"||
+			fileName[fileName.length -1]=== "pdf"
+		){
+	  }else{
+	    alert('PDF或いはexcelをアップロードしてください')
+	    return false;
+	  }
+	/*if($("#getFile").get(0).files[0].size>1048576){
+		 alert('１M以下のファイルをアップロードしてください')
+	    return false;
+	}*/
+		const formData = new FormData()
+		const emp = {
+				attendanceYearAndMonth: publicUtils.formateDate(this.state.yearAndMonth, false),
+			};
+			formData.append('emp', JSON.stringify(emp))
+			formData.append('workRepotFile', $("#getFile").get(0).files[0])
+			axios.post(this.state.serverIP + "workRepot/updateWorkRepotFile",formData)
+			.then(response => {
+				if (response.data != null) {
+					this.searchDutyManagement();
+					this.setState({ "myToastShow": true, message: "アップロード成功！",  });
+					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+				} else {
+					alert("err")
+				}
+			});
+    }
+    
 	render() {
 		const {approvalStatus,employeeList} = this.state;
 		//　テーブルの行の選択
@@ -780,6 +834,9 @@ class dutyManagement extends React.Component {
 		                        <Button variant="info" size="sm" onClick={this.downloadTest} id="workRepot">
 		                     		 <FontAwesomeIcon icon={faDownload} />報告書
 		                       </Button>{' '}
+		                       <Button variant="info" size="sm" id="upload" onClick={this.getFile}>
+	                     		 <FontAwesomeIcon icon={faUpload} />upload
+	                     	   </Button>{' '}
 	                            <Button variant="info" size="sm" id="update" onClick={this.listApproval.bind(this,2)}>
 									<FontAwesomeIcon icon={faEdit} />残控更新
 								</Button>{' '}
@@ -807,7 +864,9 @@ class dutyManagement extends React.Component {
 						</BootstrapTable>
 					</Col>  
 				</div>
-		         <div className='loadingImage' hidden={this.state.loading} style = {{"position": "absolute","top":"60%","left":"60%","margin-left":"-200px", "margin-top":"-150px",}}></div>
+		         <div className='loadingImage' hidden={this.state.loading} style = {{"position": "absolute","top":"60%","left":"60%","margin-left":"-200px", "margin-top":"-150px",}}>
+ 				<Form.File id="getFile" custom hidden="hidden" onChange={this.workRepotUpload}/>
+		         </div>
 			</div >
 		);
 	}
