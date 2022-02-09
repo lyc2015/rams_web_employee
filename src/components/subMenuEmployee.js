@@ -195,7 +195,7 @@ class SubMenu extends Component {
                     <Col sm={1}>
                     </Col>
                 </Row>
-                <Row  onClick={() => this.checkSession()}>
+                <Row  /*onClick={() => this.checkSession()}*/>
                     <Col sm={2}>
                         <br />
                         <Row>
