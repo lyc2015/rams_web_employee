@@ -130,7 +130,7 @@ class costRegistration extends React.Component {
 	};
 	//　検索
 	searchCostRegistration = () => {
-		let minDate = new Date();
+		let minDate = new Date((new Date().getMonth() + 1) === 1 ? (new Date().getFullYear() - 1 + '/12') : (new Date().getFullYear() + '/' + (new Date().getMonth())));
 		minDate.setDate(1);
 		this.setState({
 			yearAndMonth: '',
@@ -780,7 +780,7 @@ class costRegistration extends React.Component {
 	
 	// 年月変更後、レコ＾ド再取る
 	setEndDate = (date) => {
-		if(date < new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1)).getTime()){
+		if(date < new Date((new Date().getMonth() + 1) === 1 ? (new Date().getFullYear() - 1 + '/12') : (new Date().getFullYear() + '/' + (new Date().getMonth())) ).getTime()){
 			this.setState({
 				disabledFlag: true,
 			});

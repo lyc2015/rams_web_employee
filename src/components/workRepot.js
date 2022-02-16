@@ -71,7 +71,7 @@ class workRepot extends React.Component {
 			return "";
 		if(row.sumWorkTime === "" || row.sumWorkTime === null)
 			return "";
-		if(row.workingTimeReportFile === "ファイルをアップロードしてください")
+		if(row.workingTimeReportFile === "まずファイルをアップロードしてください")
 			return "時間入力済み";
 		let approvalStatuss = this.state.approvalStatuslist;
         for (var i in approvalStatuss) {
@@ -91,7 +91,7 @@ class workRepot extends React.Component {
 							let fileName=data[i].workingTimeReport.split("/");
 							data[i].workingTimeReportFile = fileName[fileName.length-1];
 						}else{
-							data[i].workingTimeReportFile = "ファイルをアップロードしてください"
+							data[i].workingTimeReportFile = "まずファイルをアップロードしてください"
 						}
 						if(i < 2 && this.state.disabledFlag[i]){
 							data[i].disabledFlag = true;
@@ -180,7 +180,10 @@ class workRepot extends React.Component {
 		fileName[fileName.length -1]=== "xlsb" ||
 		fileName[fileName.length -1]=== "xltm" ||
 		fileName[fileName.length -1]=== "csv"||
-		fileName[fileName.length -1]=== "pdf"
+		fileName[fileName.length -1]=== "pdf"||
+		fileName[fileName.length -1]=== "jpg"||
+		fileName[fileName.length -1]=== "bmp"||
+		fileName[fileName.length -1]=== "png"
 	){
   }else{
     alert('PDF或いはexcelをアップロードしてください')
@@ -208,11 +211,15 @@ class workRepot extends React.Component {
 			});
     }
 	getFile=()=>{
-		if(this.state.rowSelectSumWorkTime === undefined || this.state.rowSelectSumWorkTime === null || this.state.rowSelectSumWorkTime === "")
+		/*if(this.state.rowSelectSumWorkTime === undefined || this.state.rowSelectSumWorkTime === null || this.state.rowSelectSumWorkTime === "")
 			if(this.state.rowDisabledFlag)
 				alert("勤務時間データすでに存在しているため、初期化してください。")
 			else
 				alert("稼働時間を入力してください。")
+		else
+			$("#getFile").click();*/
+		if(this.state.rowDisabledFlag)
+			alert("勤務時間データすでに存在しているため、初期化してください。")
 		else
 			$("#getFile").click();
 	}
@@ -362,8 +369,8 @@ class workRepot extends React.Component {
 	}
 	
 	fileNameFormatter = (cell) => {
-		if(cell === "勤務時間データすでに存在しています")
-			return <font style={{color: "red"}}>勤務時間データすでに存在しています</font>;
+		if(cell === "勤務時間データすでに存在しています" || cell === "まずファイルをアップロードしてください")
+			return <font style={{color: "red"}}>{cell}</font>;
 		else
 			return cell
 	}
@@ -439,7 +446,7 @@ class workRepot extends React.Component {
 					<Col >
 					<BootstrapTable data={employeeList} ref="table" pagination={true}  options={options} approvalRow selectRow={selectRow} headerStyle={ { background: '#5599FF'} } striped hover condensed >
 						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth'  isKey>年月</TableHeaderColumn>
-						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' dataFormat={this.fileNameFormatter}>ファイル名</TableHeaderColumn>
+						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' dataFormat={this.fileNameFormatter}>ファイル名（必）</TableHeaderColumn>
 						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }   dataField='sumWorkTime' dataFormat={this.sumWorkTimeFormatter}>稼働時間（必）</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' >登録者</TableHeaderColumn>
 						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime'  dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
