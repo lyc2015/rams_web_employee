@@ -69,10 +69,13 @@ class workRepot extends React.Component {
 	approvalStatus = (code,row) => {
 		if(row.workingTimeReportFile === "勤務時間データすでに存在しています")
 			return "";
-		if(row.sumWorkTime === "" || row.sumWorkTime === null)
-			return "";
 		if(row.workingTimeReportFile === "まずファイルをアップロードしてください")
-			return "時間入力済み";
+			return "";
+		else{
+			if(row.sumWorkTime === "" || row.sumWorkTime === null)
+				return "未完成";
+		}
+
 		let approvalStatuss = this.state.approvalStatuslist;
         for (var i in approvalStatuss) {
             if (code === approvalStatuss[i].code) {
@@ -118,52 +121,61 @@ class workRepot extends React.Component {
 	};
 	//　変更
 	sumWorkTimeChange = (sumWorkTime, row) =>{
-		var re = /^[0-9]+.?[0-9]*/;
-		if(sumWorkTime === null || sumWorkTime === "")
-			return;
-		if(sumWorkTime !== null){
-			if(sumWorkTime.length > 6){
-				alert("稼働時間をチェックしてください。");
+		if(row.workingTimeReportFile === "まずファイルをアップロードしてください"){
+			alert("まずファイルをアップロードしてください")
+			let employeeList = this.state.employeeList;
+			employeeList[row.id].sumWorkTime = "";
+			this.setState({ 
+				employeeList: employeeList
+			})
+		}else{
+			var re = /^[0-9]+.?[0-9]*/;
+			if(sumWorkTime === null || sumWorkTime === "")
 				return;
-			}else if(!re.test(sumWorkTime)){
-				alert("数字のみを入力してください。");
-				row.sumWorkTime = "";
-				let employeeList = this.state.employeeList;
-				employeeList[row.id].sumWorkTime = "";
-				this.setState({ 
-					employeeList: employeeList
-				})
-				return;
-			}else{
-				if(sumWorkTime.split(".").length > 1){
-					if(sumWorkTime.split(".")[0].length > 3 || sumWorkTime.split(".")[1].length > 2 ){
-						alert("稼働時間をチェックしてください。");
-						return;
-					}
+			if(sumWorkTime !== null){
+				if(sumWorkTime.length > 6){
+					alert("稼働時間をチェックしてください。");
+					return;
+				}else if(!re.test(sumWorkTime)){
+					alert("数字のみを入力してください。");
+					row.sumWorkTime = "";
+					let employeeList = this.state.employeeList;
+					employeeList[row.id].sumWorkTime = "";
+					this.setState({ 
+						employeeList: employeeList
+					})
+					return;
 				}else{
-					if(sumWorkTime.length > 3){
-						alert("稼働時間をチェックしてください。");
-						return;
+					if(sumWorkTime.split(".").length > 1){
+						if(sumWorkTime.split(".")[0].length > 3 || sumWorkTime.split(".")[1].length > 2 ){
+							alert("稼働時間をチェックしてください。");
+							return;
+						}
+					}else{
+						if(sumWorkTime.length > 3){
+							alert("稼働時間をチェックしてください。");
+							return;
+						}
 					}
 				}
 			}
+			const emp = {
+				attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
+				sumWorkTime:　sumWorkTime,
+			};
+			axios.post(this.state.serverIP + "workRepot/updateworkRepot",emp)
+				.then(response => {
+					if (response.data != null) {
+						this.searchWorkRepot();
+						this.setState({ "myToastShow": true, message: "更新成功！", });
+						this.setState({ rowSelectSumWorkTime: sumWorkTime, });
+						setTimeout(() => this.setState({ "myToastShow": false }), 3000);
+						setTimeout(() => window.location.reload(), 1000);
+					} else {
+						alert("err")
+					}
+				});
 		}
-		const emp = {
-			attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
-			sumWorkTime:　sumWorkTime,
-		};
-		axios.post(this.state.serverIP + "workRepot/updateworkRepot",emp)
-			.then(response => {
-				if (response.data != null) {
-					this.searchWorkRepot();
-					this.setState({ "myToastShow": true, message: "更新成功！", });
-					this.setState({ rowSelectSumWorkTime: sumWorkTime, });
-					setTimeout(() => this.setState({ "myToastShow": false }), 3000);
-					setTimeout(() => window.location.reload(), 1000);
-				} else {
-					alert("err")
-				}
-			});
 	}
   /**
      * 作業報告書ボタン
@@ -343,8 +355,15 @@ class workRepot extends React.Component {
 		this.props.history.push(path);
 	}
 	
+	updateUserFormatter = (cell,row) => {
+		if(row.sumWorkTime === null || row.sumWorkTime === "")
+			return "";
+		else
+			return cell;
+	}
+	
 	updateTimeFormatter = (cell,row) => {
-		if(row.updateUser === "")
+		if(row.sumWorkTime === null || row.sumWorkTime === "" || row.updateUser === "")
 			return "";
 		else
 			return cell;
@@ -448,8 +467,8 @@ class workRepot extends React.Component {
 						<TableHeaderColumn width='130'　tdStyle={ { padding: '.45em' } }   dataField='attendanceYearAndMonth'  isKey>年月</TableHeaderColumn>
 						<TableHeaderColumn width='380' tdStyle={ { padding: '.45em' } }   dataField='workingTimeReportFile' dataFormat={this.fileNameFormatter}>ファイル名（必）</TableHeaderColumn>
 						<TableHeaderColumn width='140' tdStyle={ { padding: '.45em' } }   dataField='sumWorkTime' dataFormat={this.sumWorkTimeFormatter}>稼働時間（必）</TableHeaderColumn>
-						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' >登録者</TableHeaderColumn>
-						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime'  dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
+						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='updateUser' dataFormat={this.updateUserFormatter}>登録者</TableHeaderColumn>
+						<TableHeaderColumn width='350' tdStyle={ { padding: '.45em' } }   dataField='updateTime' dataFormat={this.updateTimeFormatter}>更新日</TableHeaderColumn>
 						<TableHeaderColumn width='150' tdStyle={ { padding: '.45em' } }   dataField='approvalStatus'  dataFormat={this.approvalStatus}>ステータス</TableHeaderColumn>
 					</BootstrapTable>
 					</Col>
