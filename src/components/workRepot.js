@@ -25,6 +25,12 @@ class workRepot extends React.Component {
 		this.sumWorkTimeChange = this.sumWorkTimeChange.bind(this);
 	};
 	componentDidMount(){
+		if (this.props.location.state !== undefined) {
+			this.setState({
+				employeeNo: this.props.location.state.employeeNo,
+				employeeName: this.props.location.state.employeeName
+			})
+		}
 		$("#workRepotUpload").attr("disabled",true);
 		$("#workRepotDownload").attr("disabled",true);
 		$("#workRepotClear").attr("disabled",true);
@@ -85,7 +91,11 @@ class workRepot extends React.Component {
     };
 	//　検索
 	searchWorkRepot = () => {
-		axios.post(this.state.serverIP + "workRepot/selectWorkRepot")
+		const workRepotModel = {
+				employeeNo: this.state.employeeNo,
+				employeeName:　this.state.employeeName,
+			};
+		axios.post(this.state.serverIP + "workRepot/selectWorkRepot",workRepotModel)
 			.then(response => response.data)
 			.then((data) => {
 				if (data.length!=0) {
@@ -160,6 +170,8 @@ class workRepot extends React.Component {
 				}
 			}
 			const emp = {
+				employeeNo: this.state.employeeNo,
+				employeeName:　this.state.employeeName,
 				attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
 				sumWorkTime:　sumWorkTime,
 			};
@@ -207,6 +219,8 @@ class workRepot extends React.Component {
 }*/
 		const formData = new FormData()
 		const emp = {
+				employeeNo: this.state.employeeNo,
+				employeeName:　this.state.employeeName,
 				attendanceYearAndMonth:this.state.rowSelectAttendanceYearAndMonth,
 			};
 			formData.append('emp', JSON.stringify(emp))
@@ -309,6 +323,8 @@ class workRepot extends React.Component {
 			var a = window.confirm("データをクリアしてよろしいでしょうか？");
 			if(a){
 				const emp = {
+						employeeNo: this.state.employeeNo,
+						employeeName:　this.state.employeeName,
 						attendanceYearAndMonth: this.state.rowSelectAttendanceYearAndMonth,
 					};
 					axios.post(this.state.serverIP + "workRepot/clearworkRepot",emp)
@@ -433,7 +449,7 @@ class workRepot extends React.Component {
 						<Form.Group>
 							<Row inline="true">
 								<Col className="text-center">
-									<h2>作業報告書アップロード</h2>
+									<h2>{this.state.employeeName === undefined || this.state.employeeName === null ? "" : this.state.employeeName + "_"}作業報告書アップロード</h2>
 								</Col>
 							</Row>
 						</Form.Group>

@@ -389,6 +389,18 @@ class dutyManagement extends React.Component {
 					},
 				}
 				break;
+			case "workRepot":
+				path = {
+					pathname: '/subMenuManager/workRepot',
+					state: {
+						employeeNo: this.state.rowSelectEmployeeNo,
+						employeeName: this.state.rowSelectEmployeeName,
+						backPage: "employeeSearch",
+						sendValue: sendValue,
+						searchFlag: this.state.searchFlag
+					},
+				}
+				break;
 			default:
 		}
 		this.props.history.push(path);
@@ -478,6 +490,7 @@ class dutyManagement extends React.Component {
 			let dataInfo = {};
 			dataInfo["yearMonth"] = String(this.state.yearAndMonth.getFullYear()) + (this.state.yearAndMonth.getMonth() + 1 < 10 ? "0" + String(this.state.yearAndMonth.getMonth() + 1) : String(this.state.yearAndMonth.getMonth() + 1));
 			dataInfo["employeeName"] = this.state.rowSelectEmployeeName;
+			dataInfo["employeeNo"] = this.state.rowSelectEmployeeNo;
 			axios.post(this.state.serverIP + "dutyRegistration/downloadPDF", dataInfo)
 				.then(resultMap => {
 					if (resultMap.data) {
@@ -792,11 +805,12 @@ class dutyManagement extends React.Component {
 				</Form>
 				<div >
                     <Row>
-						<Col sm={3}>
+						<Col sm={4}>
 							{/*<font style={{ whiteSpace: 'nowrap' }}>稼動人数：{this.state.totalPersons}</font>*/}
                             <Button size="sm" onClick={this.shuseiTo.bind(this, "employeeInfo")} disabled={this.state.rowSelectEmployeeNo === "" ? true : false} variant="info" id="employeeInfo">個人情報</Button>{' '}
 							<Button size="sm" onClick={this.shuseiTo.bind(this, "siteInfo")} disabled={this.state.rowSelectEmployeeNo === "" ? true : false} name="clickButton" variant="info" id="siteInfo">現場情報</Button>{' '}
 							<Button size="sm" onClick={this.shuseiTo.bind(this, "sendInvoice")} name="clickButton" variant="info" id="siteInfo">請求書一覧</Button>{' '}
+							<Button size="sm" onClick={this.shuseiTo.bind(this, "workRepot")} disabled={this.state.rowSelectEmployeeNo === "" ? true : false} hidden={this.state.authorityCode==="4" ? false : true} name="clickButton" variant="info" id="workRepot">勤務管理</Button>{' '}
 						</Col>
 						<Col>
 							<InputGroup size="sm">
