@@ -29,12 +29,15 @@ class workRepot extends React.Component {
 			this.setState({
 				employeeNo: this.props.location.state.employeeNo,
 				employeeName: this.props.location.state.employeeName
+			}, () => {
+				this.selectWorkTime();
 			})
+		}else{
+			this.selectWorkTime();
 		}
 		$("#workRepotUpload").attr("disabled",true);
 		$("#workRepotDownload").attr("disabled",true);
 		$("#workRepotClear").attr("disabled",true);
-		this.selectWorkTime();
 	}
 	//onchange
 	valueChange = event => {
@@ -47,6 +50,7 @@ class workRepot extends React.Component {
 		let dataInfo = {};
 		let month = now.getMonth() + 1;
 		dataInfo["attendanceYearAndMonth"] = String(now.getFullYear()) + String(month < 10 ? "0" + month : month);
+		dataInfo["employeeNo"] = this.state.employeeNo;
 		axios.post(this.state.serverIP + "workRepot/selectWorkTime",dataInfo)
 		.then(response => response.data)
 		.then((data) => {
@@ -359,7 +363,7 @@ class workRepot extends React.Component {
 		switch (actionType) {
 			case "costRegistration":
 				path = {
-					pathname: '/subMenuEmployee/costRegistration',
+					pathname: '/subMenuManager/costRegistration',
 					state: {
 						backPage: "workRepot",
 						sendValue: sendValue,
