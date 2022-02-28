@@ -99,7 +99,6 @@ class otherCost extends React.Component {
 		}
 		
 		this.setState({ yearMonth: this.props.yearMonth, });
-
 		if (this.props.changeData1) {
 			if (this.props.costClassification == 1) {
 				this.setState({
@@ -117,6 +116,8 @@ class otherCost extends React.Component {
 					costRegistrationFileFlag2: this.props.costRegistrationFileFlag1,
 					remark: this.props.remark,
 					otherCostFilePath: this.props.otherCostFile,
+					employeeNo: this.props.employeeNo,
+					employeeName: this.props.employeeName,
 				})
 			} else {
 				this.setState({
@@ -133,6 +134,8 @@ class otherCost extends React.Component {
 					changeFile: this.props.changeFile1,
 					costRegistrationFileFlag3: this.props.costRegistrationFileFlag1,
 					otherCostFilePath: this.props.otherCostFile,
+					employeeNo: this.props.employeeNo,
+					employeeName: this.props.employeeName,
 				})
 			}
 		} else {
@@ -403,6 +406,8 @@ class otherCost extends React.Component {
 				cost: Number(utils.deleteComma(this.state.cost1)),
 				changeFile: this.state.changeFile,
 				oldCostFile: this.state.oldCostFile,
+				employeeNo: this.state.employeeNo,
+				employeeName: this.state.employeeName,
 			}
 			formData.append('emp', JSON.stringify(emp))
 			formData.append('costFile', publicUtils.nullToEmpty($('#otherCostFile').get(0).files[0]))
@@ -454,6 +459,8 @@ class otherCost extends React.Component {
 				cost: Number(utils.deleteComma(this.state.cost2)),
 				changeFile: this.state.changeFile,
 				oldCostFile: this.state.oldCostFile,
+				employeeNo: this.state.employeeNo,
+				employeeName: this.state.employeeName,
 			}
 			formData.append('emp', JSON.stringify(emp))
 			formData.append('costFile', publicUtils.nullToEmpty($('#otherCostFile').get(0).files[0]))

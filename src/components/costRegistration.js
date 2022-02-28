@@ -45,7 +45,15 @@ class costRegistration extends React.Component {
 	};
 
 	componentDidMount() {
-		this.searchCostRegistration();
+		if(this.props.location.state.employeeNo !== undefined){
+			this.setState({
+				employeeNo: this.props.location.state.employeeNo,
+			}, () => {
+				this.searchCostRegistration();
+			})
+		}else{
+			this.searchCostRegistration();
+		}
 		this.searchEmployeeName();
 		this.setState({ "errorsMessageShow": false, "myToastShow": false, });
 	}
@@ -154,6 +162,7 @@ class costRegistration extends React.Component {
 		})
 		var model = {};
 		model["yearMonth"] = publicUtils.formateDate(this.state.yearMonth, true).substring(0,6);
+		model["employeeNo"] = this.state.employeeNo;
 		axios.post(this.state.serverIP + "costRegistration/selectCostRegistration",model)
 			.then(response => response.data)
 			.then((data) => {
@@ -174,16 +183,26 @@ class costRegistration extends React.Component {
 			});
 	};
 	searchEmployeeName = () => {
-		axios.post(this.state.serverIP + "costRegistration/selectEmployeeName")
+		if(this.props.location.state.employeeNo !== undefined){
+			this.setState({
+				employeeName: this.props.location.state.employeeName,
+			})
+		}else{
+			axios.post(this.state.serverIP + "costRegistration/selectEmployeeName")
 			.then(response => {
 				this.setState({
 					employeeName: response.data.employeeName,
 				})
 			});
+		}
 	};
 
 	//登録と修正
 	InsertCost = () => {
+		if(this.state.rowSelectCostClassificationCode !== "0" && ($('#costRegistrationFile').get(0).files[0] === undefined || $('#costRegistrationFile').get(0).files[0] === null)){
+			alert("領収書を添付してください")
+			return;
+		}
 		const formData = new FormData()
 		if (this.state.cost === "" ||
 			this.state.stationCode1 == "" ||
@@ -241,6 +260,8 @@ class costRegistration extends React.Component {
 			oldCostFile: this.state.rowSelectCostFile,
 			changeFile: this.state.changeFile,
 			remark: this.state.remark,
+			employeeNo: this.state.employeeNo,
+			employeeName: this.state.employeeName,
 		}
 		formData.append('emp', JSON.stringify(emp))
 		formData.append('costFile', publicUtils.nullToEmpty($('#costRegistrationFile').get(0).files[0]))
@@ -872,6 +893,8 @@ class costRegistration extends React.Component {
 							otherCostToroku={this.otherCostGet} 
 							minDate={this.state.minDate}
 							otherCostFile={this.state.oldCostFile}
+							employeeNo={this.state.employeeNo}
+							employeeName={this.state.employeeName}
 						/></Modal.Body>
 				</Modal>
 				<div style={{ "display": this.state.myToastShow ? "block" : "none" }}>
@@ -885,7 +908,7 @@ class costRegistration extends React.Component {
 						<Form.Group>
 							<Row inline="true">
 								<Col className="text-center">
-									<h2>費用登録</h2>
+									<h2>{this.state.employeeNo === undefined || this.state.employeeNo === null ? "" : this.state.employeeName + "_"}費用登録</h2>
 							  		<br/>
 									<h2>{new Date().toLocaleDateString()}</h2>
 								</Col>

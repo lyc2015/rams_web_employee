@@ -363,10 +363,12 @@ class workRepot extends React.Component {
 		switch (actionType) {
 			case "costRegistration":
 				path = {
-					pathname: '/subMenuManager/costRegistration',
+					pathname: this.state.employeeNo === undefined || this.state.employeeNo === null ? '/subMenuEmployee/costRegistration' : '/subMenuManager/costRegistration',
 					state: {
 						backPage: "workRepot",
 						sendValue: sendValue,
+						employeeNo: this.state.employeeNo,
+						employeeName: this.state.employeeName,
 					},
 				}
 				break;
