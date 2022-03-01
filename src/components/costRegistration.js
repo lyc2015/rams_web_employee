@@ -45,7 +45,7 @@ class costRegistration extends React.Component {
 	};
 
 	componentDidMount() {
-		if(this.props.location.state.employeeNo !== undefined){
+		if(this.props.location.state !== undefined && this.props.location.state.employeeNo !== undefined){
 			this.setState({
 				employeeNo: this.props.location.state.employeeNo,
 			}, () => {
@@ -183,7 +183,7 @@ class costRegistration extends React.Component {
 			});
 	};
 	searchEmployeeName = () => {
-		if(this.props.location.state.employeeNo !== undefined){
+		if(this.props.location.state !== undefined && this.props.location.state.employeeNo !== undefined){
 			this.setState({
 				employeeName: this.props.location.state.employeeName,
 			})
