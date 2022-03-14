@@ -77,7 +77,7 @@ class workRepot extends React.Component {
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
 	approvalStatus = (code,row) => {
-		if(row.workingTimeReportFile === "勤務時間データすでに存在しています")
+		if(row.workingTimeReportFile === "作業時間入力画面で存在しました")
 			return "";
 		if(row.workingTimeReportFile === "まずファイルをアップロードしてください")
 			return "";
@@ -112,7 +112,7 @@ class workRepot extends React.Component {
 						}
 						if(i < 2 && this.state.disabledFlag[i]){
 							data[i].disabledFlag = true;
-							data[i].workingTimeReportFile = "勤務時間データすでに存在しています"
+							data[i].workingTimeReportFile = "作業時間入力画面で存在しました"
 						}
 					}
 					if(this.state.rowId !== ""){
@@ -410,7 +410,7 @@ class workRepot extends React.Component {
 	}
 	
 	fileNameFormatter = (cell) => {
-		if(cell === "勤務時間データすでに存在しています" || cell === "まずファイルをアップロードしてください")
+		if(cell === "作業時間入力画面で存在しました" || cell === "まずファイルをアップロードしてください")
 			return <font style={{color: "red"}}>{cell}</font>;
 		else
 			return cell

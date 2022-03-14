@@ -517,6 +517,9 @@ class DutyRegistration extends React.Component {
 					}
 				}
 			}
+			if(this.state.systemName === undefined || this.state.systemName === null || this.state.systemName === ""){
+				errorMessage = "業務名称を入力してください"
+			}
 			if (!publicUtils.isEmpty(errorMessage)) {
 				this.setState({
 					errorsMessageShow: true,

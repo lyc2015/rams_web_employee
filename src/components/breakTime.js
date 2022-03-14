@@ -272,6 +272,9 @@ class BreakTime extends Component {
                                     </InputGroup.Append>
                                 </InputGroup>
                             </Col>
+                            <Col>
+								<div><font style={{ color: "grey",fontSize: "14px" }}>現場の固定休憩を時間入力してください</font></div>
+							</Col>
                         </Row>
                         <Row>
 	                        <Col sm={2}>
