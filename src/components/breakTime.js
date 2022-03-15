@@ -62,6 +62,7 @@ class BreakTime extends Component {
 					backPage: location.state.backPage,
 					sendValue: location.state.sendValue,
 					flag: location.state.sendValue.flag,
+					nowDate: String(new Date().getFullYear()) + (new Date().getMonth() + 1 < 10 ? "0" + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)),
 				}
 			);
         let postData = {
@@ -210,6 +211,55 @@ class BreakTime extends Component {
 			return this.props.history.push(path);
 		}
 	};
+	
+	changeToDutyRegistration = () => {
+		var path = {};
+        path = {
+            pathname: "/subMenuEmployee/dutyRegistration",
+            state: { sendValue: this.state.sendValue,
+            },
+        }
+		return this.props.history.push(path);
+	};
+	
+	setBreakTime = (date) => {
+		this.setState({ breakTimeDate: date })
+		let tempDate = String(date.getFullYear()) + (date.getMonth() + 1 < 10 ? "0" + String(date.getMonth() + 1) : String(date.getMonth() + 1))
+		if(tempDate < this.state.nowDate){
+	        var breakTimeInfo = {};
+	        breakTimeInfo["employeeNo"] = $("#employeeNo").val();
+	        breakTimeInfo["breakTimeYearMonth"] = tempDate;
+	        let postData = {
+	                yearMonth: tempDate,
+	            }
+			axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
+	        .then(resultMap => {
+	            if(resultMap.data.breakTime !== null){
+	            	$("#breakTimeDayHourStart").val(Number(resultMap.data.breakTime.lunchBreakStartTime.toString().substring(0, 2)));
+                    $("#breakTimeDayMinuteStart").val(Number(resultMap.data.breakTime.lunchBreakStartTime.toString().substring(2)));
+                    $("#breakTimeDayHourEnd").val(Number(resultMap.data.breakTime.lunchBreakFinshTime.toString().substring(0, 2)));
+                    $("#breakTimeDayMinuteEnd").val(Number(resultMap.data.breakTime.lunchBreakFinshTime.toString().substring(2)));
+                    $("#breakTimeNightHourStart").val(Number(resultMap.data.breakTime.nightBreakStartTime.toString().substring(0, 2)));
+                    $("#breakTimeNightMinuteStart").val(Number(resultMap.data.breakTime.nightBreakStartTime.toString().substring(2)));
+                    $("#breakTimeNightHourEnd").val(Number(resultMap.data.breakTime.nightBreakfinshTime.toString().substring(0, 2)));
+                    $("#breakTimeNightMinuteEnd").val(Number(resultMap.data.breakTime.nightBreakfinshTime.toString().substring(2)));
+                    this.setState({
+                        breakTimeDaybreakTimeHour: resultMap.data.breakTime.lunchBreakTime,
+                        breakTimeNightbreakTimeHour: resultMap.data.breakTime.nightBreakTime, breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
+                        disabledFlag: true,
+                    });
+	            }
+	            else{
+	            	alert("データ存在していません");
+            	}
+	        })
+	        .catch(function () {
+	            alert("更新错误，请检查程序");
+	        })
+		}else{
+			this.setState({ disabledFlag: false })
+		}
+	}
     
     render() {
         const { actionType } = this.state;
@@ -261,7 +311,7 @@ class BreakTime extends Component {
                                     <InputGroup.Append>
                                         <DatePicker
                                             selected={this.state.breakTimeDate}
-                                            onChange={date => { this.setState({ breakTimeDate: date }); }}
+                                            onChange={this.setBreakTime} 
                                             locale="ja"
                                             dateFormat="yyyy/MM"
                                             showMonthYearPicker
@@ -273,7 +323,10 @@ class BreakTime extends Component {
                                 </InputGroup>
                             </Col>
                             <Col>
-								<div><font style={{ color: "grey",fontSize: "14px" }}>現場の固定休憩を時間入力してください</font></div>
+								<div>
+								<Button size="sm" variant="info" type="button" onClick={this.changeToDutyRegistration} >勤务时间</Button>
+								<font style={{ color: "grey",fontSize: "14px" }}>　現場の固定休憩を時間入力してください</font>
+								</div>
 							</Col>
                         </Row>
                         <Row>
@@ -426,11 +479,11 @@ class BreakTime extends Component {
                             <Col sm={4}></Col>
                             <Col sm={4} className="text-center">
                                 <div >
-                                    <Button size="sm" className="btn btn-info btn-sm" onClick={this.beferBreakTimeRegister} variant="info" id="toroku" type="button">
+                                    <Button size="sm" className="btn btn-info btn-sm" onClick={this.beferBreakTimeRegister} disabled={this.state.disabledFlag} variant="info" id="toroku" type="button">
                                         <FontAwesomeIcon icon={faSave} /> 登録
 										</Button>
 										&nbsp;&nbsp;
-										<Button size="sm" className="btn btn-info btn-sm" onClick={TopCustomerInfoJs.reset} >
+										<Button size="sm" className="btn btn-info btn-sm" onClick={TopCustomerInfoJs.reset} disabled={this.state.disabledFlag}>
                                         <FontAwesomeIcon icon={faUndo} /> リセット
 										</Button>
 										&nbsp;&nbsp;
