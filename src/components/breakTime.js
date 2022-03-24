@@ -324,8 +324,8 @@ class BreakTime extends Component {
                             </Col>
                             <Col>
 								<div>
-								<Button size="sm" variant="info" type="button" onClick={this.changeToDutyRegistration} >勤务时间</Button>
-								<font style={{ color: "grey",fontSize: "14px" }}>　現場の固定休憩を時間入力してください</font>
+								<font style={{ color: "grey",fontSize: "14px",marginLeft: "-50px" }}>現場の固定休憩を時間入力してください </font>
+								<Button size="sm" variant="info" type="button" onClick={this.changeToDutyRegistration} >勤务时间入力</Button>
 								</div>
 							</Col>
                         </Row>
