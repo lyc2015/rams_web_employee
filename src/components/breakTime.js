@@ -56,6 +56,7 @@ class BreakTime extends Component {
      * 画面の初期化
      */
     componentDidMount() {
+    	this.getDutyRegistrationFlag();
 		const { location } = this.props
 		this.setState(
 				{
@@ -213,13 +214,18 @@ class BreakTime extends Component {
 	};
 	
 	changeToDutyRegistration = () => {
-		var path = {};
-        path = {
-            pathname: "/subMenuEmployee/dutyRegistration",
-            state: { sendValue: this.state.sendValue,
-            },
-        }
-		return this.props.history.push(path);
+		if(this.state.breakTimeFlag === true){
+			alert("休憩時間を登録してください。");
+			return;
+		}else{
+			var path = {};
+	        path = {
+	            pathname: "/subMenuEmployee/dutyRegistration",
+	            state: { sendValue: this.state.sendValue,
+	            },
+	        }
+			return this.props.history.push(path);
+		}
 	};
 	
 	setBreakTime = (date) => {
@@ -260,6 +266,20 @@ class BreakTime extends Component {
 			this.setState({ disabledFlag: false })
 		}
 	}
+	
+    getDutyRegistrationFlag = () => {
+		let postData = {
+				yearMonth: this.state.year + this.state.month,
+			}
+		axios.post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
+		.then(resultMap => {
+			if (resultMap.data.breakTime === null) {
+				this.setState({
+					breakTimeFlag: true,
+				});
+			}
+		})
+    }
     
     render() {
         const { actionType } = this.state;
@@ -325,7 +345,7 @@ class BreakTime extends Component {
                             <Col>
 								<div>
 								<font style={{ color: "grey",fontSize: "14px",marginLeft: "-50px" }}>現場の固定休憩を時間入力してください </font>
-								<Button size="sm" variant="info" type="button" onClick={this.changeToDutyRegistration} >勤务时间入力</Button>
+								<Button size="sm" variant="info" type="button" onClick={this.changeToDutyRegistration} >勤務時間入力</Button>
 								</div>
 							</Col>
                         </Row>
