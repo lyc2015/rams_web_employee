@@ -231,7 +231,7 @@ class BreakTime extends Component {
 	setBreakTime = (date) => {
 		this.setState({ breakTimeDate: date })
 		let tempDate = String(date.getFullYear()) + (date.getMonth() + 1 < 10 ? "0" + String(date.getMonth() + 1) : String(date.getMonth() + 1))
-		if(tempDate < this.state.nowDate){
+		if(tempDate <= this.state.nowDate){
 	        var breakTimeInfo = {};
 	        breakTimeInfo["employeeNo"] = $("#employeeNo").val();
 	        breakTimeInfo["breakTimeYearMonth"] = tempDate;
@@ -264,6 +264,22 @@ class BreakTime extends Component {
 	        })
 		}else{
 			this.setState({ disabledFlag: false })
+		}
+		if(tempDate > this.state.nowDate){
+        	$("#breakTimeDayHourStart").val(0);
+            $("#breakTimeDayMinuteStart").val(0);
+            $("#breakTimeDayHourEnd").val(0);
+            $("#breakTimeDayMinuteEnd").val(0);
+            $("#breakTimeNightHourStart").val(0);
+            $("#breakTimeNightMinuteStart").val(0);
+            $("#breakTimeNightHourEnd").val(0);
+            $("#breakTimeNightMinuteEnd").val(0);
+            this.setState({
+                breakTimeDaybreakTimeHour: 0,
+                breakTimeNightbreakTimeHour: 0,
+                breakTimeSumHour: 0,
+                disabledFlag: true,
+            });
 		}
 	}
 	
