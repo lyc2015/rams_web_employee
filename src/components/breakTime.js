@@ -257,13 +257,28 @@ class BreakTime extends Component {
 	            }
 	            else{
 	            	alert("データ存在していません");
+	            	$("#breakTimeDayHourStart").val(0);
+	                $("#breakTimeDayMinuteStart").val(0);
+	                $("#breakTimeDayHourEnd").val(0);
+	                $("#breakTimeDayMinuteEnd").val(0);
+	                $("#breakTimeNightHourStart").val(0);
+	                $("#breakTimeNightMinuteStart").val(0);
+	                $("#breakTimeNightHourEnd").val(0);
+	                $("#breakTimeNightMinuteEnd").val(0);
+	                this.setState({
+	                    breakTimeDaybreakTimeHour: 0,
+	                    breakTimeNightbreakTimeHour: 0,
+	                    breakTimeSumHour: 0,
+	                    disabledFlag: true,
+	                });
             	}
+                this.setState({
+                    dateDisabledFlag: tempDate < this.state.nowDate,
+                });
 	        })
 	        .catch(function () {
 	            alert("更新错误，请检查程序");
 	        })
-		}else{
-			this.setState({ disabledFlag: false })
 		}
 		if(tempDate > this.state.nowDate){
         	$("#breakTimeDayHourStart").val(0);
@@ -279,6 +294,7 @@ class BreakTime extends Component {
                 breakTimeNightbreakTimeHour: 0,
                 breakTimeSumHour: 0,
                 disabledFlag: true,
+                dateDisabledFlag: false,
             });
 		}
 	}
@@ -373,7 +389,7 @@ class BreakTime extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="niKanjiFor150">お昼</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <Form.Control id="breakTimeDayHourStart" name="breakTimeDayHourStart" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeDayHourStart" name="breakTimeDayHourStart" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeDayHourStart.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -384,7 +400,7 @@ class BreakTime extends Component {
                                         <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
-                                    <Form.Control id="breakTimeDayMinuteStart" name="breakTimeDayMinuteStart" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeDayMinuteStart" name="breakTimeDayMinuteStart" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeDayMinuteStart.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -395,7 +411,7 @@ class BreakTime extends Component {
                                         <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <font style={{ marginLeft: "10px", marginRight: "10px", marginTop: "5px" }}>～</font>
-                                    <Form.Control id="breakTimeDayHourEnd" name="breakTimeDayHourEnd" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeDayHourEnd" name="breakTimeDayHourEnd" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeDayHourEnd.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -406,7 +422,7 @@ class BreakTime extends Component {
                                         <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
-                                    <Form.Control id="breakTimeDayMinuteEnd" name="breakTimeDayMinuteEnd" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeDayMinuteEnd" name="breakTimeDayMinuteEnd" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeDayMinuteEnd.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -429,7 +445,7 @@ class BreakTime extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text id="niKanjiFor150">夜　</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <Form.Control id="breakTimeNightHourStart" name="breakTimeNightHourStart" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeNightHourStart" name="breakTimeNightHourStart" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeNightHourStart.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -440,7 +456,7 @@ class BreakTime extends Component {
                                         <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
-                                    <Form.Control id="breakTimeNightMinuteStart" name="breakTimeNightMinuteStart" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeNightMinuteStart" name="breakTimeNightMinuteStart" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeNightMinuteStart.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -451,7 +467,7 @@ class BreakTime extends Component {
                                         <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     <font style={{ marginLeft: "10px", marginRight: "10px", marginTop: "5px" }}>～</font>
-                                    <Form.Control id="breakTimeNightHourEnd" name="breakTimeNightHourEnd" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeNightHourEnd" name="breakTimeNightHourEnd" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag}>
                                         {this.state.breakTimeNightHourEnd.map(data =>
                                             <option value={data}>
                                                 {data}
@@ -462,7 +478,7 @@ class BreakTime extends Component {
                                         <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
                                     </InputGroup.Prepend>
                                     &nbsp;
-                                    <Form.Control id="breakTimeNightMinuteEnd" name="breakTimeNightMinuteEnd" as="select" onChange={this.calculateTime} >
+                                    <Form.Control id="breakTimeNightMinuteEnd" name="breakTimeNightMinuteEnd" as="select" onChange={this.calculateTime} disabled={this.state.dateDisabledFlag} >
                                         {this.state.breakTimeNightMinuteEnd.map(data =>
                                             <option value={data}>
                                                 {data}
