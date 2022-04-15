@@ -77,8 +77,6 @@ class workRepot extends React.Component {
 		serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
 	};
 	approvalStatus = (code,row) => {
-		if(row.workingTimeReportFile === "作業時間入力画面で存在しました")
-			return "";
 		if(row.workingTimeReportFile === "まずファイルをアップロードしてください")
 			return "";
 		else{
@@ -211,7 +209,8 @@ class workRepot extends React.Component {
 		fileName[fileName.length -1]=== "pdf"||
 		fileName[fileName.length -1]=== "jpg"||
 		fileName[fileName.length -1]=== "bmp"||
-		fileName[fileName.length -1]=== "png"
+		fileName[fileName.length -1]=== "png"||
+		fileName[fileName.length -1]=== "jpeg"
 	){
   }else{
     alert('PDF或いはexcelをアップロードしてください')
