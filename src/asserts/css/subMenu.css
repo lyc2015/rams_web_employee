@@ -1,72 +1,78 @@
-html, .mainBody {
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF),
-		color-stop(1, #00BFFF)); /* Saf4+, Chrome */
-	height: 100%;
-	width: 100%;
-	position: absolute;
-	top: 0px;
-	bottom: 0px;
-	background-size: cover;
-	background-attachment: fixed;
+html,
+.mainBody {
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, #ffffff),
+    color-stop(1, #00bfff)
+  ); /* Saf4+, Chrome */
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 .row {
-	width: 99.9999%;
-	padding: 0px;
-	margin: 0px;
+  width: 99.9999%;
+  padding: 0px;
+  margin: 0px;
 }
 
 h2 {
-	font-family: "幼园", Sans-serif;
-	font-size: 22px;
-	font-weight: 900;
-	padding: 0;
-	margin: 0;
-	line-height: 1;
-	text-align: center;
-	color: #018ec5;
+  font-family: "幼园", Sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  text-align: center;
+  color: #018ec5;
 }
 
 .nav-font {
-	font-family: "宋体", Sans-serif;
-	font-weight: bold;
-	font-size: 18px;
-	color: rgb(198, 251, 255);
+  font-family: "宋体", Sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  color: rgb(198, 251, 255);
 }
 
 .logout {
-	background-color: rgba(112, 135, 176, 0) !important;
-	padding: 0px 40px 0px 0px !important;
+  background-color: rgba(112, 135, 176, 0) !important;
+  padding: 0px 40px 0px 0px !important;
 }
 
 .loginPeople {
-	font-family: "黑体", Sans-serif;
-	font-size: 15px;
-	text-decoration: blink;
-	font-weight: bolder;
-	color: rgba(123, 84, 175, 0.411);
-	margin-right: auto;
-	margin-top: auto;
+  font-family: "黑体", Sans-serif;
+  font-size: 15px;
+  text-decoration: blink;
+  font-weight: bolder;
+  color: rgba(123, 84, 175, 0.411);
+  margin-right: auto;
+  margin-top: auto;
 }
 
 .title-font {
-	font-family: "幼园", Sans-serif;
-	font-size: 34px;
-	width: auto;
-	font-weight: bolder;
-	padding: 0;
-	margin: 0;
-	line-height: 1;
-	text-align: center;
-	color: rgb(110, 70, 185);
-	text-shadow: 5px 2px 6px rgb(148, 195, 207);
+  font-family: "幼园", Sans-serif;
+  font-size: 34px;
+  width: auto;
+  font-weight: bolder;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  text-align: center;
+  color: rgb(110, 70, 185);
+  text-shadow: 5px 2px 6px rgb(148, 195, 207);
 }
 
 .linkFont {
-	font-family: "黑体", Sans-serif;
-	font-size: 1.3rem;
-	margin-left: -0.5rem;
-	color: rgb(247, 226, 248);
+  font-family: "黑体", Sans-serif;
+  font-size: 1.3rem;
+  margin-left: -0.5rem;
+  color: rgb(247, 226, 248);
 }
 
 /* .linkFont:hover {
@@ -75,10 +81,10 @@ h2 {
 } */
 
 .linkFont-click {
-	font-family: "黑体", Sans-serif;
-	font-size: 1.3rem;
-	margin-left: -0.5rem;
-	color: black;
+  font-family: "黑体", Sans-serif;
+  font-size: 1.3rem;
+  margin-left: -0.5rem;
+  color: black;
 }
 
 /* .linkFont-click:hover {
@@ -87,188 +93,185 @@ h2 {
 	animation: light 0.5s ease infinite alternate;
 } */
 
-#社員・BP,#現場,#お客様,
-#給料・売上,#営業送信,
-#営業管理,#勤務,#期限確認,
-#マスター,#設定・共有,
-#ほかの設定,#勤務登録,#ファイル管理
-{
-	padding: 0px;
-	margin: 0px;
+#社員・BP,
+#現場,
+#お客様,
+#給料・売上,
+#営業送信,
+#営業管理,
+#勤務,
+#期限確認,
+#マスター,
+#設定・共有,
+#ほかの設定,
+#勤務登録,
+#ファイル管理 {
+  padding: 0px;
+  margin: 0px;
 }
 
-.my-tabcolor{
+.my-tabcolor {
 }
 
-.my-tabcolor::before{
-	display: none;
+.my-tabcolor::before {
+  display: none;
 }
 
-.my-tabcolor::after{
-	display: none;
+.my-tabcolor::after {
+  display: none;
 }
 
-.my-tabcolor-font{
-	color: #4a4a4a;
-	font-size: 18px;
-	margin-top: 0.2rem;
-	margin-bottom: 0.2rem;
+.my-tabcolor-font {
+  color: #4a4a4a;
+  font-size: 18px;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
 }
 
-.my-tabcolor-font-hover{
-	color: #ffffff;
-	font-size: 18px;
-	margin-top: 0.2rem;
-	margin-bottom: 0.2rem;
+.my-tabcolor-font-hover {
+  color: #ffffff;
+  font-size: 18px;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
 }
 
-.my-tabcolor-font-hover:hover{
-	color: #ffffff;
-	font-size: 18px;
-	margin-top: 0.2rem;
-	margin-bottom: 0.2rem;
-	text-decoration: none;
+.my-tabcolor-font-hover:hover {
+  color: #ffffff;
+  font-size: 18px;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  text-decoration: none;
 }
 
 @-webkit-keyframes change {
-    from {
-      -webkit-filter: hue-rotate(0deg);
-    }
-    to {
-      -webkit-filter: hue-rotate(-360deg);
-    }
+  from {
+    -webkit-filter: hue-rotate(0deg);
+  }
+  to {
+    -webkit-filter: hue-rotate(-360deg);
+  }
 }
 
-
 @keyframes light {
-            from {
-                text-shadow: 0 0 10px #fff,
-                    0 0 20px #fff,
-                    0 0 30px #fff,
-                    0 0 40px #fff700,
-                    0 0 70px #fff700,
-                    0 0 80px #fff700;
-            }
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff700,
+      0 0 70px #fff700, 0 0 80px #fff700;
+  }
 
-            to {
-                text-shadow: 0 0 0px #fff,
-                    0 0 5px #fff,
-                    0 0 10px #fff,
-                    0 0 15px #fff700,
-                    0 0 20px #fff700,
-                    0 0 30px #fff700;
-            }
-        }
+  to {
+    text-shadow: 0 0 0px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff700,
+      0 0 20px #fff700, 0 0 30px #fff700;
+  }
+}
 
 .collapse {
-	margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 .collapsing {
-	margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 .title-all {
-	background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
 .menuCol {
-	box-shadow: 5px 2px 6px rgb(110, 0, 28);
+  box-shadow: 5px 2px 6px rgb(110, 0, 28);
 }
 
 #page {
-	background-color: #f0ffff;
-	box-shadow: 5px 2px 6px rgb(110, 0, 28);
+  background-color: #f0ffff;
+  box-shadow: 5px 2px 6px rgb(110, 0, 28);
 }
 
 .list-group-item {
-	position: relative;
-	display: block;
-	padding: .5rem 1.25rem;
-	background-color: #fff;
-	border: none;
+  position: relative;
+  display: block;
+  padding: 0.5rem 1.25rem;
+  background-color: #fff;
+  border: none;
 }
 
 @media screen and (max-width: 1550px) {
-	.linkFont {
-		font-family: "黑体", Sans-serif;
-		font-size: 1.0rem;
-		color: rgb(247, 226, 248);
-		margin-left: -0.8rem;
-	}
-	.linkFont-click {
-		font-family: "黑体", Sans-serif;
-		font-size: 1.0rem;
-		color: rgb(0, 0, 0);
-		margin-left: -0.8rem;
-	}
-	.collapse {
-		margin-left: 0.05rem;
-	}
-	.collapsing {
-		margin-left: 0.05rem;
-	}
-	.title-font {
-		font-family: "幼园", Sans-serif;
-		font-size: 1.4rem;
-		width: auto;
-		font-weight: bolder;
-		padding: 0;
-		margin: 0;
-		line-height: 1;
-		text-align: center;
-		color: rgb(110, 70, 185);
-		text-shadow: 5px 2px 6px rgb(148, 195, 207);
-	}
-	.my-tabcolor-font{
-		color: #4a4a4a;
-		font-size: 14px;
-		margin-top: 0.2rem;
-		margin-bottom: 0.2rem;
-	}	
-	.my-tabcolor-font-hover{
-		color: #ffffff;
-		font-size: 14px;
-		margin-top: 0.2rem;
-		margin-bottom: 0.2rem;
-	}
-	
-	.my-tabcolor-font-hover:hover{
-		color: #ffffff;
-		font-size: 14px;
-		margin-top: 0.2rem;
-		margin-bottom: 0.2rem;
-		text-decoration: none;
-	}
+  .linkFont {
+    font-family: "黑体", Sans-serif;
+    font-size: 1rem;
+    color: rgb(247, 226, 248);
+    margin-left: -0.8rem;
+  }
+  .linkFont-click {
+    font-family: "黑体", Sans-serif;
+    font-size: 1rem;
+    color: rgb(0, 0, 0);
+    margin-left: -0.8rem;
+  }
+  .collapse {
+    margin-left: 0.05rem;
+  }
+  .collapsing {
+    margin-left: 0.05rem;
+  }
+  .title-font {
+    font-family: "幼园", Sans-serif;
+    font-size: 1.4rem;
+    width: auto;
+    font-weight: bolder;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    text-align: center;
+    color: rgb(110, 70, 185);
+    text-shadow: 5px 2px 6px rgb(148, 195, 207);
+  }
+  .my-tabcolor-font {
+    color: #4a4a4a;
+    font-size: 14px;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+  }
+  .my-tabcolor-font-hover {
+    color: #ffffff;
+    font-size: 14px;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .my-tabcolor-font-hover:hover {
+    color: #ffffff;
+    font-size: 14px;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    text-decoration: none;
+  }
 }
 
 @media screen and (max-width: 1300px) {
-	.linkFont {
-		font-family: "黑体", Sans-serif;
-		font-size: 0.75rem;
-		color: rgb(247, 226, 248);
-		margin-left: -1.4rem;
-	}
-	.linkFont-click {
-		font-family: "黑体", Sans-serif;
-		font-size: 0.75rem;
-		color: rgb(0, 0, 0);
-		margin-left: -1.4rem;
-	}
+  .linkFont {
+    font-family: "黑体", Sans-serif;
+    font-size: 0.75rem;
+    color: rgb(247, 226, 248);
+    margin-left: -1.4rem;
+  }
+  .linkFont-click {
+    font-family: "黑体", Sans-serif;
+    font-size: 0.75rem;
+    color: rgb(0, 0, 0);
+    margin-left: -1.4rem;
+  }
 }
 
 @media screen and (max-width: 1200px) {
-	.linkFont {
-		font-family: "黑体", Sans-serif;
-		font-size: 0.45rem;
-		color: rgb(247, 226, 248);
-		margin-left: -1.6rem;
-	}
-	.linkFont-click {
-		font-family: "黑体", Sans-serif;
-		font-size: 0.45rem;
-		color: rgb(0, 0, 0);
-		margin-left: -1.6rem;
-	}
+  .linkFont {
+    font-family: "黑体", Sans-serif;
+    font-size: 0.45rem;
+    color: rgb(247, 226, 248);
+    margin-left: -1.6rem;
+  }
+  .linkFont-click {
+    font-family: "黑体", Sans-serif;
+    font-size: 0.45rem;
+    color: rgb(0, 0, 0);
+    margin-left: -1.6rem;
+  }
 }
-
