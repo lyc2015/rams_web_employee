@@ -14,6 +14,7 @@ html,
   bottom: 0px;
   background-size: cover;
   background-attachment: fixed;
+  /* min-width: 1670px; */
 }
 
 .row {
@@ -245,7 +246,7 @@ h2 {
     text-decoration: none;
   }
 }
-
+/* 
 @media screen and (max-width: 1300px) {
   .linkFont {
     font-family: "黑体", Sans-serif;
@@ -273,5 +274,15 @@ h2 {
     font-size: 0.45rem;
     color: rgb(0, 0, 0);
     margin-left: -1.6rem;
+  }
+} */
+
+@media screen and (max-width: 750px) {
+  .loginMark {
+    font-size: 35px;
+  }
+
+  .loginPeople {
+    font-size: 12px;
   }
 }

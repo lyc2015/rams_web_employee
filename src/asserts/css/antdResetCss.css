@@ -1,0 +1,71 @@
+.ant-message-error {
+  display: flex;
+  align-items: center;
+}
+.ant-message-info {
+  display: flex;
+  align-items: center;
+}
+
+.ant-message-success {
+  display: flex;
+  align-items: center;
+}
+
+.ant-message-notice {
+  text-align: left !important;
+}
+
+.ant-picker {
+  height: calc(1.5em + 0.5rem + 2px);
+}
+
+.ant-picker-date-panel .ant-picker-content th:nth-of-type(1),
+.ant-picker-date-panel .ant-picker-content th:nth-of-type(7) {
+  color: red;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-bs-table-container {
+  /* min-width: 1200px; */
+}
+
+.react-datepicker__day-names .react-datepicker__day-name:nth-of-type(6),
+.react-datepicker__day-names .react-datepicker__day-name:nth-of-type(7) {
+  color: red;
+  font-weight: bold;
+}
+
+.react-datepicker__navigation--previous {
+  border-right-color: black;
+}
+.react-datepicker__navigation--next {
+  border-left-color: black;
+}
+
+.ant-modal-confirm .ant-modal-body {
+  box-shadow: #007bff 0px 0px 10px;
+}
+
+.ant-popover-inner-content {
+  box-shadow: #007bff 0px 0px 12px;
+}
+
+.ant-tag {
+  font-size: 14px;
+}
+
+.myCss .ant-menu-horizontal > .ant-menu-submenu > .ant-menu-submenu-title {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.myCss .ant-menu {
+  background: transparent;
+  height: 100%;
+  /* border: 1px solid #333; */
+}

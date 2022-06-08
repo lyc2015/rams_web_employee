@@ -1,18 +1,31 @@
 html,
-.root{
+.root {
   height: 100%;
   width: 100%;
   position: absolute;
   top: 0px;
   bottom: 0px;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, #00BFFF)); /* Saf4+, Chrome */
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, #ffffff),
+    color-stop(1, #00bfff)
+  ); /* Saf4+, Chrome */
 }
-.loginBody{ 
+.loginBody {
   height: 100%;
   width: 100%;
   position: absolute;
   top: 0px;
   bottom: 0px;
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, #ffffff),
+    color-stop(1, #00bfff)
+  ); /* Saf4+, Chrome */
 }
 .dateInput {
   border: 0px;
@@ -20,11 +33,11 @@ html,
   background-position: 3px;
   width: 27px;
   height: 20px;
-  line-height:0;
-  font-size:0;
-  overflow:hidden;
+  line-height: 0;
+  font-size: 0;
+  overflow: hidden;
 }
-.mb-4{
+.mb-4 {
   margin-bottom: 2rem !important;
 }
 .form-signin {
@@ -54,18 +67,18 @@ html,
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-.row{
-  width:99.9999%;
-  padding:0px;
-  margin:0px;
+.row {
+  width: 99.9999%;
+  padding: 0px;
+  margin: 0px;
 }
-.loginMark{
+.loginMark {
   font-family: "黑体", Sans-serif;
   font-size: 44px;
-  color:rgb(0, 0, 0);
+  color: rgb(0, 0, 0);
   font-weight: lighter;
   margin-left: 20px;
 }
-.resetFont{
-  color:rgb(63, 4, 4);
+.resetFont {
+  color: rgb(63, 4, 4);
 }

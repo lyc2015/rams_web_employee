@@ -43,13 +43,38 @@ import Resume from "./resume";
 import store from "./redux/store";
 import BreakTime from "./breakTime";
 import ReactTooltip from "react-tooltip";
+import { message } from "antd";
+
 axios.defaults.withCredentials = true;
 
+//お客様情報画面の追加パラメータ
+var customerInfoPath = {
+  pathname: "/subMenuEmployee/customerInfo",
+  state: { actionType: "insert" },
+};
+const menuStyle = {
+  borderBottom: "0.1px solid #167887",
+  backgroundColor: "#17a2b8",
+};
+const menuStyleHover = {
+  borderBottom: "0.1px solid #167887",
+  backgroundColor: "#188596",
+};
+
+const subMenu = {
+  borderBottom: "0.1px solid #4a4a4a",
+  backgroundColor: "#ffffff",
+};
+const subMenuHover = {
+  borderBottom: "0.1px solid #4a4a4a",
+  backgroundColor: "#4a4a4a",
+};
 /**
  * サブメニュー画面（社員用）
  */
 class SubMenu extends Component {
   state = {
+    isMobileDevice: false,
     nowDate: "", //今の期日
     hover: "",
     className: "",
@@ -64,6 +89,10 @@ class SubMenu extends Component {
       .post(this.state.serverIP + "subMenuEmployee/init")
       .then((resultMap) => {
         if (resultMap.data !== null && resultMap.data !== "") {
+          store.dispatch({
+            type: "UPDATE_INIT_EMPLOYEE",
+            data: resultMap.data,
+          });
           document.getElementById("kanriSha").innerHTML =
             "社員" + "：" + resultMap.data["employeeName"];
         } else {
@@ -75,6 +104,19 @@ class SubMenu extends Component {
    * 画面の初期化
    */
   componentDidMount() {
+    var sUserAgent = navigator.userAgent;
+    if (
+      sUserAgent.indexOf("Android") > -1 ||
+      sUserAgent.indexOf("iPhone") > -1 ||
+      sUserAgent.indexOf("iPad") > -1 ||
+      sUserAgent.indexOf("iPod") > -1 ||
+      sUserAgent.indexOf("Symbian") > -1
+    ) {
+      this.setState({ isMobileDevice: true });
+    } else {
+      this.setState({ isMobileDevice: false });
+    }
+
     this.getDutyRegistrationFlag();
 
     var dateNow = new Date();
@@ -146,7 +188,7 @@ class SubMenu extends Component {
         flag: this.state.breakTimeFlag,
       };
       if (this.state.breakTimeFlag) {
-        alert("休憩時間を登録してください。");
+        message.info("休憩時間を登録してください。");
         this.shuseiTo({
           pathname: "/subMenuEmployee/breakTime",
           state: {
@@ -198,38 +240,90 @@ class SubMenu extends Component {
     }
   };
 
-  render() {
-    //お客様情報画面の追加パラメータ
-    var customerInfoPath = {
-      pathname: "/subMenuEmployee/customerInfo",
-      state: { actionType: "insert" },
-    };
-    const menuStyle = {
-      borderBottom: "0.1px solid #167887",
-      backgroundColor: "#17a2b8",
-    };
-    const menuStyleHover = {
-      borderBottom: "0.1px solid #167887",
-      backgroundColor: "#188596",
-    };
-
-    const subMenu = {
-      borderBottom: "0.1px solid #4a4a4a",
-      backgroundColor: "#ffffff",
-    };
-    const subMenuHover = {
-      borderBottom: "0.1px solid #4a4a4a",
-      backgroundColor: "#4a4a4a",
-    };
-
+  renderTopMobile = () => {
     return (
-      <div className="mainBody">
+      <div className="myCss" style={{ backgroundColor: "#FFFAF0" }}>
+        <div className="df justify-between">
+          <Navbar inline="true">
+            <img className="titleImg w40" alt="title" src={title} />
+            <span className="loginMark fz30">LYC株式会社</span>
+          </Navbar>
+          {/* 导航栏 */}
+          {/* <div>
+            <Menu mode="horizontal" defaultSelectedKeys={["mail"]}>
+              <Menu.SubMenu
+                key="SubMenu"
+                title="勤務登録"
+                icon={<MenuFoldOutlined />}
+              >
+                <Menu.Item
+                  key="two"
+                  icon={
+                    <FontAwesomeIcon
+                      className="fa-fw"
+                      size="lg"
+                      icon={faFileExcel}
+                    />
+                  }
+                >
+                  <Link
+                    className={
+                      this.state.hover.search("1") !== -1
+                        ? "my-tabcolor-font-hover"
+                        : "my-tabcolor-font"
+                    }
+                    to={{
+                      pathname: "/subMenuEmployee/workRepot",
+                      state: { actionType: "insert" },
+                    }}
+                  >
+                    作業報告書
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="three" icon={<AppstoreOutlined />}>
+                  Navigation Three
+                </Menu.Item>
+                <Menu.Item key="four" icon={<AppstoreOutlined />}>
+                  Navigation Four
+                </Menu.Item>
+              </Menu.SubMenu>
+            </Menu>
+          </div> */}
+        </div>
+        <div className="df justify-end">
+          <div className="loginPeople df mr5 ">
+            {this.state.nowDate}{" "}
+            <FontAwesomeIcon className="fa-fw" size="lg" icon={faUser} />
+            <div id="kanriSha"></div>
+          </div>
+          <Link
+            as="button"
+            className="loginPeople mr5"
+            to="/"
+            id="logout"
+            onClick={this.logout}
+          >
+            <FontAwesomeIcon
+              className="fa-fw"
+              size="lg"
+              icon={faCaretSquareLeft}
+            />
+            sign out
+          </Link>
+        </div>
+      </div>
+    );
+  };
+
+  renderTopPC = () => {
+    return (
+      <>
         <Row style={{ backgroundColor: "#FFFAF0" }}>
           <Col>
             <div style={{ float: "left" }}>
-              <Navbar inline>
+              <Navbar inline="true">
                 <img className="titleImg" alt="title" src={title} />
-                <a className="loginMark" inline>
+                <a className="loginMark" inline="true">
                   LYC株式会社
                 </a>{" "}
               </Navbar>
@@ -258,6 +352,19 @@ class SubMenu extends Component {
           </Col>
           <Col sm={1}></Col>
         </Row>
+      </>
+    );
+  };
+
+  render() {
+    const { isMobileDevice } = this.state;
+
+    console.log({ state: this.state }, "render");
+
+    return (
+      <div className={"mainBody " + (isMobileDevice ? "" : " min-width1670")}>
+        {/* TOP */}
+        {isMobileDevice ? this.renderTopMobile() : this.renderTopPC()}
         <Row /*onClick={() => this.checkSession()}*/>
           <Col sm={2}>
             <br />
@@ -268,7 +375,7 @@ class SubMenu extends Component {
               </Container>
             </Row>
             <Row>
-              <Col>
+              <Col className={isMobileDevice ? "mb20 pl0 pr0" : ""}>
                 <ListGroup>
                   <Accordion className="menuCol">
                     <ListGroup.Item
@@ -277,7 +384,7 @@ class SubMenu extends Component {
                           ? menuStyleHover
                           : menuStyle
                       }
-                      block
+                      block="true"
                       data-place="right"
                       data-type="info"
                       data-tip=""
@@ -336,7 +443,7 @@ class SubMenu extends Component {
                                     onClick={this.shuseiTo.bind(this, {
                                       pathname: "/subMenuEmployee/workRepot",
                                     })}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
@@ -375,7 +482,7 @@ class SubMenu extends Component {
                                       "勤務登録"
                                     )}
                                     onClick={this.test}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
@@ -388,7 +495,7 @@ class SubMenu extends Component {
                                           pathname: "",
                                           state: { actionType: "insert" },
                                         }}
-                                        disabled
+                                        // disabled
                                       >
                                         <FontAwesomeIcon
                                           className="fa-fw"
@@ -417,7 +524,7 @@ class SubMenu extends Component {
                                       pathname:
                                         "/subMenuEmployee/workTimeSearch",
                                     })}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
@@ -459,7 +566,7 @@ class SubMenu extends Component {
                                       pathname:
                                         "/subMenuEmployee/costRegistration",
                                     })}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
@@ -497,7 +604,7 @@ class SubMenu extends Component {
                           ? menuStyleHover
                           : menuStyle
                       }
-                      block
+                      block="true"
                       data-place="right"
                       data-type="info"
                       data-tip=""
@@ -560,7 +667,7 @@ class SubMenu extends Component {
                                       pathname:
                                         "/subMenuEmployee/dataShareEmployee",
                                     })}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
@@ -601,7 +708,7 @@ class SubMenu extends Component {
                                     onClick={this.shuseiTo.bind(this, {
                                       pathname: "/subMenuEmployee/resume",
                                     })}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
@@ -638,7 +745,7 @@ class SubMenu extends Component {
                           ? menuStyleHover
                           : menuStyle
                       }
-                      block
+                      block="true"
                       data-place="right"
                       data-type="info"
                       data-tip=""
@@ -701,7 +808,7 @@ class SubMenu extends Component {
                                       pathname:
                                         "/subMenuEmployee/passwordSetEmployee",
                                     })}
-                                    block
+                                    block="true"
                                   >
                                     <div>
                                       <Link
