@@ -21,6 +21,7 @@ import {
   faLevelUpAlt,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 import * as publicUtils from "./utils/publicUtils.js";
@@ -575,15 +576,11 @@ class workRepot extends React.Component {
             {isMobileDevice ? null : <FontAwesomeIcon icon={faMoneyCheckAlt} />}
             費用登録
           </Button>{" "}
-          <Button
-            size="sm"
-            variant="info"
-            type="button"
-            onClick={this.back}
-            hidden={isMobileDevice}
-          >
-            <FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
-          </Button>
+          {this.props.state.initEmployee.authorityCode === "1" ? null : (
+            <Button size="sm" variant="info" type="button" onClick={this.back}>
+              <FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
+            </Button>
+          )}
         </div>
         <div>
           {" "}
@@ -625,7 +622,7 @@ class workRepot extends React.Component {
     console.log(
       {
         state: this.state,
-        props: this.props,
+        propsState: this.props.state,
       },
       "render"
     );
@@ -770,4 +767,12 @@ class workRepot extends React.Component {
     );
   }
 }
-export default workRepot;
+
+export default connect(
+  (state) => {
+    return {
+      state,
+    };
+  },
+  (dispatch) => {}
+)(workRepot);

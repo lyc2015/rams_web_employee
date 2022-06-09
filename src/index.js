@@ -17,10 +17,11 @@ import "moment/locale/ja";
 import locale from "antd/lib/locale/ja_JP";
 
 ReactDOM.render(
-  <ConfigProvider locale={locale}>
-    <App />
-  </ConfigProvider>,
-  // /*<Provider store={store}>*/ <App /> /*</Provider>*/,
+  <Provider store={store}>
+    <ConfigProvider locale={locale}>
+      <App />
+    </ConfigProvider>
+  </Provider>,
   document.getElementById("root")
 );
 

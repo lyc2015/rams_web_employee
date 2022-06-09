@@ -16,6 +16,7 @@ import DataShareEmployee from "./dataShareEmployee";
 import WorkTimeSearch from "./workTimeSearch";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { connect } from "react-redux";
 import {
   faHistory,
   faFile,
@@ -89,10 +90,7 @@ class SubMenu extends Component {
       .post(this.state.serverIP + "subMenuEmployee/init")
       .then((resultMap) => {
         if (resultMap.data !== null && resultMap.data !== "") {
-          store.dispatch({
-            type: "UPDATE_INIT_EMPLOYEE",
-            data: resultMap.data,
-          });
+          this.props.updateInitEmployee(resultMap.data);
           document.getElementById("kanriSha").innerHTML =
             "社員" + "：" + resultMap.data["employeeName"];
         } else {
@@ -151,10 +149,7 @@ class SubMenu extends Component {
       .post(this.state.serverIP + "subMenuEmployee/logout")
       .then((resultMap) => {
         message.success("ログアウト成功");
-        store.dispatch({
-          type: "UPDATE_INIT_EMPLOYEE",
-          data: {},
-        });
+        this.props.updateInitEmployee({});
       });
   };
   shuseiTo = (path) => {
@@ -276,8 +271,6 @@ class SubMenu extends Component {
 
   render() {
     const { isMobileDevice } = this.state;
-
-    console.log({ state: this.state }, "render");
 
     return (
       <div className={"mainBody " + (isMobileDevice ? "" : "mainBodyMinWidth")}>
@@ -824,4 +817,18 @@ class SubMenu extends Component {
     );
   }
 }
-export default SubMenu;
+
+export default connect(
+  (state) => {
+    return {
+      state,
+    };
+  },
+  (dispatch) => {
+    return {
+      updateInitEmployee: (data) => {
+        dispatch({ type: "UPDATE_INIT_EMPLOYEE", data });
+      },
+    };
+  }
+)(SubMenu);
