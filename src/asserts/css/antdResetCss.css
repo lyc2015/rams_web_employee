@@ -69,3 +69,8 @@
   height: 100%;
   /* border: 1px solid #333; */
 }
+
+.ant-input-number-input {
+  height: auto !important;
+  padding: 0 !important;
+}

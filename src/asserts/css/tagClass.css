@@ -31,7 +31,7 @@
 }
 
 .w100p {
-  width: 100%;
+  width: 100% !important;
 }
 
 .h100p {
@@ -72,6 +72,10 @@
 
 .mb5 {
   margin-bottom: 5px !important;
+}
+
+.mb10 {
+  margin-bottom: 10px !important;
 }
 
 .mb20 {
@@ -117,6 +121,10 @@
   font-size: 12px !important;
 }
 
+.fz18 {
+  font-size: 18px !important;
+}
+
 .fz35 {
   font-size: 35px;
 }
@@ -127,4 +135,30 @@
 
 .w40 {
   width: 40px !important;
+}
+
+.w50p {
+  width: 50%;
+}
+
+.white-space-pre-wrap {
+  white-space: pre-wrap;
+}
+
+.bg-transparent {
+  background: transparent !important;
+}
+
+.bg-disabled {
+  background: #e9ecef !important;
+}
+
+.bg-datePicker {
+  background-image: url(/static/media/date_24px_533395_easyicon.net.3d84369e.ico) !important;
+  background-repeat: no-repeat !important;
+  background-position: right center !important;
+}
+
+.bg-error {
+  border-color: red !important;
 }

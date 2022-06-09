@@ -24,7 +24,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import * as publicUtils from "./utils/publicUtils.js";
 import store from "./redux/store";
 import * as utils from "./utils/publicUtils.js";
-import { message } from "antd";
+import { message, DatePicker as AntdDatePicker } from "antd";
+import moment from "moment";
 axios.defaults.withCredentials = true;
 /**1
  * 他の費用画面
@@ -649,7 +650,7 @@ class otherCost extends React.Component {
         <Form>
           <Form.Group>
             <Row>
-              <Col sm={6}>
+              <Col xs={5} sm={6}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">区分</InputGroup.Text>
@@ -675,29 +676,36 @@ class otherCost extends React.Component {
                   </Form.Control>
                 </InputGroup>
               </Col>
-              <Col sm={6}>
-                <InputGroup size="sm" className="mb-3">
+              <Col xs={7} sm={6}>
+                <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">日付</InputGroup.Text>
-                    <DatePicker
-                      value={this.state.yearAndMonth}
-                      selected={this.state.yearAndMonth}
-                      onChange={this.inactiveYearAndMonth}
-                      disabled={this.state.costClassificationCode === ""}
-                      autoComplete="off"
-                      locale="ja"
-                      minDate={this.state.minDate}
-                      dateFormat="yyyy/MM/dd"
-                      id={
-                        this.state.costClassificationCode === ""
-                          ? "datePickerReadonlyDefault"
-                          : this.state.errorItem === "yearAndMonth"
-                          ? "datePickerRed"
-                          : "datePicker"
-                      }
-                      className="form-control form-control-sm"
-                    />
                   </InputGroup.Prepend>
+                  {/* 重写样式 */}
+                  <AntdDatePicker
+                    disabled={this.state.costClassificationCode === ""}
+                    allowClear={false}
+                    suffixIcon={false}
+                    placeholder=""
+                    value={
+                      this.state.yearAndMonth
+                        ? moment(this.state.yearAndMonth)
+                        : ""
+                    }
+                    onChange={this.inactiveYearAndMonth}
+                    format="YYYY/MM/DD"
+                    name="yearAndMonth"
+                    locale="ja"
+                    className={
+                      "bg-datePicker w100p " +
+                      (this.state.costClassificationCode === ""
+                        ? "bg-disabled "
+                        : "" +
+                          (this.state.errorItem === "yearAndMonth"
+                            ? "bg-error "
+                            : ""))
+                    }
+                  />
                 </InputGroup>
               </Col>
             </Row>
@@ -709,7 +717,7 @@ class otherCost extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col sm={3}>
+              <Col xs={8} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="fourKanjiFor150">
@@ -740,7 +748,7 @@ class otherCost extends React.Component {
                   </Form.Control>
                 </InputGroup>
               </Col>
-              <Col sm={3}>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">出発</InputGroup.Text>
@@ -765,7 +773,7 @@ class otherCost extends React.Component {
                     renderInput={(params) => (
                       <div ref={params.InputProps.ref}>
                         <input
-                          placeholder="  出発"
+                          placeholder="出発"
                           type="text"
                           {...params.inputProps}
                           style={
@@ -781,7 +789,7 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col sm={3}>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">到着</InputGroup.Text>
@@ -806,7 +814,7 @@ class otherCost extends React.Component {
                     renderInput={(params) => (
                       <div ref={params.InputProps.ref}>
                         <input
-                          placeholder="  到着"
+                          placeholder="到着"
                           type="text"
                           {...params.inputProps}
                           style={
@@ -822,7 +830,9 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col sm={3}>
+            </Row>
+            <Row>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
@@ -858,7 +868,7 @@ class otherCost extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col sm={4}>
+              <Col xs={12} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">名称</InputGroup.Text>
@@ -885,12 +895,13 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col sm={4}>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">場所</InputGroup.Text>
                   </InputGroup.Prepend>
                   <Autocomplete
+                    className="w100p"
                     value={
                       this.state.station.find(
                         (v) => v.code === this.state.stationCode5
@@ -910,7 +921,7 @@ class otherCost extends React.Component {
                     renderInput={(params) => (
                       <div ref={params.InputProps.ref}>
                         <input
-                          placeholder="  場所"
+                          placeholder="場所"
                           type="text"
                           {...params.inputProps}
                           style={
@@ -926,7 +937,7 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col sm={4}>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
@@ -1007,7 +1018,7 @@ class otherCost extends React.Component {
               type="button"
               on
             >
-              <FontAwesomeIcon icon={faSave} />{" "}
+              <FontAwesomeIcon icon={faSave || ""} />{" "}
               {this.props.changeData1 ? "更新" : "登録"}
             </Button>{" "}
             <Button
@@ -1016,7 +1027,7 @@ class otherCost extends React.Component {
               type="reset"
               onClick={this.resetBook}
             >
-              <FontAwesomeIcon icon={faUndo} /> Reset
+              <FontAwesomeIcon icon={faUndo || ""} /> Reset
             </Button>{" "}
             <Button
               size="sm"
@@ -1024,11 +1035,11 @@ class otherCost extends React.Component {
               onClick={(event) => this.addFile(event, "otherCostFile")}
               disabled={this.state.costClassificationCode === ""}
             >
-              <FontAwesomeIcon icon={faFile} />{" "}
+              <FontAwesomeIcon icon={faFile || ""} />{" "}
               {this.state.otherCostFilePath === "" ? "添付" : "済み"}
-            </Button>{" "}
+            </Button>
           </div>
-          <div>
+          <div style={{ position: "absolute" }}>
             <Form.File
               id="otherCostFile"
               hidden

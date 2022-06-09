@@ -28,7 +28,7 @@ import * as publicUtils from "./utils/publicUtils.js";
 import store from "./redux/store";
 import OtherCostModel from "./otherCost";
 import * as utils from "./utils/publicUtils.js";
-import { message, notification, Input } from "antd";
+import { message, notification, Input, Divider } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 axios.defaults.withCredentials = true;
 
@@ -834,25 +834,30 @@ class costRegistration extends React.Component {
       return transportationCode(row.stationCode, this.state.station);
     } else {
       return (
-        <div style={{ textAlign: "center" }}>
-          <Row>
-            <Col>
-              {transportationCode(
-                row.costClassificationCode == 1
-                  ? row.originCode
-                  : row.transportationCode,
-                this.state.station
-              )}
-            </Col>
-            <Col sm={1}>
-              <td
-                style={{ borderTop: "0", borderRight: "0", borderBottom: "0" }}
-              ></td>
-            </Col>
-            <Col>
-              {transportationCode(row.destinationCode, this.state.station)}
-            </Col>
-          </Row>
+        <div className="df align-center">
+          <div
+            title={transportationCode(
+              row.costClassificationCode == 1
+                ? row.originCode
+                : row.transportationCode,
+              this.state.station
+            )}
+            className="w50p white-space-pre-wrap"
+          >
+            {transportationCode(
+              row.costClassificationCode == 1
+                ? row.originCode
+                : row.transportationCode,
+              this.state.station
+            )}
+          </div>
+          <Divider type="vertical" />
+          <div
+            title={transportationCode(row.destinationCode, this.state.station)}
+            className="w50p white-space-pre-wrap"
+          >
+            {transportationCode(row.destinationCode, this.state.station)}
+          </div>
         </div>
       );
     }
@@ -1018,6 +1023,8 @@ class costRegistration extends React.Component {
           visible={this.state.showOtherCostModal}
           footer={null}
           onCancel={this.handleHideModal.bind(this)}
+          style={isMobileDevice ? { top: "0" } : null}
+          bodyStyle={isMobileDevice ? { padding: "12px 0px" } : null}
         >
           <OtherCostModel
             yearMonth={this.state.yearMonth}
@@ -1139,7 +1146,7 @@ class costRegistration extends React.Component {
             </Col>
           </Row>
           <Row>
-            <Col sm={2}>
+            <Col xs={6} sm={3}>
               <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">出発</InputGroup.Text>
@@ -1167,7 +1174,7 @@ class costRegistration extends React.Component {
                   renderInput={(params) => (
                     <div ref={params.InputProps.ref}>
                       <input
-                        placeholder="  出発"
+                        placeholder="出発"
                         type="text"
                         {...params.inputProps}
                         style={
@@ -1183,7 +1190,7 @@ class costRegistration extends React.Component {
                 />
               </InputGroup>
             </Col>
-            <Col sm={2}>
+            <Col xs={6} sm={3}>
               <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">到着</InputGroup.Text>
@@ -1211,7 +1218,7 @@ class costRegistration extends React.Component {
                   renderInput={(params) => (
                     <div ref={params.InputProps.ref}>
                       <input
-                        placeholder="  到着"
+                        placeholder="到着"
                         type="text"
                         {...params.inputProps}
                         style={
@@ -1227,7 +1234,7 @@ class costRegistration extends React.Component {
                 />
               </InputGroup>
             </Col>
-            <Col sm={2}>
+            <Col xs={6} sm={3}>
               <InputGroup size="sm" className="mb-3">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">
@@ -1269,7 +1276,7 @@ class costRegistration extends React.Component {
                 />
               </InputGroup>
             </Col>
-            <Col sm={2}>
+            <Col xs={6} sm={3}>
               <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">
@@ -1277,7 +1284,7 @@ class costRegistration extends React.Component {
                   </InputGroup.Text>
                 </InputGroup.Prepend>
                 <InputNumber
-                  className="w100p"
+                  className="w100p form-control"
                   ref="cost"
                   id="cost"
                   min={0}
@@ -1329,7 +1336,9 @@ class costRegistration extends React.Component {
                 /> */}
               </InputGroup>
             </Col>
-            <Col sm={4}>
+          </Row>
+          <Row>
+            <Col xs={6} sm={3}>
               <InputGroup size="sm" className="mb-3">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">備考</InputGroup.Text>
@@ -1372,9 +1381,9 @@ class costRegistration extends React.Component {
                 >
                   <FontAwesomeIcon
                     icon={
-                      this.state.rowSelectCostClassificationCode !== "0"
+                      (this.state.rowSelectCostClassificationCode !== "0"
                         ? faSave
-                        : faEdit
+                        : faEdit) || ""
                     }
                   />{" "}
                   {this.state.rowSelectCostClassificationCode !== "0"
@@ -1394,7 +1403,7 @@ class costRegistration extends React.Component {
                   type="reset"
                   onClick={this.resetBook}
                 >
-                  <FontAwesomeIcon icon={faUndo} /> Reset
+                  <FontAwesomeIcon icon={faUndo || ""} /> Reset
                 </Button>{" "}
                 <Button
                   variant="info"
@@ -1408,7 +1417,7 @@ class costRegistration extends React.Component {
                   }
                   onClick={(event) => this.addFile(event)}
                 >
-                  <FontAwesomeIcon icon={faFile} />
+                  <FontAwesomeIcon icon={faFile || ""} />
                   {this.state.costRegistrationFileFlag !== true
                     ? " 添付    "
                     : " 済み"}
@@ -1429,9 +1438,11 @@ class costRegistration extends React.Component {
             </Col>
           </Row>
           <div>
-            <div className="text-center">総額：{this.state.sumCost}</div>
+            <h2 className="text-center fz18 mb10">
+              総額：{this.state.sumCost} 円
+            </h2>
             <Row className="align-center">
-              <Col xs={12} sm={8}>
+              <Col xs={12} sm={12}>
                 <Button
                   variant="info"
                   size="sm"
@@ -1457,7 +1468,7 @@ class costRegistration extends React.Component {
                     }
                     onClick={(event) => this.addOtherFile(event)}
                   >
-                    <FontAwesomeIcon icon={faFile} />{" "}
+                    <FontAwesomeIcon icon={faFile || ""} />{" "}
                     {"" === "" ? "添付" : "済み"}
                   </Button>{" "}
                   <Button
@@ -1471,7 +1482,7 @@ class costRegistration extends React.Component {
                     onClick={this.listChange}
                     id="costRegistrationChange"
                   >
-                    <FontAwesomeIcon icon={faEdit} /> 修正
+                    <FontAwesomeIcon icon={faEdit || ""} /> 修正
                   </Button>{" "}
                   <Button
                     variant="info"
@@ -1483,7 +1494,7 @@ class costRegistration extends React.Component {
                     onClick={this.listDel}
                     id="costRegistrationDel"
                   >
-                    <FontAwesomeIcon icon={faTrash} /> 削除
+                    <FontAwesomeIcon icon={faTrash || ""} /> 削除
                   </Button>
                 </div>
               </Col>
@@ -1553,6 +1564,7 @@ class costRegistration extends React.Component {
                   headerAlign="center"
                   dataAlign="center"
                   hidden={isMobileDevice}
+                  tdStyle={{ padding: ".45em" }}
                 >
                   場所
                 </TableHeaderColumn>
@@ -1563,6 +1575,7 @@ class costRegistration extends React.Component {
                   dataAlign="center"
                   dataFormat={this.testSpan}
                   hidden={isMobileDevice}
+                  tdStyle={{ padding: ".45em" }}
                 >
                   <th
                     style={{
