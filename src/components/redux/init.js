@@ -14,3 +14,13 @@ export async function fetchInitEmployee(state = defaultState, action) {
   //     }
   //   });
 }
+export function isMobileDevice(state = defaultState, action) {
+  var sUserAgent = navigator.userAgent;
+  let isMobileDevice =
+    sUserAgent.indexOf("Android") > -1 ||
+    sUserAgent.indexOf("iPhone") > -1 ||
+    sUserAgent.indexOf("iPad") > -1 ||
+    sUserAgent.indexOf("iPod") > -1 ||
+    sUserAgent.indexOf("Symbian") > -1;
+  return isMobileDevice;
+}

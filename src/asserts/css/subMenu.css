@@ -48,17 +48,15 @@ h2 {
 
 .loginPeople {
   font-family: "黑体", Sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   text-decoration: blink;
   font-weight: bolder;
   color: rgba(123, 84, 175, 0.411);
-  margin-right: auto;
-  margin-top: auto;
 }
 
 .title-font {
   font-family: "幼园", Sans-serif;
-  font-size: 34px;
+  font-size: 28px;
   width: auto;
   font-weight: bolder;
   padding: 0;
@@ -194,7 +192,7 @@ h2 {
   border: none;
 }
 
-@media screen and (max-width: 1550px) {
+@media screen and (max-width: 1620px) {
   .linkFont {
     font-family: "黑体", Sans-serif;
     font-size: 1rem;
@@ -276,13 +274,3 @@ h2 {
     margin-left: -1.6rem;
   }
 } */
-
-@media screen and (max-width: 750px) {
-  .loginMark {
-    font-size: 35px;
-  }
-
-  .loginPeople {
-    font-size: 12px;
-  }
-}

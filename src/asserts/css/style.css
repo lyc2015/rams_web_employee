@@ -275,7 +275,7 @@ body {
   padding-right: 0px;
   height: calc(1.5em + 0.5rem + 2px);
   background-color: white;
-  width: 20rem !important;
+  /* width: 20rem !important; */
 }
 
 #datePicker-certificatePrinting-intoCompanyYearAndMonth {
@@ -286,7 +286,7 @@ body {
   padding-right: 0px;
   height: calc(1.5em + 0.5rem + 2px);
   background-color: white;
-  width: 9.5rem !important;
+  /* width: 9.5rem !important; */
 }
 
 #datePicker-interview {
@@ -1360,7 +1360,7 @@ body {
 }
 
 .Autocompletestyle-dutyManagement {
-  width: 10.6rem;
+  /* width: 10.6rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1451,7 +1451,7 @@ body {
 }
 
 .Autocompletestyle-sendRepot {
-  width: 12rem;
+  /* width: 12rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1462,7 +1462,7 @@ body {
 }
 
 .Autocompletestyle-salesSend-storageList {
-  width: 12.8rem;
+  /* width: 12.8rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1665,7 +1665,7 @@ body {
 }
 
 .Autocompletestyle-certificatePrinting-employeeName {
-  width: 20.1rem;
+  /* width: 20.1rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1675,7 +1675,7 @@ body {
 }
 
 .Autocompletestyle-envelopePrinting-employeeName {
-  width: 12.8rem;
+  /* width: 12.8rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1695,7 +1695,7 @@ body {
 }
 
 .Autocompletestyle-siteInfoSearch-developLanguageCode {
-  width: 6rem;
+  /* width: 6rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1869,7 +1869,7 @@ body {
   content: "";
 }
 
-@media screen and (max-width: 1550px) {
+@media screen and (max-width: 1620px) {
   #customerInfoDatePicker {
     background-repeat: no-repeat;
     width: 10rem;
@@ -2108,7 +2108,7 @@ body {
     margin-right: 1.3rem;
   }
   .Autocompletestyle-sendRepot {
-    width: 9rem;
+    /* width: 9rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2119,7 +2119,7 @@ body {
   }
 
   .Autocompletestyle-salesSend-storageList {
-    width: 7.8rem;
+    /* width: 7.8rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2208,7 +2208,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
-    width: 13.9rem !important;
+    /* width: 13.9rem !important; */
   }
 
   #datePicker-certificatePrinting-intoCompanyYearAndMonth {
@@ -2352,7 +2352,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-siteInfoSearch-developLanguageCode {
-    width: 5rem;
+    /* width: 5rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2574,7 +2574,7 @@ body {
   }
 
   .Autocompletestyle-certificatePrinting-employeeName {
-    width: 13.9rem;
+    /* width: 13.9rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -3188,11 +3188,11 @@ body {
   }
 
   #threeKanjiFor150 {
-    width: 2.8rem;
+    /* width: 2.8rem; */
   }
 
   #fourKanjiFor150 {
-    width: 3rem;
+    width: 5rem;
   }
 
   #datePicker {
@@ -3203,6 +3203,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
+    width: 6.8rem;
   }
 
   #datePicker-duty {
@@ -3225,7 +3226,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
-    width: 4.8rem !important;
+    width: 6.8rem !important;
   }
 
   #datePickerReadonlyDefault {
@@ -3236,7 +3237,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: #e9ecef;
-    width: 4.8rem !important;
+    width: 6.8rem !important;
   }
 
   #datePickerReadonlyDefault-duty {
@@ -3260,211 +3261,7 @@ body {
     color: "#495057";
   }
 }
-@media screen and (max-width: 1200px) {
-  #niKanjiFor150 {
-    font-size: 0.75rem;
-    width: 2.3rem;
-  }
-
-  #threeKanjiFor150 {
-    font-size: 0.75rem;
-    width: 2.3rem;
-  }
-
-  #fourKanjiFor150 {
-    width: 2.3rem;
-  }
-
-  #datePicker {
-    background-repeat: no-repeat;
-    background-position: 10px 7px;
-    background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
-      center transparent;
-    padding-right: 0px;
-    height: calc(1.5em + 0.5rem + 2px);
-    background-color: white;
-    /* width: 4.8rem !important; */
-  }
-
-  #datePicker-duty {
-    background-repeat: no-repeat;
-    background-position: 10px 7px;
-    background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
-      center transparent;
-    padding-right: 0px;
-    height: calc(1.5em + 0.5rem + 2px);
-    background-color: white;
-    width: 6.8rem !important;
-  }
-
-  #datePickerRed {
-    border-color: red;
-    background-repeat: no-repeat;
-    background-position: 10px 7px;
-    background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
-      center transparent;
-    padding-right: 0px;
-    height: calc(1.5em + 0.5rem + 2px);
-    background-color: white;
-    width: 4.8rem !important;
-  }
-
-  #datePickerReadonlyDefault {
-    background-repeat: no-repeat;
-    background-position: 10px 7px;
-    background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
-      center transparent;
-    padding-right: 0px;
-    height: calc(1.5em + 0.5rem + 2px);
-    background-color: #e9ecef;
-    width: 4.8rem !important;
-  }
-
-  #datePickerReadonlyDefault-duty {
-    background-repeat: no-repeat;
-    background-position: 10px 7px;
-    background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
-      center transparent;
-    padding-right: 0px;
-    height: calc(1.5em + 0.5rem + 2px);
-    background-color: #e9ecef;
-    width: 6.8rem !important;
-  }
-
-  .Autocompletestyle-costRegistration {
-    /* width: 3.3rem; */
-    height: 31px;
-    border-color: "#ced4da";
-    border-width: 1;
-    border-style: "solid";
-    font-size: "0.85rem";
-    color: "#495057";
-  }
-}
 
 .MuiAutocomplete-root .autocompleteInput ::before {
   border-bottom: 0px !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.verticalAlignMiddle {
-  vertical-align: middle !important;
-}
-
-.align-center {
-  align-items: center;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.justify-end {
-  justify-content: flex-end;
-}
-
-.justify-start {
-  justify-content: flex-start;
-}
-
-.justify-between {
-  justify-content: space-between;
-}
-
-.w40p {
-  width: 40%;
-}
-
-.w100p {
-  width: 100%;
-}
-
-.h100p {
-  height: 100%;
-}
-
-.h70p {
-  height: 70%;
-}
-
-.pl15 {
-  padding-left: 15px;
-}
-
-.pr15 {
-  padding-right: 15px;
-}
-
-.pl0 {
-  padding-left: 0 !important;
-}
-
-.pr0 {
-  padding-right: 0 !important;
-}
-
-.mr0 {
-  margin-right: 0px !important;
-}
-
-.mr5 {
-  margin-right: 5px !important;
-}
-
-.mr10 {
-  margin-right: 10px;
-}
-
-.mb20 {
-  margin-bottom: 20px !important;
-}
-
-.w70 {
-  width: 70px !important;
-}
-
-.w50p {
-  width: 50% !important;
-}
-
-.min-width1670 {
-  min-width: 1670px;
-}
-
-.df {
-  display: flex;
-}
-
-.wordBreak {
-  white-space: normal;
-  word-break: break-all;
-  word-wrap: break-word;
-}
-
-.overflowEllipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.flexWrapNoWrap {
-  flex-wrap: nowrap;
-}
-
-.fwb {
-  font-weight: bold;
-}
-
-.fz35 {
-  font-size: 35px;
-}
-
-.fz30 {
-  font-size: 30px !important;
-}
-
-.w40 {
-  width: 40px !important;
 }

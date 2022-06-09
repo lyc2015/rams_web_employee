@@ -40,19 +40,6 @@ class workRepot extends React.Component {
     this.sumWorkTimeChange = this.sumWorkTimeChange.bind(this);
   }
   componentDidMount() {
-    var sUserAgent = navigator.userAgent;
-    if (
-      sUserAgent.indexOf("Android") > -1 ||
-      sUserAgent.indexOf("iPhone") > -1 ||
-      sUserAgent.indexOf("iPad") > -1 ||
-      sUserAgent.indexOf("iPod") > -1 ||
-      sUserAgent.indexOf("Symbian") > -1
-    ) {
-      this.setState({ isMobileDevice: true });
-    } else {
-      this.setState({ isMobileDevice: false });
-    }
-
     if (this.props.location.state) {
       this.setState(
         {
@@ -110,6 +97,7 @@ class workRepot extends React.Component {
 
   //　初期化データ
   initialState = {
+    isMobileDevice: store.getState().isMobileDevice,
     employeeList: [],
     rowApprovalStatus: "",
     disabledFlag: [false, false],

@@ -1,0 +1,130 @@
+.text-center {
+  text-align: center;
+}
+
+.verticalAlignMiddle {
+  vertical-align: middle !important;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.w40p {
+  width: 40%;
+}
+
+.w100p {
+  width: 100%;
+}
+
+.h100p {
+  height: 100%;
+}
+
+.h70p {
+  height: 70%;
+}
+
+.pl15 {
+  padding-left: 15px;
+}
+
+.pr15 {
+  padding-right: 15px;
+}
+
+.pl0 {
+  padding-left: 0 !important;
+}
+
+.pr0 {
+  padding-right: 0 !important;
+}
+
+.mr0 {
+  margin-right: 0px !important;
+}
+
+.mr5 {
+  margin-right: 5px !important;
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
+.mb5 {
+  margin-bottom: 5px !important;
+}
+
+.mb20 {
+  margin-bottom: 20px !important;
+}
+
+.w70 {
+  width: 70px !important;
+}
+
+.w50p {
+  width: 50% !important;
+}
+
+.mainBodyMinWidth {
+  min-width: 1550px;
+}
+
+.df {
+  display: flex;
+}
+
+.wordBreak {
+  white-space: normal;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.overflowEllipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.flexWrapNoWrap {
+  flex-wrap: nowrap !important;
+}
+
+.fwb {
+  font-weight: bold;
+}
+
+.fz12 {
+  font-size: 12px !important;
+}
+
+.fz35 {
+  font-size: 35px;
+}
+
+.fz30 {
+  font-size: 30px !important;
+}
+
+.w40 {
+  width: 40px !important;
+}

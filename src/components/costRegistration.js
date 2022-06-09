@@ -25,12 +25,11 @@ import {
   faFile,
 } from "@fortawesome/free-solid-svg-icons";
 import * as publicUtils from "./utils/publicUtils.js";
-import MyToast from "./myToast";
-import ErrorsMessageToast from "./errorsMessageToast";
 import store from "./redux/store";
 import OtherCostModel from "./otherCost";
 import * as utils from "./utils/publicUtils.js";
 import { message, notification, Input } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 axios.defaults.withCredentials = true;
 
 /**
@@ -59,18 +58,6 @@ class costRegistration extends React.Component {
   }
 
   componentDidMount() {
-    var sUserAgent = navigator.userAgent;
-    if (
-      sUserAgent.indexOf("Android") > -1 ||
-      sUserAgent.indexOf("iPhone") > -1 ||
-      sUserAgent.indexOf("iPad") > -1 ||
-      sUserAgent.indexOf("iPod") > -1 ||
-      sUserAgent.indexOf("Symbian") > -1
-    ) {
-      this.setState({ isMobileDevice: true });
-    } else {
-      this.setState({ isMobileDevice: false });
-    }
     if (
       this.props.location.state !== undefined &&
       this.props.location.state.employeeNo !== undefined
@@ -87,7 +74,6 @@ class costRegistration extends React.Component {
       this.searchCostRegistration();
     }
     this.searchEmployeeName();
-    this.setState({ errorsMessageShow: false, myToastShow: false });
   }
 
   //onchange
@@ -102,7 +88,7 @@ class costRegistration extends React.Component {
     if (cost.length > 2) return cost;
     let result = "";
     for (let i = 0; i < cost.length; i++) {
-      if (cost.charCodeAt(i) == 12288) {
+      if (cost.charCodeAt(i) === 12288) {
         result += String.fromCharCode(cost.charCodeAt(i) - 12256);
         continue;
       }
@@ -129,6 +115,7 @@ class costRegistration extends React.Component {
   };
   //　初期化データ
   initialState = {
+    isMobileDevice: store.getState().isMobileDevice,
     employeeList: [],
     approvalStatuslist: [],
     stationCode1: "", // 出発
@@ -240,18 +227,19 @@ class costRegistration extends React.Component {
       return;
     }
     const formData = new FormData();
+    console.log(this.state, 123);
     if (
       this.state.cost === "" ||
       this.state.stationCode1 == "" ||
       this.state.stationCode2 == "" ||
       this.state.detailedNameOrLine == ""
     ) {
+      message.error(
+        (this.state.regularStatus === "0" ? "定期通勤" : "非定期通勤") +
+          "関連の項目入力してください"
+      );
       this.setState({
-        errorsMessageShow: true,
         method: "put",
-        message:
-          (this.state.regularStatus === "0" ? "定期通勤" : "非定期通勤") +
-          "関連の項目入力してください",
       });
       if (this.state.stationCode1 === null || this.state.stationCode1 === "") {
         this.setState({ errorItem: "stationCode1" });
@@ -272,19 +260,17 @@ class costRegistration extends React.Component {
       return;
     }
     if (isNaN(utils.deleteComma(this.state.cost))) {
+      message.error("料金は半角数字のみ入力してください。");
       this.setState({
-        errorsMessageShow: true,
         method: "put",
-        message: "料金は半角数字のみ入力してください。",
       });
       this.setState({ errorItem: "cost" });
       return;
     }
     if (Number(utils.deleteComma(this.state.cost)) <= 0) {
+      message.error("料金は0以上を入力してください。");
       this.setState({
-        errorsMessageShow: true,
         method: "put",
-        message: "料金は0以上を入力してください。",
       });
       this.setState({ errorItem: "cost" });
       return;
@@ -329,25 +315,22 @@ class costRegistration extends React.Component {
       .post(this.state.serverIP + theUrl, formData)
       .then((response) => {
         if (response.data) {
-          this.setState({ changeData: false, errorsMessageShow: false });
+          this.setState({ changeData: false });
+          message.success("更新成功");
           this.setState({
-            myToastShow: true,
             method: "put",
-            message: "更新成功!",
           });
-          setTimeout(() => this.setState({ myToastShow: false }), 3000);
           this.resetBook();
           this.searchCostRegistration();
         } else {
+          message.error(
+            (this.state.employeeList[0].regularStatus === "0"
+              ? "定期通勤"
+              : "非定期通勤") + "データはすでに存在している"
+          );
           this.setState({
-            errorsMessageShow: true,
             method: "put",
-            message:
-              (this.state.employeeList[0].regularStatus === "0"
-                ? "定期通勤"
-                : "非定期通勤") + "データはすでに存在している",
           });
-          setTimeout(() => this.setState({ errorsMessageShow: false }), 3000);
         }
       })
       .catch((error) => {
@@ -435,59 +418,54 @@ class costRegistration extends React.Component {
     if (this.state.rowSelectCostClassificationCode == "") {
       return;
     }
-    var a = window.confirm("削除してもよろしいでしょうか？");
-    if (!a) {
-      return;
-    }
-    $("#costRegistrationFile").val(null);
-    var splDate = this.state.rowSelectHappendDate.split("～");
-    const emp = {
-      oldCostClassificationCode: this.state.rowSelectCostClassificationCode,
-      oldHappendDate: splDate[0],
-      oldCostFile: this.state.rowSelectCostFile,
-      yearMonth: publicUtils
-        .formateDate(this.state.yearMonth, true)
-        .substring(0, 6),
-      employeeNo: this.state.employeeNo,
-    };
-    axios
-      .post(
-        this.state.serverIP + "costRegistration/deleteCostRegistration",
-        emp
-      )
-      .then((result) => {
-        if (result.data == true) {
-          //削除の後で、rowSelectの値に空白をセットする
-          this.setState({
-            costRegistrationFile: null,
-            costRegistrationFileName: null,
-            changeData: false,
+    Modal.confirm({
+      title: "削除してもよろしいでしょうか？",
+      icon: <ExclamationCircleOutlined />,
+      onOk: () => {
+        $("#costRegistrationFile").val(null);
+        var splDate = this.state.rowSelectHappendDate.split("～");
+        const emp = {
+          oldCostClassificationCode: this.state.rowSelectCostClassificationCode,
+          oldHappendDate: splDate[0],
+          oldCostFile: this.state.rowSelectCostFile,
+          yearMonth: publicUtils
+            .formateDate(this.state.yearMonth, true)
+            .substring(0, 6),
+          employeeNo: this.state.employeeNo,
+        };
+        axios
+          .post(
+            this.state.serverIP + "costRegistration/deleteCostRegistration",
+            emp
+          )
+          .then((result) => {
+            if (result.data == true) {
+              //削除の後で、rowSelectの値に空白をセットする
+              this.setState({
+                costRegistrationFile: null,
+                costRegistrationFileName: null,
+                changeData: false,
+              });
+              message.success("削除完了");
+              this.setState({
+                method: "put",
+              });
+              this.resetBook();
+              this.searchCostRegistration();
+            } else {
+              message.error("削除失敗");
+            }
+          })
+          .catch((error) => {
+            notification.error({
+              message: "エラー",
+              description: "削除失敗，请检查程序",
+              placement: "topLeft",
+            });
+            console.error("Error - " + error);
           });
-          this.setState({
-            myToastShow: true,
-            method: "put",
-            message: "削除完了",
-          });
-          setTimeout(() => this.setState({ myToastShow: false }), 3000);
-          this.resetBook();
-          this.searchCostRegistration();
-        } else {
-          this.setState({
-            myToastShow: true,
-            method: "put",
-            message: "削除失敗",
-          });
-          setTimeout(() => this.setState({ myToastShow: false }), 3000);
-        }
-      })
-      .catch((error) => {
-        notification.error({
-          message: "エラー",
-          description: "削除失敗，请检查程序",
-          placement: "topLeft",
-        });
-        console.error("Error - " + error);
-      });
+      },
+    });
   };
   //reset
   resetBook = () => {
@@ -635,22 +613,18 @@ class costRegistration extends React.Component {
       .post(this.state.serverIP + theUrl, formData)
       .then((response) => {
         if (response.data) {
-          this.setState({ changeData: false, errorsMessageShow: false });
+          this.setState({ changeData: false });
+          message.success("添付成功");
           this.setState({
-            myToastShow: true,
             method: "put",
-            message: "添付成功!",
           });
-          setTimeout(() => this.setState({ myToastShow: false }), 3000);
           this.resetBook();
           this.searchCostRegistration();
         } else {
+          message.error("添付失敗");
           this.setState({
-            errorsMessageShow: true,
             method: "put",
-            message: "添付失敗!",
           });
-          setTimeout(() => this.setState({ errorsMessageShow: false }), 3000);
         }
       })
       .catch((error) => {
@@ -1037,10 +1011,10 @@ class costRegistration extends React.Component {
       afterSaveCell: this.sumWorkTimeChange,
     };
     return (
-      <div>
+      <div style={{ margin: "0 -15px" }}>
         {/*　 他の費用*/}
         <Modal
-          width="50%"
+          width={isMobileDevice ? "100%" : "50%"}
           visible={this.state.showOtherCostModal}
           footer={null}
           onCancel={this.handleHideModal.bind(this)}
@@ -1071,23 +1045,6 @@ class costRegistration extends React.Component {
             employeeName={this.state.employeeName}
           />
         </Modal>
-
-        <div style={{ display: this.state.myToastShow ? "block" : "none" }}>
-          <MyToast
-            myToastShow={this.state.myToastShow}
-            message={this.state.message}
-            type={"success"}
-          />
-        </div>
-        <div
-          style={{ display: this.state.errorsMessageShow ? "block" : "none" }}
-        >
-          <ErrorsMessageToast
-            errorsMessageShow={this.state.errorsMessageShow}
-            message={this.state.message}
-            type={"danger"}
-          />
-        </div>
         <Form>
           <div>
             <Form.Group>
@@ -1321,17 +1278,17 @@ class costRegistration extends React.Component {
                 </InputGroup.Prepend>
                 <InputNumber
                   className="w100p"
-                  ref="unitPrice"
+                  ref="cost"
                   id="cost"
                   min={0}
-                  name="unitPrice"
+                  name="cost"
                   maxLength="8"
-                  onChange={(v) => this.costValueChange(v, "unitPrice")}
+                  onChange={(v) => this.costValueChange(v, "cost")}
                   placeholder={
                     this.state.regularStatus === "0" ? "料金" : "回数合計料金"
                   }
                   // formatter={(value) => `${utils.addComma(value)}`}
-                  value={this.state.unitPrice}
+                  value={this.state.cost}
                   disabled={
                     this.state.disabledFlag ||
                     !(
@@ -1399,7 +1356,7 @@ class costRegistration extends React.Component {
           </Row>
           <Row>
             <Col>
-              <div style={{ textAlign: "center", marginBottom: "10px" }}>
+              <div style={{ textAlign: "center", marginBottom: "20px" }}>
                 <Button
                   size="sm"
                   variant="info"
@@ -1412,7 +1369,6 @@ class costRegistration extends React.Component {
                   }
                   onClick={this.InsertCost}
                   type="button"
-                  on
                 >
                   <FontAwesomeIcon
                     icon={
@@ -1473,19 +1429,28 @@ class costRegistration extends React.Component {
             </Col>
           </Row>
           <div>
+            <div className="text-center">総額：{this.state.sumCost}</div>
             <Row className="align-center">
-              <Col xs={6} sm={4}>
-                <span style={{ float: "left" }}>
-                  総額：{this.state.sumCost}
-                </span>
-              </Col>
-
-              <Col xs={6} sm={8}>
+              <Col xs={12} sm={8}>
+                <Button
+                  variant="info"
+                  size="sm"
+                  disabled={
+                    this.state.disabledFlag ||
+                    !(
+                      this.state.rowSelectCostClassificationCode === "" ||
+                      this.state.rowSelectCostClassificationCode === "0"
+                    )
+                  }
+                  onClick={this.handleShowModal.bind(this)}
+                >
+                  <FontAwesomeIcon /> {" 他の費用"}
+                </Button>
                 <div style={{ float: "right" }}>
                   <Button
                     size="sm"
                     variant="info"
-                    hidden={
+                    disabled={
                       this.state.disabledFlag ||
                       this.state.rowSelectCostClassificationCode === "" ||
                       this.state.rowSelectCostClassificationCode === "0"
@@ -1498,7 +1463,7 @@ class costRegistration extends React.Component {
                   <Button
                     variant="info"
                     size="sm"
-                    hidden={
+                    disabled={
                       this.state.disabledFlag ||
                       this.state.rowSelectCostClassificationCode === "" ||
                       this.state.rowSelectCostClassificationCode === "0"
@@ -1511,25 +1476,14 @@ class costRegistration extends React.Component {
                   <Button
                     variant="info"
                     size="sm"
-                    disabled={this.state.disabledFlag}
+                    disabled={
+                      this.state.disabledFlag ||
+                      this.state.rowSelectCostClassificationCode === ""
+                    }
                     onClick={this.listDel}
                     id="costRegistrationDel"
                   >
                     <FontAwesomeIcon icon={faTrash} /> 削除
-                  </Button>{" "}
-                  <Button
-                    variant="info"
-                    size="sm"
-                    disabled={
-                      this.state.disabledFlag ||
-                      !(
-                        this.state.rowSelectCostClassificationCode === "" ||
-                        this.state.rowSelectCostClassificationCode === "0"
-                      )
-                    }
-                    onClick={this.handleShowModal.bind(this)}
-                  >
-                    <FontAwesomeIcon /> {" 他の費用"}
                   </Button>
                 </div>
               </Col>

@@ -74,7 +74,7 @@ const subMenuHover = {
  */
 class SubMenu extends Component {
   state = {
-    isMobileDevice: false,
+    isMobileDevice: store.getState().isMobileDevice,
     nowDate: "", //今の期日
     hover: "",
     className: "",
@@ -104,19 +104,6 @@ class SubMenu extends Component {
    * 画面の初期化
    */
   componentDidMount() {
-    var sUserAgent = navigator.userAgent;
-    if (
-      sUserAgent.indexOf("Android") > -1 ||
-      sUserAgent.indexOf("iPhone") > -1 ||
-      sUserAgent.indexOf("iPad") > -1 ||
-      sUserAgent.indexOf("iPod") > -1 ||
-      sUserAgent.indexOf("Symbian") > -1
-    ) {
-      this.setState({ isMobileDevice: true });
-    } else {
-      this.setState({ isMobileDevice: false });
-    }
-
     this.getDutyRegistrationFlag();
 
     var dateNow = new Date();
@@ -163,7 +150,11 @@ class SubMenu extends Component {
     axios
       .post(this.state.serverIP + "subMenuEmployee/logout")
       .then((resultMap) => {
-        alert("ログアウトしました");
+        message.success("ログアウト成功");
+        store.dispatch({
+          type: "UPDATE_INIT_EMPLOYEE",
+          data: {},
+        });
       });
   };
   shuseiTo = (path) => {
@@ -240,65 +231,33 @@ class SubMenu extends Component {
     }
   };
 
-  renderTopMobile = () => {
+  renderTop = () => {
+    const { isMobileDevice } = this.state;
     return (
       <div className="myCss" style={{ backgroundColor: "#FFFAF0" }}>
         <div className="df justify-between">
           <Navbar inline="true">
-            <img className="titleImg w40" alt="title" src={title} />
-            <span className="loginMark fz30">LYC株式会社</span>
+            <img
+              className={"titleImg " + (isMobileDevice ? "w40" : "")}
+              alt="title"
+              src={title}
+            />
+            <span className={"loginMark " + (isMobileDevice ? "fz30" : "")}>
+              LYC株式会社
+            </span>
           </Navbar>
-          {/* 导航栏 */}
-          {/* <div>
-            <Menu mode="horizontal" defaultSelectedKeys={["mail"]}>
-              <Menu.SubMenu
-                key="SubMenu"
-                title="勤務登録"
-                icon={<MenuFoldOutlined />}
-              >
-                <Menu.Item
-                  key="two"
-                  icon={
-                    <FontAwesomeIcon
-                      className="fa-fw"
-                      size="lg"
-                      icon={faFileExcel}
-                    />
-                  }
-                >
-                  <Link
-                    className={
-                      this.state.hover.search("1") !== -1
-                        ? "my-tabcolor-font-hover"
-                        : "my-tabcolor-font"
-                    }
-                    to={{
-                      pathname: "/subMenuEmployee/workRepot",
-                      state: { actionType: "insert" },
-                    }}
-                  >
-                    作業報告書
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="three" icon={<AppstoreOutlined />}>
-                  Navigation Three
-                </Menu.Item>
-                <Menu.Item key="four" icon={<AppstoreOutlined />}>
-                  Navigation Four
-                </Menu.Item>
-              </Menu.SubMenu>
-            </Menu>
-          </div> */}
         </div>
         <div className="df justify-end">
-          <div className="loginPeople df mr5 ">
+          <div
+            className={"loginPeople df mr5 " + (isMobileDevice ? " fz12" : "")}
+          >
             {this.state.nowDate}{" "}
             <FontAwesomeIcon className="fa-fw" size="lg" icon={faUser} />
             <div id="kanriSha"></div>
           </div>
           <Link
             as="button"
-            className="loginPeople mr5"
+            className={"loginPeople " + (isMobileDevice ? "fz12" : "")}
             to="/"
             id="logout"
             onClick={this.logout}
@@ -315,56 +274,19 @@ class SubMenu extends Component {
     );
   };
 
-  renderTopPC = () => {
-    return (
-      <>
-        <Row style={{ backgroundColor: "#FFFAF0" }}>
-          <Col>
-            <div style={{ float: "left" }}>
-              <Navbar inline="true">
-                <img className="titleImg" alt="title" src={title} />
-                <a className="loginMark" inline="true">
-                  LYC株式会社
-                </a>{" "}
-              </Navbar>
-            </div>
-            <div style={{ marginTop: "50px", float: "right" }}>
-              <font className="loginPeople">
-                {this.state.nowDate}{" "}
-                <FontAwesomeIcon className="fa-fw" size="lg" icon={faUser} />
-                <a id="kanriSha"></a>
-              </font>{" "}
-              <Link
-                as="button"
-                className="loginPeople"
-                to="/"
-                id="logout"
-                onClick={this.logout}
-              >
-                <FontAwesomeIcon
-                  className="fa-fw"
-                  size="lg"
-                  icon={faCaretSquareLeft}
-                />
-                sign out
-              </Link>
-            </div>
-          </Col>
-          <Col sm={1}></Col>
-        </Row>
-      </>
-    );
-  };
-
   render() {
     const { isMobileDevice } = this.state;
 
     console.log({ state: this.state }, "render");
 
     return (
-      <div className={"mainBody " + (isMobileDevice ? "" : " min-width1670")}>
+      <div className={"mainBody " + (isMobileDevice ? "" : "mainBodyMinWidth")}>
         {/* TOP */}
-        {isMobileDevice ? this.renderTopMobile() : this.renderTopPC()}
+        <Row className="myCss" style={{ backgroundColor: "#FFFAF0" }}>
+          <Col sm={11}>{this.renderTop()}</Col>
+          <Col sm={1}></Col>
+        </Row>
+
         <Row /*onClick={() => this.checkSession()}*/>
           <Col sm={2}>
             <br />
