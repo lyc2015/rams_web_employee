@@ -1439,7 +1439,7 @@ class costRegistration extends React.Component {
           </Row>
           <div>
             <h2 className="text-center fz18 mb10">
-              総額：{this.state.sumCost} 円
+              総額：{this.state.sumCost || "0"} 円
             </h2>
             <Row className="align-center">
               <Col xs={12} sm={12}>

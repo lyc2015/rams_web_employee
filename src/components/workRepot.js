@@ -774,5 +774,7 @@ export default connect(
       state,
     };
   },
-  (dispatch) => {}
+  (dispatch) => {
+    return {};
+  }
 )(workRepot);
