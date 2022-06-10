@@ -576,7 +576,8 @@ class workRepot extends React.Component {
             {isMobileDevice ? null : <FontAwesomeIcon icon={faMoneyCheckAlt} />}
             費用登録
           </Button>{" "}
-          {this.props.state.initEmployee.authorityCode === "1" ? null : (
+          {this.props.state.initEmployee.authorityCode === "1" ||
+          isMobileDevice ? null : (
             <Button size="sm" variant="info" type="button" onClick={this.back}>
               <FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
             </Button>

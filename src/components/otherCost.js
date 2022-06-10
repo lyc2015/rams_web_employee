@@ -1016,9 +1016,8 @@ class otherCost extends React.Component {
               variant="info"
               onClick={this.InsertCost}
               type="button"
-              on
             >
-              <FontAwesomeIcon icon={faSave || ""} />{" "}
+              <FontAwesomeIcon icon={faSave} />{" "}
               {this.props.changeData1 ? "更新" : "登録"}
             </Button>{" "}
             <Button
@@ -1027,7 +1026,7 @@ class otherCost extends React.Component {
               type="reset"
               onClick={this.resetBook}
             >
-              <FontAwesomeIcon icon={faUndo || ""} /> Reset
+              <FontAwesomeIcon icon={faUndo} /> Reset
             </Button>{" "}
             <Button
               size="sm"
@@ -1035,7 +1034,7 @@ class otherCost extends React.Component {
               onClick={(event) => this.addFile(event, "otherCostFile")}
               disabled={this.state.costClassificationCode === ""}
             >
-              <FontAwesomeIcon icon={faFile || ""} />{" "}
+              <FontAwesomeIcon icon={faFile} />{" "}
               {this.state.otherCostFilePath === "" ? "添付" : "済み"}
             </Button>
           </div>

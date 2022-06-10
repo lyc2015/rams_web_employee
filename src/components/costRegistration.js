@@ -1019,6 +1019,7 @@ class costRegistration extends React.Component {
       <div style={{ margin: "0 -15px" }}>
         {/*　 他の費用*/}
         <Modal
+          destroyOnClose
           width={isMobileDevice ? "100%" : "50%"}
           visible={this.state.showOtherCostModal}
           footer={null}
@@ -1079,19 +1080,17 @@ class costRegistration extends React.Component {
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">年月</InputGroup.Text>
                 </InputGroup.Prepend>
-                <InputGroup.Append>
-                  <DatePicker
-                    selected={this.state.yearMonth}
-                    onChange={this.setEndDate}
-                    autoComplete="off"
-                    locale="ja"
-                    showMonthYearPicker
-                    showFullMonthYearPicker
-                    className="form-control form-control-sm"
-                    dateFormat="yyyy/MM"
-                    id="datePicker"
-                  />
-                </InputGroup.Append>
+                <DatePicker
+                  selected={this.state.yearMonth}
+                  onChange={this.setEndDate}
+                  autoComplete="off"
+                  locale="ja"
+                  showMonthYearPicker
+                  showFullMonthYearPicker
+                  className="form-control form-control-sm"
+                  dateFormat="yyyy/MM"
+                  id="datePicker"
+                />
               </InputGroup>
             </Col>
             <Col xs={6} sm={2}>

@@ -259,7 +259,7 @@ class Login2 extends Component {
                   type="checkbox"
                   checked={this.state.remberPassWord}
                   onChange={this.handleChecked}
-                  value={this.state.remberPassWord}
+                  // value={this.state.remberPassWord}
                 />
                 <span> ログイン情報保存</span>
               </div>

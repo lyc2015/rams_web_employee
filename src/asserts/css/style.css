@@ -599,7 +599,7 @@ body {
 
 #monthlysalesSearchDatePicker {
   background-repeat: no-repeat;
-  width: 115px;
+  /* width: 115px; */
   background-position: 10px 7px;
   background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
     center transparent;
@@ -1207,7 +1207,7 @@ body {
 }
 
 .Autocompletestyle-master {
-  width: 17.8rem;
+  /* width: 17.8rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -2018,7 +2018,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-master {
-    width: 11.7rem;
+    /* width: 11.7rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2694,7 +2694,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-master {
-    width: 11.7rem;
+    /* width: 11.7rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -3150,7 +3150,7 @@ body {
   }
   #monthlysalesSearchDatePicker {
     background-repeat: no-repeat;
-    width: 76px;
+    /* width: 76px; */
     background-position: 10px 7px;
     background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
       center transparent;
@@ -3203,7 +3203,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
-    width: 6.8rem;
+    /* width: 6.8rem; */
   }
 
   #datePicker-duty {
