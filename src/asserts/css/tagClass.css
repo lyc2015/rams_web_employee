@@ -162,3 +162,7 @@
 .bg-error {
   border-color: red !important;
 }
+
+.clear-grid-padding {
+  margin: 0 -15px;
+}

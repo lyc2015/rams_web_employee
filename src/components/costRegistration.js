@@ -1016,7 +1016,7 @@ class costRegistration extends React.Component {
       afterSaveCell: this.sumWorkTimeChange,
     };
     return (
-      <div style={{ margin: "0 -15px" }}>
+      <div className={isMobileDevice ? "clear-grid-padding" : ""}>
         {/*　 他の費用*/}
         <Modal
           destroyOnClose

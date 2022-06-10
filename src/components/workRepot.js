@@ -564,57 +564,68 @@ class workRepot extends React.Component {
   optionsBtn = () => {
     const { isMobileDevice } = this.state;
     return (
-      <div
-        className={"df justify-between " + (isMobileDevice ? "" : "pl15 pr15")}
-      >
-        <div>
-          <Button
-            variant="info"
-            size="sm"
-            onClick={this.shuseiTo.bind(this, "costRegistration")}
-          >
-            {isMobileDevice ? null : <FontAwesomeIcon icon={faMoneyCheckAlt} />}
-            費用登録
-          </Button>{" "}
-          {this.props.state.initEmployee.authorityCode === "1" ||
-          isMobileDevice ? null : (
-            <Button size="sm" variant="info" type="button" onClick={this.back}>
-              <FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
-            </Button>
-          )}
-        </div>
-        <div>
-          {" "}
-          <Button
-            variant="info"
-            size="sm"
-            onClick={this.getFile}
-            id="workRepotUpload"
-            disabled={this.state.workRepotUploadDisable}
-          >
-            {isMobileDevice ? null : <FontAwesomeIcon icon={faUpload} />} Upload
-          </Button>{" "}
-          <Button
-            variant="info"
-            size="sm"
-            onClick={this.downLoad}
-            id="workRepotDownload"
-            disabled={this.state.workRepotDownload}
-          >
-            {isMobileDevice ? null : <FontAwesomeIcon icon={faDownload} />}{" "}
-            Download
-          </Button>{" "}
-          <Button
-            variant="info"
-            size="sm"
-            onClick={this.clear}
-            id="workRepotClear"
-            disabled={this.state.workRepotClear}
-          >
-            {isMobileDevice ? null : <FontAwesomeIcon icon={faTrash} />} クリア
-          </Button>
-        </div>
-      </div>
+      <Row>
+        <Col xs={12} sm={12}>
+          <div className={"df justify-between "}>
+            <div>
+              <Button
+                variant="info"
+                size="sm"
+                onClick={this.shuseiTo.bind(this, "costRegistration")}
+              >
+                {isMobileDevice ? null : (
+                  <FontAwesomeIcon icon={faMoneyCheckAlt} />
+                )}
+                費用登録
+              </Button>{" "}
+              {this.props.state.initEmployee.authorityCode === "1" ||
+              isMobileDevice ? null : (
+                <Button
+                  size="sm"
+                  variant="info"
+                  type="button"
+                  onClick={this.back}
+                >
+                  <FontAwesomeIcon icon={faLevelUpAlt} /> 戻る
+                </Button>
+              )}
+            </div>
+            <div>
+              {" "}
+              <Button
+                variant="info"
+                size="sm"
+                onClick={this.getFile}
+                id="workRepotUpload"
+                disabled={this.state.workRepotUploadDisable}
+              >
+                {isMobileDevice ? null : <FontAwesomeIcon icon={faUpload} />}{" "}
+                Upload
+              </Button>{" "}
+              <Button
+                variant="info"
+                size="sm"
+                onClick={this.downLoad}
+                id="workRepotDownload"
+                disabled={this.state.workRepotDownload}
+              >
+                {isMobileDevice ? null : <FontAwesomeIcon icon={faDownload} />}{" "}
+                Download
+              </Button>{" "}
+              <Button
+                variant="info"
+                size="sm"
+                onClick={this.clear}
+                id="workRepotClear"
+                disabled={this.state.workRepotClear}
+              >
+                {isMobileDevice ? null : <FontAwesomeIcon icon={faTrash} />}{" "}
+                クリア
+              </Button>
+            </div>
+          </div>
+        </Col>
+      </Row>
     );
   };
 
@@ -662,7 +673,7 @@ class workRepot extends React.Component {
 
     const { isMobileDevice } = this.state;
     return (
-      <div>
+      <div className={isMobileDevice ? "clear-grid-padding" : ""}>
         <FormControl
           id="rowSelectCheckSection"
           name="rowSelectCheckSection"
@@ -695,7 +706,7 @@ class workRepot extends React.Component {
           <br />
           {this.optionsBtn()}
           <Col
-            style={isMobileDevice ? { paddingLeft: 0, paddingRight: 0 } : null}
+          // style={isMobileDevice ? { paddingLeft: 0, paddingRight: 0 } : null}
           >
             <BootstrapTable
               data={filterEmpList}
@@ -718,7 +729,7 @@ class workRepot extends React.Component {
                 年月
               </TableHeaderColumn>
               <TableHeaderColumn
-                width={isMobileDevice ? "100" : "320"}
+                width={isMobileDevice ? "90" : "320"}
                 tdStyle={{ padding: ".45em" }}
                 dataField="workingTimeReportFile"
                 dataFormat={this.fileNameFormatter}
@@ -726,7 +737,7 @@ class workRepot extends React.Component {
                 {isMobileDevice ? "ファイル" : "ファイル名（必）"}
               </TableHeaderColumn>
               <TableHeaderColumn
-                width={isMobileDevice ? "" : "140"}
+                width={isMobileDevice ? "95" : "140"}
                 tdStyle={{ padding: ".45em" }}
                 dataField="sumWorkTime"
                 dataFormat={this.sumWorkTimeFormatter}
@@ -752,7 +763,7 @@ class workRepot extends React.Component {
                 更新日
               </TableHeaderColumn>
               <TableHeaderColumn
-                width={isMobileDevice ? "80" : "110"}
+                width={isMobileDevice ? "90" : "110"}
                 dataAlign="center"
                 headerAlign="center"
                 tdStyle={{ padding: ".45em" }}

@@ -26,6 +26,7 @@ import store from "./redux/store";
 import * as utils from "./utils/publicUtils.js";
 import { message, DatePicker as AntdDatePicker } from "antd";
 import moment from "moment";
+moment.locale("ja");
 axios.defaults.withCredentials = true;
 /**1
  * 他の費用画面

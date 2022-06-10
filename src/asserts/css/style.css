@@ -3182,6 +3182,18 @@ body {
     width: 2.7rem;
   }
 }
+
+@media screen and (max-width: 1000px) {
+  body {
+    font-family: Helvetica, sans-serif;
+    font-size: 14px !important;
+  }
+
+  .react-bs-table thead > tr:first-child > th {
+    padding: 10px 8px;
+  }
+}
+
 @media screen and (max-width: 1300px) {
   #niKanjiFor150 {
     width: 3rem;

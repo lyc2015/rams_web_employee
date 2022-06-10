@@ -1,6 +1,7 @@
 import { message } from "antd";
 import JapaneseHolidays from "japanese-holidays";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 const $ = require("jquery");
 // 時間段を取得
 export function getFullYearMonth(date, now) {
@@ -298,7 +299,11 @@ export function formateDate(datetime, flag) {
     function addDateZero(num) {
       return num < 10 ? "0" + num : num;
     }
-    let d = new Date(datetime);
+    console.log(datetime instanceof Date, datetime, "formateDate");
+    let d = datetime;
+    if (!(d instanceof Date)) {
+      d = new Date(datetime);
+    }
     let formatdatetime;
     if (flag === true) {
       formatdatetime =

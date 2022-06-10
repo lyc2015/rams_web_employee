@@ -1,6 +1,7 @@
 import defaultState from "./state";
 import axios from "axios";
 const $ = require("jquery");
+axios.defaults.withCredentials = true;
 
 export async function fetchInitEmployee(state = defaultState, action) {
   // var res = [];
