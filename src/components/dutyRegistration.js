@@ -1950,10 +1950,10 @@ class DutyRegistration extends React.Component {
                 >
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
-                    width="58"
+                    width="53"
                     dataField="hasWork"
                     dataFormat={this.hasWorkFormatter}
                   >
@@ -1961,18 +1961,21 @@ class DutyRegistration extends React.Component {
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
-                    width="40"
+                    width={isMobileDevice ? "25" : "40"}
                     dataField="day"
                     isKey
+                    headerAlign={isMobileDevice ? "center" : "left"}
+                    dataAlign={isMobileDevice ? "center" : "left"}
+                    thStyle={isMobileDevice ? { padding: 0 } : {}}
                   >
                     日
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
                     width="40"
@@ -1984,10 +1987,10 @@ class DutyRegistration extends React.Component {
 
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: isMobileDevice ? "0" : ".10em",
                       border: "0.01rem solid black",
                     }}
-                    width="90"
+                    width={isMobileDevice ? "75" : "100"}
                     dataField="startTime"
                     dataFormat={this.startTimeFormatter}
                   >
@@ -2010,10 +2013,10 @@ class DutyRegistration extends React.Component {
 
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: isMobileDevice ? "0" : ".10em",
                       border: "0.01rem solid black",
                     }}
-                    width="90"
+                    width={isMobileDevice ? "75" : "100"}
                     dataField="endTime"
                     dataFormat={this.endTimeFormatter}
                   >
@@ -2036,7 +2039,7 @@ class DutyRegistration extends React.Component {
 
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
                     width="70"
@@ -2048,21 +2051,22 @@ class DutyRegistration extends React.Component {
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
                     width="80"
                     dataField="workHour"
                     dataFormat={this.workHourFormatter}
+                    hidden={isMobileDevice}
                   >
                     作業時間
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
-                    width="220"
+                    width={isMobileDevice ? "100" : "220"}
                     dataField="workContent"
                     dataFormat={this.workContentFormatter}
                   >
@@ -2070,12 +2074,13 @@ class DutyRegistration extends React.Component {
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     tdStyle={{
-                      padding: ".20em",
+                      padding: ".10em",
                       border: "0.01rem solid black",
                     }}
                     width="220"
                     dataField="remark"
                     dataFormat={this.remarkFormatter}
+                    hidden={isMobileDevice}
                   >
                     備考
                   </TableHeaderColumn>
