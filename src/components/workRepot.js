@@ -539,6 +539,12 @@ class workRepot extends React.Component {
     return returnItem;
   };
 
+  attendanceYearAndMonthFormatter = (cell) => {
+    let arr = cell.split("");
+    arr.splice(4, 0, "/");
+    return arr.join("");
+  };
+
   fileNameFormatter = (cell) => {
     if (cell === "まずファイルをアップロードしてください")
       return (
@@ -724,6 +730,7 @@ class workRepot extends React.Component {
                 width={isMobileDevice ? "70" : "100"}
                 tdStyle={{ padding: ".45em" }}
                 dataField="attendanceYearAndMonth"
+                dataFormat={this.attendanceYearAndMonthFormatter}
                 isKey
               >
                 年月

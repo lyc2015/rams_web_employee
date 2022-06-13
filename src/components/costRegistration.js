@@ -1283,18 +1283,21 @@ class costRegistration extends React.Component {
                   </InputGroup.Text>
                 </InputGroup.Prepend>
                 <InputNumber
+                  type="tel"
                   className="w100p form-control"
                   ref="cost"
                   id="cost"
                   min={0}
+                  max={9999999}
                   name="cost"
                   maxLength="8"
                   onChange={(v) => this.costValueChange(v, "cost")}
                   placeholder={
                     this.state.regularStatus === "0" ? "料金" : "回数合計料金"
                   }
-                  // formatter={(value) => `${utils.addComma(value)}`}
-                  value={this.state.cost}
+                  formatter={(value) => utils.addComma(value)}
+                  parser={(value) => utils.deleteComma(value)}
+                  value={utils.deleteComma(this.state.cost)}
                   disabled={
                     this.state.disabledFlag ||
                     !(

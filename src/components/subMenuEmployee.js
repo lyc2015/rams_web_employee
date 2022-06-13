@@ -228,8 +228,10 @@ class SubMenu extends Component {
 
   renderTop = () => {
     const { isMobileDevice } = this.state;
+    console.log(this.props.location, "render");
+
     return (
-      <div className="myCss" style={{ backgroundColor: "#FFFAF0" }}>
+      <div>
         <div className="df justify-between">
           <Navbar inline="true">
             <img
@@ -285,7 +287,7 @@ class SubMenu extends Component {
             <br />
             <Row>
               <Container>
-                <h1 className="title-font">社員勤務</h1>
+                <h1 className="title-font">勤務管理</h1>
                 <br />
               </Container>
             </Row>
@@ -308,6 +310,7 @@ class SubMenu extends Component {
                       data-effect="solid"
                       onMouseEnter={this.toggleHover.bind(this, "勤務登録")}
                       onMouseLeave={this.toggleHover.bind(this, "")}
+                      // data-event="click focus"
                     >
                       <Accordion.Toggle
                         as={Button}
@@ -318,7 +321,8 @@ class SubMenu extends Component {
                         <font
                           className={
                             this.state.hover.search("勤務登録") !== -1 ||
-                            this.state.className.search("勤務登録") !== -1
+                            this.state.className.search("勤務登録") !== -1 ||
+                            this.props.location.pathname === "/subMenuEmployee"
                               ? "linkFont-click"
                               : "linkFont"
                           }

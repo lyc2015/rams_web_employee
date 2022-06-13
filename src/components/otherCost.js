@@ -839,6 +839,7 @@ class otherCost extends React.Component {
                     <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
                   </InputGroup.Prepend>
                   <FormControl
+                    type="tel"
                     value={cost1}
                     name="cost1"
                     maxLength="7"
@@ -853,7 +854,6 @@ class otherCost extends React.Component {
                     }
                     placeholder="例：XXXXX"
                     autoComplete="off"
-                    type="text"
                     aria-label="Small"
                     size="sm"
                     aria-describedby="inputGroup-sizing-sm"

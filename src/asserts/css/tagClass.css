@@ -70,6 +70,14 @@
   margin-right: 10px;
 }
 
+.mt3 {
+  margin-top: 3px !important;
+}
+
+.mb0 {
+  margin-bottom: 0 !important;
+}
+
 .mb5 {
   margin-bottom: 5px !important;
 }
@@ -94,10 +102,17 @@
   min-width: 1550px;
 }
 
+.dif {
+  display: inline-flex;
+}
+
 .df {
   display: flex;
 }
 
+.margin-0-auto {
+  margin: 0 auto;
+}
 .wordBreak {
   white-space: normal;
   word-break: break-all;
@@ -139,6 +154,26 @@
 
 .w50p {
   width: 50%;
+}
+
+.p0 {
+  padding: 0 !important;
+}
+
+.pl0 {
+  padding-left: 0 !important;
+}
+
+.poa {
+  position: absolute;
+}
+
+.por {
+  position: relative;
+}
+
+.left0 {
+  left: 0;
 }
 
 .white-space-pre-wrap {

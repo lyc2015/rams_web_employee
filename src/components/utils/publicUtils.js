@@ -974,6 +974,7 @@ export function enToManEn(en) {
  * INPUT输入的时候全角自动转为半角
  */
 export function costValueChange(v) {
+  if (v === null || v === undefined) return "";
   let cost = v + "";
   if (cost.length > 7) {
     message.error("入力された金額は合理的ではありません！");
@@ -989,6 +990,5 @@ export function costValueChange(v) {
       result += String.fromCharCode(cost.charCodeAt(i) - 65248);
     else result += String.fromCharCode(cost.charCodeAt(i));
   }
-  cost = addComma(result);
-  return cost;
+  return result;
 }

@@ -1133,6 +1133,10 @@ body {
   width: 3rem;
 }
 
+#ichiKanjiFor150 {
+  width: 2rem;
+}
+
 #niKanjiFor150 {
   width: 4.8rem;
 }
@@ -3195,6 +3199,9 @@ body {
 }
 
 @media screen and (max-width: 1300px) {
+  #ichiKanjiFor150 {
+    width: 2rem;
+  }
   #niKanjiFor150 {
     width: 3rem;
   }

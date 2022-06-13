@@ -592,11 +592,21 @@ class BreakTime extends Component {
                 </div>
               </Col>
             </Row>
-
+            {isMobileDevice ? (
+              <Row>
+                <Col>
+                  <InputGroup size="sm" className="mb0 mt3">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="niKanjiFor150">お昼</InputGroup.Text>
+                    </InputGroup.Prepend>
+                  </InputGroup>
+                </Col>
+              </Row>
+            ) : null}
             <Row>
               <Col xs={0} sm={2}></Col>
-              <Col>
-                <TimePicker
+              <Col xs={12} sm={8}>
+                {/* <TimePicker
                   id="breakTimeDayHourStart"
                   name="breakTimeDayHourStart"
                   disabled={this.state.dateDisabledFlag}
@@ -610,12 +620,15 @@ class BreakTime extends Component {
                   disabled={this.state.dateDisabledFlag}
                   minuteStep={15}
                   showSecond={false}
-                />
+                /> */}
                 <InputGroup size="sm" className="mb-3">
-                  <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">お昼</InputGroup.Text>
-                  </InputGroup.Prepend>
+                  {isMobileDevice ? null : (
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="niKanjiFor150">お昼</InputGroup.Text>
+                    </InputGroup.Prepend>
+                  )}
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeDayHourStart"
                     name="breakTimeDayHourStart"
                     as="select"
@@ -627,10 +640,10 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">時</InputGroup.Text>
                   </InputGroup.Prepend>
-                  &nbsp;
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeDayMinuteStart"
                     name="breakTimeDayMinuteStart"
                     as="select"
@@ -642,7 +655,7 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">分</InputGroup.Text>
                   </InputGroup.Prepend>
                   <font
                     style={{
@@ -654,6 +667,7 @@ class BreakTime extends Component {
                     ～
                   </font>
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeDayHourEnd"
                     name="breakTimeDayHourEnd"
                     as="select"
@@ -665,10 +679,10 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">時</InputGroup.Text>
                   </InputGroup.Prepend>
-                  &nbsp;
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeDayMinuteEnd"
                     name="breakTimeDayMinuteEnd"
                     as="select"
@@ -680,20 +694,35 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">分</InputGroup.Text>
                   </InputGroup.Prepend>
                 </InputGroup>
               </Col>
               <Col sm={2}></Col>
             </Row>
+            {isMobileDevice ? (
+              <Row>
+                <Col>
+                  <InputGroup size="sm" className="mb0 mt3">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="niKanjiFor150">夜　</InputGroup.Text>
+                    </InputGroup.Prepend>
+                  </InputGroup>
+                </Col>
+              </Row>
+            ) : null}
             <Row>
               <Col sm={2}></Col>
-              <Col>
+              <Col xs={12} sm={8}>
                 <InputGroup size="sm" className="mb-3 ">
-                  <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">夜　</InputGroup.Text>
-                  </InputGroup.Prepend>
+                  {isMobileDevice ? null : (
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="niKanjiFor150">夜　</InputGroup.Text>
+                    </InputGroup.Prepend>
+                  )}
+
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeNightHourStart"
                     name="breakTimeNightHourStart"
                     as="select"
@@ -705,10 +734,10 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">時</InputGroup.Text>
                   </InputGroup.Prepend>
-                  &nbsp;
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeNightMinuteStart"
                     name="breakTimeNightMinuteStart"
                     as="select"
@@ -720,7 +749,7 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">分</InputGroup.Text>
                   </InputGroup.Prepend>
                   <font
                     style={{
@@ -732,6 +761,7 @@ class BreakTime extends Component {
                     ～
                   </font>
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeNightHourEnd"
                     name="breakTimeNightHourEnd"
                     as="select"
@@ -743,10 +773,10 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">時</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">時</InputGroup.Text>
                   </InputGroup.Prepend>
-                  &nbsp;
                   <Form.Control
+                    className={isMobileDevice ? "pl0" : ""}
                     id="breakTimeNightMinuteEnd"
                     name="breakTimeNightMinuteEnd"
                     as="select"
@@ -758,7 +788,7 @@ class BreakTime extends Component {
                     ))}
                   </Form.Control>
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">分</InputGroup.Text>
+                    <InputGroup.Text id="ichiKanjiFor150">分</InputGroup.Text>
                   </InputGroup.Prepend>
                 </InputGroup>
               </Col>
