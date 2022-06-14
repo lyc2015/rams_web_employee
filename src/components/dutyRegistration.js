@@ -2100,7 +2100,7 @@ class DutyRegistration extends React.Component {
               <Col style={{ textAlign: "center" }}>
                 <Button
                   size="sm"
-                  className="btn btn-info btn-sm"
+                  className="btn btn-info btn-sm pb10"
                   disabled={this.state.disabledFlag}
                   onClick={this.beforeSubmit.bind(this)}
                 >

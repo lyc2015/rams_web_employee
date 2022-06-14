@@ -895,6 +895,9 @@ class SubMenu extends Component {
     return (
       <div>
         <Dropdown
+          arrow={{
+            pointAtCenter: true,
+          }}
           overlayStyle={{ background: "#f7f7f7", color: "#4a4a4a" }}
           overlay={this.renderMobileMenu()}
           trigger={["click"]}
