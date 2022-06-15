@@ -733,7 +733,7 @@ class workRepot extends React.Component {
                 width={isMobileDevice ? "70" : "100"}
                 tdStyle={{ padding: ".45em" }}
                 dataField="attendanceYearAndMonth"
-                dataFormat={this.attendanceYearAndMonthFormatter}
+                dataFormat={(cell) => publicUtils.addLeftSlash(cell)}
                 isKey
               >
                 年月

@@ -96,3 +96,8 @@
   top: 0;
   z-index: 2;
 }
+
+.ant-collapse-header {
+  color: #018ec5 !important;
+  font-weight: bold;
+}

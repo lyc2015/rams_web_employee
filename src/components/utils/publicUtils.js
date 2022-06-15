@@ -299,7 +299,7 @@ export function formateDate(datetime, flag) {
     function addDateZero(num) {
       return num < 10 ? "0" + num : num;
     }
-    console.log(datetime instanceof Date, datetime, "formateDate");
+    // console.log(datetime instanceof Date, datetime, "formateDate");
     let d = datetime;
     if (!(d instanceof Date)) {
       d = new Date(datetime);
@@ -991,4 +991,93 @@ export function costValueChange(v) {
     else result += String.fromCharCode(cost.charCodeAt(i));
   }
   return result;
+}
+
+/**
+ * 根据传入的值拼接字符串
+ * 【name】：value1 joinWith value2 joinWith value3
+ * @param {} name eq:【言　語】, joinWith eq: `、`, values eq:['C#','VB.net']
+ * @returns 【言　語】: C#、VB.net
+ */
+function formatText({ name, joinWith, values }) {
+  let str = "";
+  let nameIsIn = false;
+  if (!(values instanceof Array)) {
+    console.error("formatText-values 必须是数组，检查程序");
+    return "";
+  }
+
+  values = values.filter((value) => value);
+  if (!name || values?.length < 1) return "";
+
+  values.forEach((value) => {
+    // 拼接标题
+    if (!nameIsIn && value) {
+      str += `${name}: `;
+      nameIsIn = true;
+    }
+    // 拼接内容
+    str += `${value}${joinWith || ""}`;
+  });
+  if (str.endsWith(joinWith)) {
+    str = str.slice(0, str.length - joinWith.length);
+  }
+
+  return str;
+}
+
+/**
+ * 文本的配置数据生成copy的text
+ * @param {Object []} textObjs  文本的配置数组
+ *                    [ {name,joinWith,values},...]
+ * @returns
+ */
+export function formatCopyByTextObjs(textObjs) {
+  // let textObjs = [
+  //   {
+  //     name: `【案件名】`,
+  //     joinWith: undefined,
+  //     values: [selectedProjectInfo.projectName],
+  //   },
+  // ];
+  let str = "";
+  textObjs.forEach((textObj, index) => {
+    let res = formatText(textObj);
+    if (res) {
+      str +=
+        res +
+        `
+`;
+    }
+  });
+  return str.trim();
+}
+
+export function findItemByKey(arr, keyName, key, needIndex = false) {
+  let index = -1;
+  let item = {};
+  if (!arr || !keyName || key === null || key === undefined) return "";
+  for (let i = 0; i < arr.length; i++) {
+    const element = arr[i];
+    if (element[keyName] === key) {
+      index = i;
+      item = element;
+      break;
+    }
+  }
+  if (needIndex) {
+    return {
+      index,
+      item,
+    };
+  } else {
+    return item;
+  }
+}
+
+export function addLeftSlash(cell) {
+  let arr = cell.split("");
+  if (arr.length < 6) return cell;
+  arr.splice(4, 0, "/");
+  return arr.join("");
 }
