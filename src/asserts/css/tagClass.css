@@ -70,6 +70,10 @@
   margin-right: 0px !important;
 }
 
+.m0 {
+  margin: 0 !important;
+}
+
 .ml5 {
   margin-left: 5px !important;
 }
@@ -217,7 +221,7 @@
 }
 
 .bg-disabled {
-  background: #e9ecef !important;
+  background-color: #e9ecef !important;
 }
 
 .bg-datePicker {

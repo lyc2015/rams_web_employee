@@ -169,7 +169,9 @@ class SubMenu extends Component {
 
   test = () => {
     if (this.state.dutyRegistrationFlag) {
-      alert("作業報告書データすでに存在しています、クリアしてください。");
+      message.error(
+        "作業報告書データすでに存在しています、クリアしてください。"
+      );
     } else {
       var sendValue = {
         flag: this.state.breakTimeFlag,
@@ -184,7 +186,10 @@ class SubMenu extends Component {
           },
         });
       } else {
-        this.shuseiTo({ pathname: "/subMenuEmployee/dutyRegistration" });
+        this.shuseiTo({
+          pathname: "/subMenuEmployee/dutyRegistration",
+          state: { actionType: "insert" },
+        });
       }
     }
   };
@@ -392,7 +397,7 @@ class SubMenu extends Component {
                                     this,
                                     "勤務登録"
                                   )}
-                                  onClick={this.test}
+                                  onClick={() => this.test()}
                                   block="true"
                                 >
                                   <div>
@@ -837,20 +842,14 @@ class SubMenu extends Component {
           },
           {
             label: (
-              <Link
-                to={{
-                  pathname: "dutyRegistration",
-                  state: { actionType: "insert" },
-                }}
-                // disabled
-              >
+              <div onClick={() => this.test()}>
                 <FontAwesomeIcon
                   className="fa-fw"
                   size="lg"
                   icon={faUserEdit}
                 />{" "}
                 勤務時間入力
-              </Link>
+              </div>
             ),
             key: "1",
           },

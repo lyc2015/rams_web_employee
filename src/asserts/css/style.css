@@ -1506,7 +1506,7 @@ body {
 }
 
 .Autocompletestyle-projectInfo-keyWordOfLanagurue {
-  width: 6.6rem;
+  /* width: 6.6rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -2041,7 +2041,7 @@ body {
   }
 
   .Autocompletestyle-projectInfo-siteLocation {
-    width: 10.4rem;
+    /* width: 10.4rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2051,7 +2051,7 @@ body {
   }
 
   .Autocompletestyle-projectInfo-keyWordOfLanagurue {
-    width: 5.2rem;
+    /* width: 5.2rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
