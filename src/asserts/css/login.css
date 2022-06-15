@@ -76,7 +76,7 @@ html,
   font-family: "黑体", Sans-serif;
   font-size: 44px;
   color: rgb(0, 0, 0);
-  font-weight: lighter;
+  font-weight: normal;
   margin-left: 20px;
 }
 .resetFont {

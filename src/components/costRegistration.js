@@ -30,6 +30,7 @@ import OtherCostModel from "./otherCost";
 import * as utils from "./utils/publicUtils.js";
 import { message, notification, Input, Divider } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { isMobileDevice } from "./redux/init";
 axios.defaults.withCredentials = true;
 
 /**
@@ -465,6 +466,8 @@ class costRegistration extends React.Component {
             console.error("Error - " + error);
           });
       },
+      centered: true,
+      className: this.state.isMobileDevice ? "confirmModalBtnCenterClass" : "",
     });
   };
   //reset
@@ -1019,12 +1022,13 @@ class costRegistration extends React.Component {
       <div className={isMobileDevice ? "clear-grid-padding" : ""}>
         {/*　 他の費用*/}
         <Modal
+          centered
           destroyOnClose
           width={isMobileDevice ? "100%" : "50%"}
           visible={this.state.showOtherCostModal}
           footer={null}
           onCancel={this.handleHideModal.bind(this)}
-          style={isMobileDevice ? { top: "0" } : null}
+          // style={isMobileDevice ? { top: "0" } : null}
           bodyStyle={isMobileDevice ? { padding: "12px 0px" } : null}
         >
           <OtherCostModel
@@ -1065,8 +1069,8 @@ class costRegistration extends React.Component {
                       : this.state.employeeName + "_"}
                     費用登録
                   </h2>
-                  <br />
-                  <h2>{new Date().toLocaleDateString()}</h2>
+                  {/* <br /> */}
+                  {/* <h2>{new Date().toLocaleDateString()}</h2> */}
                 </Col>
               </Row>
             </Form.Group>
@@ -1340,7 +1344,7 @@ class costRegistration extends React.Component {
             </Col>
           </Row>
           <Row>
-            <Col xs={6} sm={3}>
+            <Col xs={12} sm={3}>
               <InputGroup size="sm" className="mb-3">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">備考</InputGroup.Text>
@@ -1440,9 +1444,14 @@ class costRegistration extends React.Component {
             </Col>
           </Row>
           <div>
-            <h2 className="text-center fz18 mb10">
-              総額：{this.state.sumCost || "0"} 円
-            </h2>
+            <Row>
+              <Col>
+                <h2 className="text-left fz14 mb10 fwn">
+                  総額：{this.state.sumCost || "0"} 円
+                </h2>
+              </Col>
+            </Row>
+
             <Row className="align-center">
               <Col xs={12} sm={12}>
                 <Button

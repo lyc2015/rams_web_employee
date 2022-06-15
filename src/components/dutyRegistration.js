@@ -31,7 +31,8 @@ import MyToast from "./myToast";
 import BreakTime from "./breakTime";
 import * as DutyRegistrationJs from "./dutyRegistrationJs.js";
 import { string } from "prop-types";
-import { message, notification } from "antd";
+import { message, notification, Modal as AntdModal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 axios.defaults.withCredentials = true;
 
@@ -1522,20 +1523,23 @@ class DutyRegistration extends React.Component {
   };
 
   test = () => {
-    var a = window.confirm(
-      "入力したデータを全部初期化してもよろしいでしょうか？"
-    );
-    if (a) {
-      let postData = {
-        yearMonth: this.state.year + this.state.month,
-      };
-      axios
-        .post(this.state.serverIP + "dutyRegistration/clearData", postData)
-        .then((response) => {
-          setTimeout(() => window.location.reload(), 1000);
-          this.getWorkData();
-        });
-    }
+    AntdModal.confirm({
+      title: "入力したデータを全部初期化してもよろしいでしょうか？",
+      icon: <ExclamationCircleOutlined />,
+      onOk: () => {
+        let postData = {
+          yearMonth: this.state.year + this.state.month,
+        };
+        axios
+          .post(this.state.serverIP + "dutyRegistration/clearData", postData)
+          .then((response) => {
+            setTimeout(() => window.location.reload(), 1000);
+            this.getWorkData();
+          });
+      },
+      centered: true,
+      className: this.state.isMobileDevice ? "confirmModalBtnCenterClass" : "",
+    });
   };
 
   // 年月変更後、レコ＾ド再取る

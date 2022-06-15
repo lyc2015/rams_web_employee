@@ -439,6 +439,9 @@ class workRepot extends React.Component {
               }
             });
         },
+        className: this.state.isMobileDevice
+          ? "confirmModalBtnCenterClass"
+          : "",
       });
     }
   };

@@ -898,7 +898,6 @@ class SubMenu extends Component {
           arrow={{
             pointAtCenter: true,
           }}
-          overlayStyle={{ background: "#f7f7f7", color: "#4a4a4a" }}
           overlay={this.renderMobileMenu()}
           trigger={["click"]}
         >
@@ -912,21 +911,17 @@ class SubMenu extends Component {
     );
   };
 
+  // position: -webkit-sticky;
+  // position: sticky;
+  // top: 0;
+
   render() {
     const { isMobileDevice } = this.state;
 
     return (
       <div className={"mainBody " + (isMobileDevice ? "" : "mainBodyMinWidth")}>
         {/* TOP */}
-        <Row
-          className="myCss"
-          style={{
-            backgroundColor: "#FFFAF0",
-            position: "sticky",
-            top: 0,
-            zIndex: "999",
-          }}
-        >
+        <Row className="myCss employeeNavBar">
           <Col sm={11}>{this.renderTop()}</Col>
           <Col sm={1}></Col>
         </Row>

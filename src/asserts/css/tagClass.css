@@ -1,5 +1,13 @@
 .text-center {
-  text-align: center;
+  text-align: center !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
 }
 
 .verticalAlignMiddle {
@@ -62,6 +70,10 @@
   margin-right: 0px !important;
 }
 
+.ml5 {
+  margin-left: 5px !important;
+}
+
 .mr5 {
   margin-right: 5px !important;
 }
@@ -102,6 +114,10 @@
   min-width: 1550px;
 }
 
+.dib {
+  display: inline-block;
+}
+
 .dif {
   display: inline-flex;
 }
@@ -128,12 +144,20 @@
   flex-wrap: nowrap !important;
 }
 
+.fwn {
+  font-weight: normal !important;
+}
+
 .fwb {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .fz12 {
   font-size: 12px !important;
+}
+
+.fz14 {
+  font-size: 14px !important;
 }
 
 .fz18 {

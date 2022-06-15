@@ -90,7 +90,7 @@ var methodNameList = [
 
 export function fetchDropDown(state = defaultState) {
   var outArray = [];
-  var serverIP = "http://127.0.0.1:8080/";
+  var serverIP = "http://192.168.2.21:8080/";
   // var serverIP = "http://54.201.204.105:8080/";
 
   var par = JSON.stringify(methodNameList);

@@ -48,6 +48,7 @@
 
 .ant-modal-confirm .ant-modal-body {
   box-shadow: #007bff 0px 0px 10px;
+  border: 1px solid #007bff;
 }
 
 .ant-popover-inner-content {
@@ -56,6 +57,10 @@
 
 .ant-tag {
   font-size: 14px;
+}
+
+.myCss {
+  box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 8%) !important;
 }
 
 .myCss .ant-menu-horizontal > .ant-menu-submenu > .ant-menu-submenu-title {
@@ -77,4 +82,17 @@
 
 .ant-picker-header button {
   color: black !important;
+}
+
+.confirmModalBtnCenterClass.ant-modal-confirm .ant-modal-confirm-btns {
+  float: none;
+  text-align: center;
+}
+
+.employeeNavBar {
+  background-color: #fffaf0;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 2;
 }

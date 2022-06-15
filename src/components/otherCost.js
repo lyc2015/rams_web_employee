@@ -718,7 +718,7 @@ class otherCost extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={8} sm={4}>
+              <Col xs={7} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="fourKanjiFor150">
@@ -747,6 +747,33 @@ class otherCost extends React.Component {
                       </option>
                     ))}
                   </Form.Control>
+                </InputGroup>
+              </Col>
+              <Col xs={5} sm={4}>
+                <InputGroup size="sm" className="mb-3">
+                  <InputGroup.Prepend>
+                    <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
+                  </InputGroup.Prepend>
+                  <FormControl
+                    type="tel"
+                    value={cost1}
+                    name="cost1"
+                    maxLength="7"
+                    onChange={(e) => this.costValueChange(e)}
+                    style={
+                      this.state.errorItem === "cost1"
+                        ? { borderColor: "red" }
+                        : { borderColor: "" }
+                    }
+                    disabled={
+                      this.state.costClassificationCode != 1 ? true : false
+                    }
+                    placeholder="例：XXXXX"
+                    autoComplete="off"
+                    aria-label="Small"
+                    size="sm"
+                    aria-describedby="inputGroup-sizing-sm"
+                  />
                 </InputGroup>
               </Col>
               <Col xs={6} sm={4}>
@@ -828,35 +855,6 @@ class otherCost extends React.Component {
                         />
                       </div>
                     )}
-                  />
-                </InputGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={6} sm={4}>
-                <InputGroup size="sm" className="mb-3">
-                  <InputGroup.Prepend>
-                    <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <FormControl
-                    type="tel"
-                    value={cost1}
-                    name="cost1"
-                    maxLength="7"
-                    onChange={(e) => this.costValueChange(e)}
-                    style={
-                      this.state.errorItem === "cost1"
-                        ? { borderColor: "red" }
-                        : { borderColor: "" }
-                    }
-                    disabled={
-                      this.state.costClassificationCode != 1 ? true : false
-                    }
-                    placeholder="例：XXXXX"
-                    autoComplete="off"
-                    aria-label="Small"
-                    size="sm"
-                    aria-describedby="inputGroup-sizing-sm"
                   />
                 </InputGroup>
               </Col>
