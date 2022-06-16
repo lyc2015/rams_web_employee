@@ -718,12 +718,10 @@ class otherCost extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={7} sm={4}>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
-                    <InputGroup.Text id="fourKanjiFor150">
-                      交通手段
-                    </InputGroup.Text>
+                    <InputGroup.Text id="niKanjiFor150">交通</InputGroup.Text>
                   </InputGroup.Prepend>
                   <Form.Control
                     as="select"
@@ -749,7 +747,7 @@ class otherCost extends React.Component {
                   </Form.Control>
                 </InputGroup>
               </Col>
-              <Col xs={5} sm={4}>
+              <Col xs={6} sm={4}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>

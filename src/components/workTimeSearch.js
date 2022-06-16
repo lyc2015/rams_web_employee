@@ -201,9 +201,7 @@ class workTimeSearch extends React.Component {
             <Col sm={5}>
               <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                 <InputGroup.Prepend>
-                  <InputGroup.Text id="inputGroup-sizing-sm">
-                    期間
-                  </InputGroup.Text>
+                  <InputGroup.Text id="niKanjiFor150">期間</InputGroup.Text>
                 </InputGroup.Prepend>
                 <DatePicker
                   allowClear={false}
