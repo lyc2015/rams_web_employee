@@ -184,7 +184,7 @@ class workTimeSearch extends React.Component {
       afterSaveCell: this.sumWorkTimeChange,
     };
     return (
-      <div>
+      <div className={isMobileDevice ? "clear-grid-padding" : ""}>
         <Form>
           <div>
             <Form.Group>
@@ -300,7 +300,7 @@ class workTimeSearch extends React.Component {
                 width="5%"
                 tdStyle={{ padding: ".45em" }}
                 dataField="attendanceDays"
-                hidden={isMobileDevice}
+                hidden
               >
                 出勤日数
               </TableHeaderColumn>
@@ -309,7 +309,7 @@ class workTimeSearch extends React.Component {
                 tdStyle={{ padding: ".45em" }}
                 dataField="sumWorkTime"
               >
-                出勤時間
+                {isMobileDevice ? "出勤" : "出勤時間"}
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="10%"
@@ -323,9 +323,8 @@ class workTimeSearch extends React.Component {
                 width="10%"
                 tdStyle={{ padding: ".45em" }}
                 dataField="workTimeRank"
-                hidden={isMobileDevice}
               >
-                稼働ranking
+                {isMobileDevice ? "No" : "稼働ranking"}
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="10%"
@@ -341,7 +340,7 @@ class workTimeSearch extends React.Component {
                 tdStyle={{ padding: ".45em" }}
                 dataField="otherCost"
                 dataFormat={publicUtils.addComma.bind(this)}
-                hidden={isMobileDevice}
+                hidden
               >
                 他の費用
               </TableHeaderColumn>

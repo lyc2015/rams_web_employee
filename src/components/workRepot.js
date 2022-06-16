@@ -51,11 +51,11 @@ class workRepot extends React.Component {
             this.props.location.state.dutyManagementTempState,
         },
         () => {
-          this.selectWorkTime();
+          this.searchWorkRepot();
         }
       );
     } else {
-      this.selectWorkTime();
+      this.searchWorkRepot();
     }
     this.setState({
       workRepotUploadDisable: true,
@@ -68,32 +68,6 @@ class workRepot extends React.Component {
     this.setState({
       [event.target.name]: event.target.value,
     });
-  };
-  selectWorkTime = () => {
-    let now = new Date();
-    let dataInfo = {};
-    let month = now.getMonth() + 1;
-    dataInfo["attendanceYearAndMonth"] =
-      String(now.getFullYear()) + String(month < 10 ? "0" + month : month);
-    dataInfo["employeeNo"] = this.state.employeeNo;
-    axios
-      .post(this.state.serverIP + "workRepot/selectWorkTime", dataInfo)
-      .then((response) => response.data)
-      .then((data) => {
-        let disabledFlag = this.state.disabledFlag;
-        if (data != null) {
-          disabledFlag[0] = data.nowMonth;
-          disabledFlag[1] = data.lastMonth;
-        }
-        this.setState(
-          {
-            disabledFlag,
-          },
-          () => {
-            this.searchWorkRepot();
-          }
-        );
-      });
   };
 
   //　初期化データ
@@ -226,8 +200,8 @@ class workRepot extends React.Component {
           if (response.data != null) {
             this.searchWorkRepot();
             message.success("更新成功！");
-            this.setState({ rowSelectSumWorkTime: sumWorkTime });
-            setTimeout(() => window.location.reload(), 1000);
+            // this.setState({ rowSelectSumWorkTime: sumWorkTime });
+            // setTimeout(() => window.location.reload(), 1000);
           } else {
             alert("err");
           }
@@ -433,7 +407,7 @@ class workRepot extends React.Component {
                 });
                 this.searchWorkRepot();
                 message.success("クリア完成！");
-                setTimeout(() => window.location.reload(), 1000);
+                // setTimeout(() => window.location.reload(), 1000);
               } else {
                 alert("err");
               }
