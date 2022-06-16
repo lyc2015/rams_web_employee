@@ -718,7 +718,7 @@ class otherCost extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={6} sm={4}>
+              <Col xs={6} sm={6}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">交通</InputGroup.Text>
@@ -747,7 +747,7 @@ class otherCost extends React.Component {
                   </Form.Control>
                 </InputGroup>
               </Col>
-              <Col xs={6} sm={4}>
+              <Col xs={6} sm={6}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
@@ -774,12 +774,13 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col xs={6} sm={4}>
+              <Col xs={6} sm={6}>
                 <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">出発</InputGroup.Text>
                   </InputGroup.Prepend>
                   <Autocomplete
+                    className="w100p"
                     id="stationCode3"
                     name="stationCode3"
                     value={
@@ -815,12 +816,13 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col xs={6} sm={4}>
+              <Col xs={6} sm={6}>
                 <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">到着</InputGroup.Text>
                   </InputGroup.Prepend>
                   <Autocomplete
+                    className="w100p"
                     value={
                       this.state.station.find(
                         (v) => v.code === this.state.stationCode4
@@ -865,13 +867,13 @@ class otherCost extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={12} sm={4}>
+              <Col xs={12} sm={6}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">名称</InputGroup.Text>
                   </InputGroup.Prepend>
                   <FormControl
-                    placeholder=""
+                    placeholder="名称"
                     autoComplete="off"
                     name="detailedNameOrLine2"
                     value={this.state.detailedNameOrLine2}
@@ -892,7 +894,7 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col xs={6} sm={4}>
+              <Col xs={12} sm={6}>
                 <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">場所</InputGroup.Text>
@@ -934,7 +936,7 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col xs={6} sm={4}>
+              <Col xs={12} sm={6}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">料金</InputGroup.Text>
@@ -949,8 +951,7 @@ class otherCost extends React.Component {
                         : { borderColor: "" }
                     }
                     onChange={(e) => this.costValueChange(e)}
-                    value={this.state.cost2}
-                    placeholder="例：XXXXX"
+                    placeholder="料金"
                     autoComplete="off"
                     type="text"
                     aria-label="Small"
@@ -962,15 +963,13 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-            </Row>
-            <Row>
-              <Col sm={6}>
+              <Col xs={12} sm={6}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">備考</InputGroup.Text>
                   </InputGroup.Prepend>
                   <FormControl
-                    placeholder="例：XXXXX"
+                    placeholder="備考"
                     name="remark"
                     value={this.state.remark}
                     autoComplete="off"
@@ -984,13 +983,13 @@ class otherCost extends React.Component {
                   />
                 </InputGroup>
               </Col>
-              <Col sm={6}>
+              <Col xs={12} sm={12}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="niKanjiFor150">添付</InputGroup.Text>
                   </InputGroup.Prepend>
                   <FormControl
-                    placeholder="例：XXXXX"
+                    placeholder="添付"
                     name="remark"
                     value={showCostFileName}
                     autoComplete="off"

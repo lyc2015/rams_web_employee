@@ -1023,7 +1023,7 @@ class costRegistration extends React.Component {
         {/*　 他の費用*/}
         <Modal
           destroyOnClose
-          width={isMobileDevice ? "100%" : "50%"}
+          width={isMobileDevice ? "100%" : "40%"}
           visible={this.state.showOtherCostModal}
           footer={null}
           onCancel={this.handleHideModal.bind(this)}
