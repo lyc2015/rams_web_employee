@@ -101,3 +101,7 @@
   color: #018ec5 !important;
   font-weight: bold;
 }
+
+.react-datepicker-popper {
+  min-width: 14rem;
+}

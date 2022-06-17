@@ -895,7 +895,7 @@ class costRegistration extends React.Component {
     if (row.costClassificationCode === "0" && row.regularStatus === "1") {
       return "非定期通勤";
     } else {
-      return cell;
+      return <div className="white-space-pre-wrap">{cell}</div>;
     }
   }
   cost(cost) {
@@ -938,14 +938,21 @@ class costRegistration extends React.Component {
 
   // 年月変更後、レコ＾ド再取る
   setEndDate = (date) => {
-    if (
-      date <
-      new Date(
-        new Date().getMonth() + 1 === 1
-          ? new Date().getFullYear() - 1 + "/12"
-          : new Date().getFullYear() + "/" + new Date().getMonth()
-      ).getTime()
-    ) {
+    // 禁用两个月前的数据
+
+    /** new Date() 在ios、及不同浏览器上的适配
+     * new Date('2022/5') 以字符串的格式创建date时，在ios会不被某些浏览器识别，导致出现 Invalid Date
+     * 因此最好使用浏览器都能识别的格式
+     * eg： new Date(2011, 01, 07)
+     *
+     */
+    let nowYearAndMonth =
+      new Date().getMonth() + 1 === 1
+        ? new Date().getFullYear() - 1 + "/12"
+        : new Date().getFullYear() +
+          "/" +
+          utils.addDateZero(new Date().getMonth());
+    if (date < new Date(...nowYearAndMonth.split("/"))) {
       this.setState({
         disabledFlag: true,
       });
@@ -1529,7 +1536,7 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="5%"
+                  width="58"
                   tdStyle={{ padding: ".45em" }}
                   dataField="rowNo"
                   isKey
@@ -1540,7 +1547,7 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="10%"
+                  width="100"
                   tdStyle={{ padding: ".45em" }}
                   dataFormat={this.happendDate.bind(this)}
                   dataField="happendDate"
@@ -1550,7 +1557,7 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="10%"
+                  width="60"
                   tdStyle={{ padding: ".45em" }}
                   dataField="costClassificationCode"
                   dataFormat={this.costClassificationCode.bind(this)}
@@ -1560,7 +1567,7 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="15%"
+                  width="150"
                   tdStyle={{ padding: ".45em" }}
                   dataField="detailedNameOrLine"
                   dataFormat={this.detailedNameOrLine.bind(this)}
@@ -1571,7 +1578,7 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   colSpan="1"
-                  width="20%"
+                  width="200"
                   headerAlign="center"
                   dataAlign="center"
                   hidden={isMobileDevice}
@@ -1581,7 +1588,7 @@ class costRegistration extends React.Component {
                 </TableHeaderColumn>
                 <TableHeaderColumn
                   row="1"
-                  width="20%"
+                  width="240"
                   dataField="stationCode"
                   dataAlign="center"
                   dataFormat={this.testSpan}
@@ -1592,8 +1599,9 @@ class costRegistration extends React.Component {
                     style={{
                       textAlign: "center",
                       border: "none",
-                      width: "10%",
+                      width: "50%",
                       padding: "0px",
+                      display: "inline-block",
                     }}
                   >
                     出発地
@@ -1601,12 +1609,13 @@ class costRegistration extends React.Component {
                   <th
                     style={{
                       textAlign: "center",
-                      width: "10%",
+                      width: "50%",
                       border: "1px solid #ddd",
                       borderTop: "0",
                       borderBottom: "0",
                       borderRight: "0",
                       padding: "0px",
+                      display: "inline-block",
                     }}
                   >
                     目的地
@@ -1615,7 +1624,7 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="10%"
+                  width="80"
                   tdStyle={{ padding: ".45em" }}
                   dataFormat={this.cost.bind(this)}
                   dataField="cost"
@@ -1625,19 +1634,25 @@ class costRegistration extends React.Component {
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="15%"
+                  width="100"
                   tdStyle={{ padding: ".45em" }}
                   dataField="remark"
                   hidden={isMobileDevice}
+                  dataFormat={(cell) => (
+                    <div className="white-space-pre-wrap">{cell}</div>
+                  )}
                 >
                   備考
                 </TableHeaderColumn>
                 <TableHeaderColumn
                   row="0"
                   rowSpan="2"
-                  width="15%"
+                  width="100"
                   tdStyle={{ padding: ".45em" }}
                   dataField="costFileForShow"
+                  dataFormat={(cell) => (
+                    <div className="white-space-pre-wrap">{cell}</div>
+                  )}
                   hidden={isMobileDevice}
                 >
                   添付

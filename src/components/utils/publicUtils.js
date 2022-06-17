@@ -285,6 +285,10 @@ export async function getNO(columnName, typeName, table, serverIP) {
   return no;
 }
 
+export function addDateZero(num) {
+  return num < 10 ? "0" + num : num;
+}
+
 /**
  * 前到后时间格式
  *
@@ -296,9 +300,6 @@ export async function getNO(columnName, typeName, table, serverIP) {
  */
 export function formateDate(datetime, flag) {
   if (datetime !== undefined && datetime !== null && datetime !== "") {
-    function addDateZero(num) {
-      return num < 10 ? "0" + num : num;
-    }
     // console.log(datetime instanceof Date, datetime, "formateDate");
     let d = datetime;
     if (!(d instanceof Date)) {
@@ -347,9 +348,6 @@ export function converToLocalTime(serverDate, flag) {
 
 export function timeToStr(date) {
   if (date !== undefined && date !== null && date !== "") {
-    function addDateZero(num) {
-      return num < 10 ? "0" + num : num;
-    }
     let d = new Date(date);
     return (
       d.getFullYear() +

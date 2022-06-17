@@ -200,8 +200,9 @@ class workRepot extends React.Component {
           if (response.data != null) {
             this.searchWorkRepot();
             message.success("更新成功！");
-            // this.setState({ rowSelectSumWorkTime: sumWorkTime });
-            // setTimeout(() => window.location.reload(), 1000);
+            //TODO: 整体重新加载用户体验不好,待调整
+            this.setState({ rowSelectSumWorkTime: sumWorkTime });
+            setTimeout(() => window.location.reload(), 1000);
           } else {
             alert("err");
           }
@@ -383,7 +384,7 @@ class workRepot extends React.Component {
       );
     } else {
       Modal.confirm({
-        title: "データをクリアしてよろしいでしょうか？",
+        title: "クリアしてよろしいでしょうか？",
         icon: <ExclamationCircleOutlined />,
         onOk: () => {
           const emp = {
@@ -407,7 +408,8 @@ class workRepot extends React.Component {
                 });
                 this.searchWorkRepot();
                 message.success("クリア完成！");
-                // setTimeout(() => window.location.reload(), 1000);
+                //TODO: 整体重新加载用户体验不好,待调整
+                setTimeout(() => window.location.reload(), 1000);
               } else {
                 alert("err");
               }
@@ -491,6 +493,7 @@ class workRepot extends React.Component {
       new Date().getMonth(),
       0
     );
+
     if (
       row.id < 2 &&
       !this.state.disabledFlag[row.id] &&
@@ -504,7 +507,7 @@ class workRepot extends React.Component {
       returnItem = (
         <span className="dutyRegistration-DataTableEditingCell">
           <input
-            type="text"
+            type="tel"
             className=" form-control editor edit-text"
             name="sumWorkTime"
             value={cell || ""}

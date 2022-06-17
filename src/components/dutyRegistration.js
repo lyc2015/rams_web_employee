@@ -13,7 +13,6 @@ import axios from "axios";
 import $ from "jquery";
 import "react-datepicker/dist/react-datepicker.css";
 import "../asserts/css/style.css";
-import ErrorsMessageToast from "./errorsMessageToast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUpload,
@@ -27,7 +26,6 @@ import * as messageUtils from "./utils/messageUtils.js";
 import DatePicker from "react-datepicker";
 import { Link } from "react-router-dom";
 import store from "./redux/store";
-import MyToast from "./myToast";
 import BreakTime from "./breakTime";
 import * as DutyRegistrationJs from "./dutyRegistrationJs.js";
 import { string } from "prop-types";
@@ -752,16 +750,10 @@ class DutyRegistration extends React.Component {
             for (let i = 0; i < dateData.length; i++) {
               dateData[i].isChanged = false;
             }
-            this.setState({ dateData: dateData });
-
-            this.setState({ myToastShow: true, message: "更新成功！" });
-            setTimeout(() => this.setState({ myToastShow: false }), 3000);
+            this.setState({ dateData });
+            message.success("更新成功！");
           } else {
-            this.setState({
-              errorsMessageShow: true,
-              errorsMessageValue: "更新失敗！",
-            });
-            setTimeout(() => this.setState({ errorsMessageShow: false }), 3000);
+            message.error("更新失敗！");
           }
           // window.location.reload();
           this.onBack();
@@ -854,6 +846,7 @@ class DutyRegistration extends React.Component {
             }
           }
         }
+
         if (
           this.state.systemName === undefined ||
           this.state.systemName === null ||
@@ -862,16 +855,12 @@ class DutyRegistration extends React.Component {
           errorMessage = "業務名称を入力してください";
         }
         if (!publicUtils.isEmpty(errorMessage)) {
-          this.setState({
-            errorsMessageShow: true,
-            errorsMessageValue: errorMessage,
-          });
+          message.error(errorMessage);
           return;
         }
         this.setState(
           {
             isConfirmedPage: true,
-            errorsMessageShow: false,
             dateData: dateData,
           },
           () => {
@@ -1008,7 +997,7 @@ class DutyRegistration extends React.Component {
                   row.startTimeMinutes === "00")
               }
             >
-              {isMobileDevice ? null : "："}
+              {isMobileDevice ? null : ":"}
             </font>
             <Col style={{ padding: "0px", margin: "0px" }}>
               <span
@@ -1594,6 +1583,7 @@ class DutyRegistration extends React.Component {
 
   render() {
     const { isMobileDevice } = this.state;
+    console.log({ state: this.state }, "render");
     const selectRow = {
       mode: "checkbox",
       bgColor: "pink",
@@ -1604,22 +1594,6 @@ class DutyRegistration extends React.Component {
     };
     return (
       <div className={isMobileDevice ? "clear-grid-padding" : ""}>
-        <div
-          style={{ display: this.state.errorsMessageShow ? "block" : "none" }}
-        >
-          <ErrorsMessageToast
-            errorsMessageShow={this.state.errorsMessageShow}
-            message={this.state.errorsMessageValue}
-            type={"danger"}
-          />
-        </div>
-        <div style={{ display: this.state.myToastShow ? "block" : "none" }}>
-          <MyToast
-            myToastShow={this.state.myToastShow}
-            message={this.state.message}
-            type={"success"}
-          />
-        </div>
         <div>
           {/* 開始 */}
           {/* 休憩時間 */}
@@ -2104,7 +2078,7 @@ class DutyRegistration extends React.Component {
               <Col style={{ textAlign: "center" }}>
                 <Button
                   size="sm"
-                  className="btn btn-info btn-sm pb10"
+                  className="btn btn-info btn-sm"
                   disabled={this.state.disabledFlag}
                   onClick={this.beforeSubmit.bind(this)}
                 >
@@ -2130,6 +2104,7 @@ class DutyRegistration extends React.Component {
                 ) : null}
               </Col>
             </Row>
+            <br />
           </Form.Group>
         </div>
         <div
