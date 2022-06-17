@@ -1831,7 +1831,7 @@ class DutyRegistration extends React.Component {
                 </InputGroup>
               </Col>
               <Col sm={6}></Col>
-              <Col sm={3}>
+              <Col hidden={isMobileDevice} sm={3}>
                 <InputGroup size="sm" className="mb-3">
                   <InputGroup.Prepend>
                     <InputGroup.Text id="fiveKanji">作業担当者</InputGroup.Text>
@@ -1864,32 +1864,32 @@ class DutyRegistration extends React.Component {
                 >
                   初期化
                 </Button>{" "}
-                {isMobileDevice ? null : (
-                  <Button
-                    size="sm"
-                    variant="info"
-                    name="clickButton"
-                    title="月に一回のみ登録してください"
-                    disabled={
-                      this.state.disabledFlag || this.state.isConfirmedPage
-                    }
-                    onClick={this.shuseiTo.bind(this, "breakTime")}
-                    variant="info"
-                    id="employeeInfo"
-                  >
-                    休憩時間登録
-                  </Button>
-                )}{" "}
                 <Button
-                  variant="info"
                   size="sm"
+                  variant="info"
+                  name="clickButton"
+                  title="月に一回のみ登録してください"
                   disabled={
                     this.state.disabledFlag || this.state.isConfirmedPage
                   }
-                  onClick={this.shuseiTo.bind(this, "costRegistration")}
+                  onClick={this.shuseiTo.bind(this, "breakTime")}
+                  variant="info"
+                  id="employeeInfo"
                 >
-                  <FontAwesomeIcon icon={faMoneyCheckAlt} /> 費用登録
-                </Button>
+                  休憩時間登録
+                </Button>{" "}
+                {isMobileDevice ? null : (
+                  <Button
+                    variant="info"
+                    size="sm"
+                    disabled={
+                      this.state.disabledFlag || this.state.isConfirmedPage
+                    }
+                    onClick={this.shuseiTo.bind(this, "costRegistration")}
+                  >
+                    <FontAwesomeIcon icon={faMoneyCheckAlt} /> 費用登録
+                  </Button>
+                )}{" "}
                 <div style={{ float: "right" }}>
                   <Button
                     size="sm"

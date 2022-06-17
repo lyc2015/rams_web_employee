@@ -79,12 +79,21 @@ class workRepot extends React.Component {
     costClassificationCode: store.getState().dropDown[30],
     serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
   };
-  approvalStatus = (code, row) => {
+  approvalStatus = (code, row, formatExtraData, rowIdx) => {
     if (code === "1") {
       return <Tag color="green">承認済み</Tag>;
     } else if (code === "0") {
-      return <Tag color="gold">未承認</Tag>;
+      if (
+        row.workingTimeReportFile === "まずファイルをアップロードしてください"
+      )
+        return <Tag color="red">未入力</Tag>;
+      if (!this.state.selectWorkRepot[rowIdx]?.sumWorkTime) {
+        return <Tag color="red">時間未入力</Tag>;
+      } else {
+        return <Tag color="gold">未承認</Tag>;
+      }
     }
+
     // if (row.workingTimeReportFile === "まずファイルをアップロードしてください")
     //   return <Tag color="magenta">未完成</Tag>;
     // else if (code === "1") {
@@ -130,6 +139,7 @@ class workRepot extends React.Component {
               }
             }
           }
+          this.setState({ selectWorkRepot: JSON.parse(JSON.stringify(data)) });
         } else {
           data = [];
           data.push({
@@ -495,6 +505,7 @@ class workRepot extends React.Component {
     );
 
     if (
+      row.workingTimeReportFile !== "作業時間入力画面で存在しました" &&
       row.id < 2 &&
       !this.state.disabledFlag[row.id] &&
       row.approvalStatus !== "1" &&
@@ -529,7 +540,6 @@ class workRepot extends React.Component {
     if (cell === "まずファイルをアップロードしてください")
       return (
         <font style={{ color: "#dc3545" }}>
-          {" "}
           {this.state.isMobileDevice ? "未" : cell}
         </font>
       );

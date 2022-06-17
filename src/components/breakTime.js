@@ -337,6 +337,7 @@ class BreakTime extends Component {
   };
 
   setBreakTime = (date) => {
+    date = date.toDate();
     this.setState({ breakTimeDate: date });
     let tempDate =
       String(date.getFullYear()) +
@@ -416,7 +417,6 @@ class BreakTime extends Component {
               breakTimeNightbreakTimeHour:
                 resultMap.data.breakTime.nightBreakTime,
               breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
-              disabledFlag: true,
             });
           } else {
             message.info("データ存在していません");
@@ -432,12 +432,10 @@ class BreakTime extends Component {
               breakTimeDaybreakTimeHour: 0,
               breakTimeNightbreakTimeHour: 0,
               breakTimeSumHour: 0,
+              dateDisabledFlag: true,
               disabledFlag: true,
             });
           }
-          this.setState({
-            dateDisabledFlag: tempDate < this.state.nowDate,
-          });
         })
         .catch(function () {
           notification.error({
@@ -460,7 +458,7 @@ class BreakTime extends Component {
         breakTimeDaybreakTimeHour: 0,
         breakTimeNightbreakTimeHour: 0,
         breakTimeSumHour: 0,
-        disabledFlag: true,
+        disabledFlag: false,
         dateDisabledFlag: false,
       });
     }
