@@ -1351,7 +1351,7 @@ class costRegistration extends React.Component {
             </Col>
           </Row>
           <Row>
-            <Col xs={12} sm={3}>
+            <Col xs={12} sm={6}>
               <InputGroup size="sm" className="mb-3">
                 <InputGroup.Prepend>
                   <InputGroup.Text id="niKanjiFor150">備考</InputGroup.Text>

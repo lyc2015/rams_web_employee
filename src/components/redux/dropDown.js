@@ -88,9 +88,12 @@ var methodNameList = [
   "getServerIP", // 最後
 ];
 
+const serverIP = "http://192.168.2.13:8080/";
+
 export function fetchDropDown(state = defaultState) {
   var outArray = [];
-  var serverIP = "http://192.168.2.21:8080/";
+
+  // var serverIP = "http://127.0.0.1:8080/";
   // var serverIP = "http://54.201.204.105:8080/";
 
   var par = JSON.stringify(methodNameList);
@@ -124,7 +127,6 @@ export function fetchDropDown(state = defaultState) {
  */
 export function updateDropDown(state = defaultState, dropName) {
   var methodList = [dropName];
-  var serverIP = "http://127.0.0.1:8080/";
   //var serverIP = "http://54.201.204.105:8080/";
 
   var par = JSON.stringify(methodList);

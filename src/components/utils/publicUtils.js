@@ -997,7 +997,7 @@ export function costValueChange(v) {
  * @param {} name eq:【言　語】, joinWith eq: `、`, values eq:['C#','VB.net']
  * @returns 【言　語】: C#、VB.net
  */
-function formatText({ name, joinWith, values }) {
+function formatText({ name, joinWith = "", values, keepLastJoinMarkWhenOne }) {
   let str = "";
   let nameIsIn = false;
   if (!(values instanceof Array)) {
@@ -1008,17 +1008,20 @@ function formatText({ name, joinWith, values }) {
   values = values.filter((value) => value);
   if (!name || values?.length < 1) return "";
 
-  values.forEach((value) => {
+  values.forEach((value, index) => {
     // 拼接标题
     if (!nameIsIn && value) {
       str += `${name}: `;
       nameIsIn = true;
     }
     // 拼接内容
-    str += `${value}${joinWith || ""}`;
+    str += `${value}${index !== values.length - 1 ? joinWith : ""}`;
   });
-  if (str.endsWith(joinWith)) {
-    str = str.slice(0, str.length - joinWith.length);
+  // if (str.endsWith(joinWith)) {
+  //   str = str.slice(0, str.length - joinWith.length);
+  // }
+  if (keepLastJoinMarkWhenOne && values.length === 1) {
+    str += joinWith;
   }
 
   return str;
@@ -1073,6 +1076,7 @@ export function findItemByKey(arr, keyName, key, needIndex = false) {
   }
 }
 
+// 给yearAndMonth增加/  202206 =>  2022/06
 export function addLeftSlash(cell) {
   let arr = cell.split("");
   if (arr.length < 6) return cell;

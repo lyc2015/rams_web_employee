@@ -82,7 +82,7 @@ class workRepot extends React.Component {
   approvalStatus = (code, row, formatExtraData, rowIdx) => {
     if (code === "1") {
       return <Tag color="green">承認済み</Tag>;
-    } else if (code === "0") {
+    } else {
       if (
         row.workingTimeReportFile === "まずファイルをアップロードしてください"
       )
@@ -93,16 +93,6 @@ class workRepot extends React.Component {
         return <Tag color="gold">未承認</Tag>;
       }
     }
-
-    // if (row.workingTimeReportFile === "まずファイルをアップロードしてください")
-    //   return <Tag color="magenta">未完成</Tag>;
-    // else if (code === "1") {
-    //   return <Tag color="green">承認済み</Tag>;
-    // } else if (code === "0") {
-    //   return <Tag color="gold">未承認</Tag>;
-    // } else {
-    //   return <Tag color="magenta">未完成</Tag>;
-    // }
   };
   //　検索
   searchWorkRepot = () => {
@@ -167,7 +157,10 @@ class workRepot extends React.Component {
       });
     } else {
       var re = /^[0-9]+.?[0-9]*/;
-      if (sumWorkTime === null || sumWorkTime === "") return;
+      if (sumWorkTime === null || sumWorkTime === "") {
+        message.error("稼働時間を入力してください。");
+        return;
+      }
       if (sumWorkTime !== null) {
         if (sumWorkTime.length > 6) {
           message.error("稼働時間をチェックしてください。");
@@ -471,16 +464,19 @@ class workRepot extends React.Component {
     this.props.history.push(path);
   };
 
-  updateUserFormatter = (cell, row) => {
-    if (row.sumWorkTime === null || row.sumWorkTime === "") return "";
+  updateUserFormatter = (cell, row, formatExtraData, rowIdx) => {
+    if (
+      this.state.selectWorkRepot[rowIdx].sumWorkTime === null ||
+      this.state.selectWorkRepot[rowIdx].sumWorkTime === ""
+    )
+      return "";
     else return cell;
   };
 
-  updateTimeFormatter = (cell, row) => {
+  updateTimeFormatter = (cell, row, formatExtraData, rowIdx) => {
     if (
-      row.sumWorkTime === null ||
-      row.sumWorkTime === "" ||
-      row.updateUser === ""
+      this.state.selectWorkRepot[rowIdx].sumWorkTime === null ||
+      this.state.selectWorkRepot[rowIdx].sumWorkTime === ""
     )
       return "";
     else return cell;
@@ -518,6 +514,7 @@ class workRepot extends React.Component {
       returnItem = (
         <span className="dutyRegistration-DataTableEditingCell">
           <input
+            maxLength={6}
             type="tel"
             className=" form-control editor edit-text"
             name="sumWorkTime"
