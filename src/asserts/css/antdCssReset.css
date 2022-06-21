@@ -138,3 +138,8 @@
   color: red;
   content: "★";
 }
+
+.ant-input-number-input {
+  height: 30px !important;
+  padding: 0 11px !important;
+}

@@ -34,6 +34,14 @@
   justify-content: space-between;
 }
 
+.width-auto {
+  width: auto;
+}
+
+.w25p {
+  width: 25%;
+}
+
 .w40p {
   width: 40%;
 }
@@ -128,6 +136,10 @@
 
 .df {
   display: flex;
+}
+
+.fx1 {
+  flex: 1;
 }
 
 .margin-0-auto {
