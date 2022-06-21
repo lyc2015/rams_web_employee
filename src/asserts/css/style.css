@@ -826,7 +826,7 @@ body {
 #datePicker-empInsert-right-stayPeriod {
   background-repeat: no-repeat;
   background-position: 10px 7px;
-  width: 7.6rem;
+  /* width: 7.6rem; */
   background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
     center transparent;
   padding-right: 0px;
@@ -837,7 +837,7 @@ body {
 #datePicker-empInsert-right-immigrationTime {
   background-repeat: no-repeat;
   background-position: 10px 7px;
-  width: 7.3rem;
+  /* width: 7.3rem; */
   background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
     center transparent;
   padding-right: 0px;
@@ -1301,7 +1301,7 @@ body {
 }
 
 .Autocompletestyle-siteInfoSearch-employeeNo {
-  width: 14.4rem;
+  /* width: 14.4rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1344,7 +1344,7 @@ body {
 }
 
 .Autocompletestyle-emp-station {
-  width: 16.58rem;
+  /* width: 16.58rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1645,7 +1645,7 @@ body {
 
 .site-mark {
   width: 0.001rem;
-  margin-left: 0.15rem;
+  /* margin-left: 0.15rem; */
 }
 
 .Autocompletestyle-siteInfoSearch-customerNo {
@@ -1719,7 +1719,7 @@ body {
 }
 
 .Autocompletestyle-employeeInsert-developLanguage {
-  width: 8.29rem;
+  /* width: 8.29rem; */
   height: 31px;
   border-color: "#ced4da";
   border-width: 1;
@@ -1955,7 +1955,7 @@ body {
   }
 
   .Autocompletestyle-siteInfo {
-    width: 9rem;
+    /* width: 9rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -1974,7 +1974,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-emp-station {
-    width: 14.24rem;
+    /* width: 14.24rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2289,7 +2289,7 @@ body {
     max-width: 310px !important;
   }
   .Autocompletestyle-siteInfo-relatedEmployees {
-    width: 6.5rem;
+    /* width: 6.5rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2439,7 +2439,7 @@ body {
   }
   .site-mark {
     width: 0.001rem;
-    margin-left: 0.15rem;
+    /* margin-left: 0.15rem; */
   }
   #customerInfoDatePickerReadOnly {
     background-repeat: no-repeat;
@@ -2531,7 +2531,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-siteInfo {
-    width: 10.4rem;
+    /* width: 10.4rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2607,7 +2607,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-siteInfo-employeeNo {
-    width: 9rem;
+    /* width: 9rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2619,11 +2619,13 @@ body {
     width: 3rem;
   }
   #empinsert-right-kanji {
-    width: 5.1rem;
+    /* width: 5.1rem; */
   }
 
   .uploadButtom {
-    width: 3.78rem;
+    /* width: 3.78rem; */
+    flex-shrink: 0 !important;
+    border-radius: 0.2rem !important;
   }
 
   .downloadButtom {
@@ -2859,7 +2861,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
-    width: 6.2rem !important;
+    /* width: 6.2rem !important; */
   }
 
   #datePicker-empInsert-right-immigrationTime {
@@ -2870,7 +2872,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
-    width: 4.3rem !important;
+    /* width: 4.3rem !important; */
   }
 
   #datePicker-empInsert-right-socialInsuranceDate {
@@ -2961,7 +2963,7 @@ body {
     color: "#495057";
   }
   .Autocompletestyle-siteInfo-relatedEmployees {
-    width: 6.93rem;
+    /* width: 6.93rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
@@ -2976,7 +2978,7 @@ body {
     width: 1rem;
   }
   .Autocompletestyle-employeeInsert-developLanguage {
-    width: 7.13rem;
+    /* width: 7.13rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;
