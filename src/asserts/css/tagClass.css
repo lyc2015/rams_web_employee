@@ -35,7 +35,7 @@
 }
 
 .width-auto {
-  width: auto;
+  width: auto !important;
 }
 
 .w25p {
@@ -226,6 +226,10 @@
 
 .white-space-pre-wrap {
   white-space: pre-wrap;
+}
+
+.bg-white {
+  background: #ffffff !important;
 }
 
 .bg-transparent {

@@ -211,6 +211,10 @@ body {
   max-width: none !important;
 }
 
+#sendDay {
+  /* min-width: 7rem !important; */
+}
+
 #datePicker {
   background-repeat: no-repeat;
   background-position: 10px 7px;
@@ -837,7 +841,7 @@ body {
 #datePicker-empInsert-right-immigrationTime {
   background-repeat: no-repeat;
   background-position: 10px 7px;
-  /* width: 7.3rem; */
+  width: 7.3rem;
   background: url(date_24px_533395_easyicon.net.ico) no-repeat scroll right
     center transparent;
   padding-right: 0px;
@@ -1787,7 +1791,7 @@ body {
   padding-right: 0px;
   height: calc(1.5em + 0.5rem + 2px);
   background-color: white;
-  width: 11.8rem !important;
+  /* width: 11.8rem !important; */
 }
 
 .Autocompletestyle-wagesInfo-employeeName {
@@ -3106,7 +3110,7 @@ body {
     padding-right: 0px;
     height: calc(1.5em + 0.5rem + 2px);
     background-color: white;
-    width: 7.6rem !important;
+    /* width: 7.6rem !important; */
   }
   .Autocompletestyle-wagesInfo-employeeName {
     width: 10.2rem;
@@ -3309,4 +3313,9 @@ select {
 /*清除IE默认下拉按钮，但是测试发现IE10以上有效，IE8，9默认下拉按钮仍旧存在*/
 select::-ms-expand {
   display: none;
+}
+
+.btn-group-sm > .btn,
+.btn-sm {
+  flex-shrink: 0;
 }

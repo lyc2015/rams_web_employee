@@ -40,10 +40,10 @@
 }
 
 .react-datepicker__navigation--previous {
-  border-right-color: black;
+  border-right-color: black !important;
 }
 .react-datepicker__navigation--next {
-  border-left-color: black;
+  border-left-color: black !important;
 }
 
 .ant-modal-confirm .ant-modal-body {
