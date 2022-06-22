@@ -27,6 +27,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import * as publicUtils from "./utils/publicUtils.js";
 import store from "./redux/store";
 import { Tag, message, Modal, notification } from "antd";
+import EventEmitter from "./utils/EventEmitter";
 axios.defaults.withCredentials = true;
 
 /**
@@ -205,7 +206,7 @@ class workRepot extends React.Component {
             message.success("更新成功！");
             //TODO: 整体重新加载用户体验不好,待调整
             this.setState({ rowSelectSumWorkTime: sumWorkTime });
-            setTimeout(() => window.location.reload(), 1000);
+            EventEmitter.emit("updateWorkRepot");
           } else {
             alert("err");
           }
@@ -411,8 +412,7 @@ class workRepot extends React.Component {
                 });
                 this.searchWorkRepot();
                 message.success("クリア完成！");
-                //TODO: 整体重新加载用户体验不好,待调整
-                setTimeout(() => window.location.reload(), 1000);
+                EventEmitter.emit("updateWorkRepot");
               } else {
                 alert("err");
               }

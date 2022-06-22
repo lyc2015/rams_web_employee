@@ -46,6 +46,7 @@ import BreakTime from "./breakTime";
 import ReactTooltip from "react-tooltip";
 import { message, Dropdown, Menu, Space } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
+import EventEmitter from "./utils/EventEmitter";
 
 axios.defaults.withCredentials = true;
 
@@ -103,6 +104,9 @@ class SubMenu extends Component {
    * 画面の初期化
    */
   componentDidMount() {
+    EventEmitter.on("updateWorkRepot", () => {
+      this.getDutyRegistrationFlag();
+    });
     this.getDutyRegistrationFlag();
 
     var dateNow = new Date();
@@ -120,6 +124,9 @@ class SubMenu extends Component {
       click: "",
       className: "",
     });
+  }
+  componentWillUnmount() {
+    EventEmitter.remove("updateWorkRepot");
   }
 
   getDutyRegistrationFlag = () => {
