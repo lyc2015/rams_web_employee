@@ -58,6 +58,18 @@
   height: 70%;
 }
 
+.h60vh {
+  height: 60vh !important;
+}
+
+.h65vh {
+  height: 65vh !important;
+}
+
+.h70vh {
+  height: 70vh !important;
+}
+
 .pl15 {
   padding-left: 15px;
 }
@@ -149,6 +161,14 @@
   white-space: normal;
   word-break: break-all;
   word-wrap: break-word;
+}
+
+.ofh {
+  overflow: hidden;
+}
+
+.ofs {
+  overflow: scroll;
 }
 
 .overflowEllipsis {

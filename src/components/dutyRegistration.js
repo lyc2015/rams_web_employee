@@ -1924,13 +1924,8 @@ class DutyRegistration extends React.Component {
                   selectRow={selectRow}
                   pagination={false}
                   options={this.options}
-                  headerStyle={{
-                    background: "#5599FF",
-                    zIndex: "1",
-                    position: "sticky",
-                    top: "0",
-                  }}
-                  tableStyle={{ height: "70vh", overflow: "scroll" }}
+                  headerStyle={{ background: "#5599FF" }}
+                  bodyContainerClass={isMobileDevice ? "h60vh ofs" : ""}
                 >
                   <TableHeaderColumn
                     tdStyle={{
@@ -2112,17 +2107,9 @@ class DutyRegistration extends React.Component {
             <br />
           </Form.Group>
         </div>
-        <div
-          className="loadingImage"
-          hidden={this.state.loading}
-          style={{
-            position: "absolute",
-            top: "60%",
-            left: "60%",
-            marginLeft: "-200px",
-            marginTop: "-150px",
-          }}
-        ></div>
+        <div className="loadingImageContainer">
+          <div className="loadingImage" hidden={this.state.loading}></div>
+        </div>
       </div>
     );
   }
