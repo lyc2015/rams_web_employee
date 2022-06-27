@@ -268,3 +268,23 @@
 .shrink-0 {
   flex-shrink: 0;
 }
+
+.db {
+  display: block;
+}
+
+.dih {
+  display: inherit;
+}
+.dn {
+  display: none;
+}
+
+/* color */
+.color-red {
+  color: red;
+}
+
+.bdr0 {
+  border-radius: 0;
+}
