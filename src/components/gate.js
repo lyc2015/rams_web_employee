@@ -9,9 +9,10 @@ class gate extends Component {
   render() {
     return (
       <div
-        className="text-center mainBody"
+        className="text-center"
         style={{ float: "center", marginTop: "10%" }}
       >
+        <div className="mainBody"></div>
         <Link to="/loginManager" className="btn btn-primary">
           管理者登録
         </Link>

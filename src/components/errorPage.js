@@ -27,7 +27,8 @@ class ErrorPage extends Component {
   render() {
     if (this.state.error) {
       return (
-        <div className="mainBody">
+        <div>
+          <div className="mainBody"></div>
           <h1>エラーは：{this.state.error.toString()}</h1>
           <h2>エラーが発生したところ：{this.state.text}</h2>
         </div>

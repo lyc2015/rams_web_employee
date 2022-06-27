@@ -925,7 +925,8 @@ class SubMenu extends Component {
     const { isMobileDevice } = this.state;
 
     return (
-      <div className={"mainBody " + (isMobileDevice ? "" : "mainBodyMinWidth")}>
+      <div className={isMobileDevice ? "" : "mainBodyMinWidth"}>
+        <div className="mainBody"></div>
         {/* TOP */}
         <Row className="myCss employeeNavBar">
           <Col sm={11}>{this.renderTop()}</Col>

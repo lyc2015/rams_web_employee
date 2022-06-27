@@ -1924,7 +1924,13 @@ class DutyRegistration extends React.Component {
                   selectRow={selectRow}
                   pagination={false}
                   options={this.options}
-                  headerStyle={{ background: "#5599FF" }}
+                  headerStyle={{
+                    background: "#5599FF",
+                    zIndex: "1",
+                    position: "sticky",
+                    top: "0",
+                  }}
+                  tableStyle={{ height: "70vh", overflow: "scroll" }}
                 >
                   <TableHeaderColumn
                     tdStyle={{
@@ -2073,7 +2079,6 @@ class DutyRegistration extends React.Component {
                 <font>{"合計：" + this.state.workHours + "H"}</font>
               </Col>
             </Row>
-            <br />
             <Row>
               <Col style={{ textAlign: "center" }}>
                 <Button
