@@ -149,5 +149,5 @@
 
 .btn.btn-link.reset-link-btn {
   padding: 0;
-  line-height: normal;
+  line-height: unset;
 }
