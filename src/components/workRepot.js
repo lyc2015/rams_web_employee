@@ -85,7 +85,9 @@ class workRepot extends React.Component {
       return <Tag color="green">承認済み</Tag>;
     } else {
       if (
-        row.workingTimeReportFile === "まずファイルをアップロードしてください"
+        row.workingTimeReportFile ===
+          "まずファイルをアップロードしてください" &&
+        !row.employeeNo?.includes("BP")
       )
         return <Tag color="red">未入力</Tag>;
       if (!this.state.selectWorkRepot[rowIdx]?.sumWorkTime) {
