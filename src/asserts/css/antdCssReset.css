@@ -1,7 +1,9 @@
 .ant-message-error {
   display: flex;
   align-items: center;
+  font-size: 16px;
 }
+
 .ant-message-info {
   display: flex;
   align-items: center;
@@ -75,11 +77,6 @@
   /* border: 1px solid #333; */
 }
 
-.ant-input-number-input {
-  height: auto !important;
-  padding: 0 !important;
-}
-
 .ant-picker-header button {
   color: black !important;
 }
@@ -140,6 +137,17 @@
 }
 
 .ant-input-number-input {
-  height: 30px !important;
-  padding: 0 11px !important;
+  height: auto !important;
+  padding: 0 !important;
+}
+
+@media screen and (max-width: 1200px) {
+  .ant-message {
+    font-size: 14px !important;
+  }
+}
+
+.btn.btn-link.reset-link-btn {
+  padding: 0;
+  line-height: normal;
 }

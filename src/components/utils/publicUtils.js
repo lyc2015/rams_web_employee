@@ -504,25 +504,27 @@ export function valueGetText(code, list) {
 // }
 
 // 浏览器下载附件
-function showDownloadResume(fileBlobUrl, path) {
+function showDownloadResume(fileBlobUrl, path, fileKey) {
   var a = document.createElement("a");
 
+  let fileName = fileKey || path;
+
   a.href = fileBlobUrl;
-  if (!path) return;
-  let pathArr = [];
-  if (path.includes("/")) {
-    pathArr = path.split("/");
-  } else if (path.includes("\\")) {
-    pathArr = path.split("\\");
+  if (!fileName) return;
+  let fileNameArr = [];
+  if (fileName.includes("/")) {
+    fileNameArr = fileName.split("/");
+  } else if (fileName.includes("\\")) {
+    fileNameArr = fileName.split("\\");
   }
 
-  a.download = pathArr[pathArr.length - 1];
+  a.download = fileNameArr[fileNameArr.length - 1];
   a.click();
   a.remove();
 }
 
 // Download 方法 by:FanChongXin
-export async function handleDownload(path, serverIP) {
+export async function handleDownload(path, serverIP, fileKey) {
   let res = await axios.post(
     serverIP + "download",
     {
@@ -533,7 +535,7 @@ export async function handleDownload(path, serverIP) {
     }
   );
   let fileBlobUrl = window.URL.createObjectURL(res.data);
-  showDownloadResume(fileBlobUrl, path);
+  showDownloadResume(fileBlobUrl, path, fileKey);
 }
 
 // Download 方法
