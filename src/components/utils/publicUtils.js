@@ -515,7 +515,7 @@ function showDownloadResume(fileBlobUrl, fileName) {
 // Download 方法 by:樊崇鑫
 export async function handleDownload(path, serverIP, obj = {}) {
   try {
-    let { fileKey = "", clearName = false, extraDate } = obj;
+    let { fileKey = "", clearName = false, extraData } = obj;
     if (!path) {
       message.error("ファイルが存在しません。");
       return;
@@ -547,7 +547,7 @@ export async function handleDownload(path, serverIP, obj = {}) {
       fileName = fileNamePathArr[fileNamePathArr.length - 1];
     }
 
-    fileName = getFileNameWithExtraData(fileName, clearName, extraDate);
+    fileName = getFileNameWithExtraData(fileName, clearName, extraData);
     showDownloadResume(fileBlobUrl, fileName);
   } catch (error) {
     console.error("download failed! " + error);
