@@ -504,38 +504,74 @@ export function valueGetText(code, list) {
 // }
 
 // 浏览器下载附件
-function showDownloadResume(fileBlobUrl, path, fileKey) {
+function showDownloadResume(fileBlobUrl, fileName) {
   var a = document.createElement("a");
-
-  let fileName = fileKey || path;
-
   a.href = fileBlobUrl;
-  if (!fileName) return;
-  let fileNameArr = [];
-  if (fileName.includes("/")) {
-    fileNameArr = fileName.split("/");
-  } else if (fileName.includes("\\")) {
-    fileNameArr = fileName.split("\\");
-  }
-
-  a.download = fileNameArr[fileNameArr.length - 1];
+  a.download = fileName;
   a.click();
   a.remove();
 }
 
-// Download 方法 by:FanChongXin
-export async function handleDownload(path, serverIP, fileKey) {
-  let res = await axios.post(
-    serverIP + "download",
-    {
-      name: path,
-    },
-    {
-      responseType: "blob",
+// Download 方法 by:樊崇鑫
+export async function handleDownload(path, serverIP, obj = {}) {
+  try {
+    let { fileKey = "", clearName = false, extraDate } = obj;
+    if (!path) {
+      message.error("ファイルが存在しません。");
+      return;
     }
-  );
-  let fileBlobUrl = window.URL.createObjectURL(res.data);
-  showDownloadResume(fileBlobUrl, path, fileKey);
+    let res = await axios.post(
+      serverIP + "download",
+      {
+        name: path,
+      },
+      {
+        responseType: "blob",
+      }
+    );
+    // 文件blob资源
+    let fileBlobUrl = window.URL.createObjectURL(res.data);
+
+    // 下载的文件名
+    let fileNamePath = fileKey || path;
+    let fileNamePathArr = [];
+    let fileName = "";
+
+    if (fileNamePath.includes("/")) {
+      fileNamePathArr = fileNamePath.split("/");
+    } else if (fileNamePath.includes("\\")) {
+      fileNamePathArr = fileNamePath.split("\\");
+    }
+
+    if (fileNamePathArr.length > 0) {
+      fileName = fileNamePathArr[fileNamePathArr.length - 1];
+    }
+
+    fileName = getFileNameWithExtraData(fileName, clearName, extraDate);
+    showDownloadResume(fileBlobUrl, fileName);
+  } catch (error) {
+    console.error("download failed! " + error);
+    message.error("download failed!");
+  }
+}
+
+function getFileNameWithExtraData(fileName, clearName, extraData = {}) {
+  if (isEmptyObject(extraData)) return fileName;
+  let arr = fileName.split(".");
+  if (clearName) {
+    return Object.values(extraData).join("_") + "." + arr[1];
+  } else {
+    return arr[0] + "_" + Object.values(extraData).join("_") + "." + arr[1];
+  }
+}
+
+/**
+ * 判断object是否为空对象
+ * @param {*} object
+ * @returns
+ */
+function isEmptyObject(object) {
+  return Object.keys(object).length === 0;
 }
 
 // Download 方法

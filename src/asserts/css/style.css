@@ -2579,7 +2579,7 @@ body {
   }
 
   .Autocompletestyle-individualSales {
-    width: 8.5rem;
+    /* width: 8.5rem; */
     height: 31px;
     border-color: "#ced4da";
     border-width: 1;

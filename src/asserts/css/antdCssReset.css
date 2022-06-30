@@ -151,3 +151,10 @@
   padding: 0;
   line-height: unset;
 }
+
+@media screen and (height< 960px) {
+  /* 表格td内边距,尽可能不显示滚动条 */
+  .table td {
+    padding: 0.55rem;
+  }
+}
