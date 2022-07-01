@@ -24,6 +24,7 @@ import {
   faUndo,
   faFile,
 } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
 import * as publicUtils from "./utils/publicUtils.js";
 import store from "./redux/store";
 import OtherCostModel from "./otherCost";
@@ -32,7 +33,7 @@ import { message, notification, Input, Divider } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { isMobileDevice } from "./redux/init";
 axios.defaults.withCredentials = true;
-
+moment.locale("ja");
 /**
  * 費用登録画面
  */
@@ -946,13 +947,18 @@ class costRegistration extends React.Component {
      * eg： new Date(2011, 01, 07)
      *
      */
-    let nowYearAndMonth =
-      new Date().getMonth() + 1 === 1
-        ? new Date().getFullYear() - 1 + "/12"
-        : new Date().getFullYear() +
-          "/" +
-          utils.addDateZero(new Date().getMonth());
-    if (date < new Date(...nowYearAndMonth.split("/"))) {
+
+    // let nowYearAndMonth =
+    //   new Date().getMonth() + 1 === 1
+    //     ? new Date().getFullYear() - 1 + "/12"
+    //     : new Date().getFullYear() +
+    //       "/" +
+    //       utils.addDateZero(new Date().getMonth());
+    let selectedDate = moment(date).format("YYYY/MM");
+    let nowYearAndMonth = moment().subtract("1", "month").format("YYYY/MM");
+    console.log(selectedDate, nowYearAndMonth, selectedDate < nowYearAndMonth);
+
+    if (selectedDate < nowYearAndMonth) {
       this.setState({
         disabledFlag: true,
       });
