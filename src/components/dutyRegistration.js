@@ -30,6 +30,7 @@ import BreakTime from "./breakTime";
 import * as DutyRegistrationJs from "./dutyRegistrationJs.js";
 import { string } from "prop-types";
 import { message, notification, Modal as AntdModal } from "antd";
+import moment from "moment";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 axios.defaults.withCredentials = true;
@@ -82,9 +83,11 @@ class DutyRegistration extends React.Component {
       dateData: [],
       dateDataTemp: [],
       rowNo: [],
-      yearMonth: new Date(),
-      year: new Date().getFullYear(),
-      month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+      yearMonth: this.props.location?.state?.yearMonth || new Date(),
+      year: this.props.location?.state?.year || new Date().getFullYear(),
+      month:
+        this.props.location?.state?.month ||
+        (new Date().getMonth() + 1).toString().padStart(2, "0"),
       // status: {sleep2sleep: 0 ,work2work: 1, sleep2work: 2, work2sleep:
       // 3},
       workDays: 0,
@@ -468,6 +471,12 @@ class DutyRegistration extends React.Component {
   };
   // 初期化メソッド
   componentDidMount() {
+    console.log(
+      this.state.year,
+      this.state.month,
+      this.state.yearMonth,
+      "this.props.location?.state"
+    );
     this.getWorkData();
   }
 
@@ -649,6 +658,18 @@ class DutyRegistration extends React.Component {
             breakTimeFlag: true,
           });
         }
+        console.log(
+          "resultMap.data.breakTime === null",
+          resultMap.data.breakTime === null,
+          resultMap.data.breakTime
+        );
+
+        this.setState({
+          disabledFlag:
+            resultMap.data.approveStatus === "1" ||
+            resultMap.data.breakTime === null,
+        });
+
         this.setTableStyle();
       })
       .catch(function (e) {
@@ -1536,14 +1557,7 @@ class DutyRegistration extends React.Component {
     let year = date.getFullYear();
     let month = (date.getMonth() + 1).toString().padStart(2, "0");
     let temp = String(year) + String(month);
-    let now;
-    if ((new Date().getMonth() + 1).toString().padStart(2, "0") === "01") {
-      now = new Date().getFullYear() - 1 + "12";
-    } else {
-      now =
-        String(new Date().getFullYear()) +
-        new Date().getMonth().toString().padStart(2, "0");
-    }
+    let now = moment().subtract("1", "month").format("YYYYMM");
 
     let disabledFlag = temp < now;
     if (temp === now) {
@@ -1869,9 +1883,7 @@ class DutyRegistration extends React.Component {
                   variant="info"
                   name="clickButton"
                   title="月に一回のみ登録してください"
-                  disabled={
-                    this.state.disabledFlag || this.state.isConfirmedPage
-                  }
+                  disabled={this.state.isConfirmedPage}
                   onClick={this.shuseiTo.bind(this, "breakTime")}
                   variant="info"
                   id="employeeInfo"

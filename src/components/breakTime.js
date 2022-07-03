@@ -17,6 +17,7 @@ import "../asserts/css/style.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { notification, message, DatePicker, TimePicker } from "antd";
 import moment from "moment";
+import EventEmitter from "./utils/EventEmitter";
 moment.locale("ja");
 axios.defaults.withCredentials = true;
 
@@ -28,6 +29,9 @@ class BreakTime extends Component {
   constructor() {
     super();
     this.state = {
+      breakTimeFlag: "0", // 0 无休息时间，1 已承认  1 有休息时间
+      minDate: moment().subtract("1", "month").format("YYYYMM"),
+      nowDate: moment().format("YYYYMM"),
       isMobileDevice: store.getState().isMobileDevice,
       actionType: "", //処理区分
       breakTimeDate: new Date(),
@@ -40,8 +44,6 @@ class BreakTime extends Component {
       breakTimeNightHourEnd: [], //　　お昼時まで
       breakTimeNightMinuteEnd: [], //　　お昼分まで
       serverIP: store.getState().dropDown[store.getState().dropDown.length - 1], //劉林涛　テスト
-      year: new Date().getFullYear(),
-      month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
     };
 
     for (var i = 0; i < 24; i++) {
@@ -63,101 +65,17 @@ class BreakTime extends Component {
    * 画面の初期化
    */
   componentDidMount() {
-    this.getDutyRegistrationFlag();
     const { location } = this.props;
-    this.setState({
-      backPage: location.state.backPage,
-      sendValue: location.state.sendValue,
-      flag: location.state.sendValue.flag,
-      nowDate:
-        String(new Date().getFullYear()) +
-        (new Date().getMonth() + 1 < 10
-          ? "0" + String(new Date().getMonth() + 1)
-          : String(new Date().getMonth() + 1)),
-    });
-    let postData = {
-      yearMonth: this.state.year + this.state.month,
-    };
-    axios
-      .post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
-      .then((resultMap) => {
-        this.setState({
-          breakTimeUser: resultMap.data.employeeName,
-        });
-        $("#employeeNo").val(resultMap.data.employeeNo);
-
-        if (resultMap.data.breakTime !== null) {
-          $("#breakTimeDayHourStart").val(
-            Number(
-              resultMap.data.breakTime.lunchBreakStartTime
-                .toString()
-                .substring(0, 2)
-            )
-          );
-          $("#breakTimeDayMinuteStart").val(
-            Number(
-              resultMap.data.breakTime.lunchBreakStartTime
-                .toString()
-                .substring(2)
-            )
-          );
-          $("#breakTimeDayHourEnd").val(
-            Number(
-              resultMap.data.breakTime.lunchBreakFinshTime
-                .toString()
-                .substring(0, 2)
-            )
-          );
-          $("#breakTimeDayMinuteEnd").val(
-            Number(
-              resultMap.data.breakTime.lunchBreakFinshTime
-                .toString()
-                .substring(2)
-            )
-          );
-          $("#breakTimeNightHourStart").val(
-            Number(
-              resultMap.data.breakTime.nightBreakStartTime
-                .toString()
-                .substring(0, 2)
-            )
-          );
-          $("#breakTimeNightMinuteStart").val(
-            Number(
-              resultMap.data.breakTime.nightBreakStartTime
-                .toString()
-                .substring(2)
-            )
-          );
-          $("#breakTimeNightHourEnd").val(
-            Number(
-              resultMap.data.breakTime.nightBreakfinshTime
-                .toString()
-                .substring(0, 2)
-            )
-          );
-          $("#breakTimeNightMinuteEnd").val(
-            Number(
-              resultMap.data.breakTime.nightBreakfinshTime
-                .toString()
-                .substring(2)
-            )
-          );
-          this.setState({
-            breakTimeDaybreakTimeHour: resultMap.data.breakTime.lunchBreakTime,
-            breakTimeNightbreakTimeHour:
-              resultMap.data.breakTime.nightBreakTime,
-            breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
-          });
-        }
-      })
-      .catch(function (e) {
-        notification.error({
-          message: "サーバーエラー",
-          description: "error",
-          placement: "topLeft",
-        });
-      });
+    this.setState(
+      {
+        backPage: location.state?.backPage,
+        sendValue: location.state?.sendValue,
+        flag: location.state?.sendValue?.flag,
+      },
+      () => {
+        this.getDutyInfo();
+      }
+    );
   }
   calculateTime = () => {
     var breakTimeDayHourStart = Number($("#breakTimeDayHourStart").val());
@@ -265,21 +183,12 @@ class BreakTime extends Component {
         )
         .then((resultMap) => {
           if (resultMap.data) {
-            this.setState({
-              myToastShow: true,
-              method: "put",
-              message: "更新成功!",
-            });
-            setTimeout(() => this.setState({ myToastShow: false }), 3000);
+            message.success("更新成功");
           } else {
-            this.setState({
-              errorsMessageShow: true,
-              method: "put",
-              message: "更新失敗!",
-            });
-            setTimeout(() => this.setState({ errorsMessageShow: false }), 3000);
+            message.error("更新失敗");
           }
-          setTimeout(() => window.location.reload(), 1000);
+          // setTimeout(() => window.location.reload(), 1000);
+          EventEmitter.emit("updateWorkRepot");
         })
         .catch(function () {
           notification.error({
@@ -323,14 +232,25 @@ class BreakTime extends Component {
   };
 
   changeToDutyRegistration = () => {
-    if (this.state.breakTimeFlag === true) {
-      message.info("休憩時間を登録してください。");
+    if (this.state.breakTimeFlag === "1") {
+      message.info("承認済みでした、修正できないです");
       return;
+    } else if (this.state.breakTimeFlag === "0") {
+      message.info("休憩時間を登録してください。");
     } else {
       var path = {};
+      let breakTimeDateMonth = String(this.state.breakTimeDate.getMonth() + 1);
       path = {
         pathname: "/subMenuEmployee/dutyRegistration",
-        state: { sendValue: this.state.sendValue },
+        state: {
+          sendValue: this.state.sendValue,
+          year: this.state.breakTimeDate.getFullYear(),
+          month:
+            breakTimeDateMonth < 10
+              ? "0" + breakTimeDateMonth
+              : breakTimeDateMonth,
+          yearMonth: moment(this.state.breakTimeDate).toDate(),
+        },
       };
       return this.props.history.push(path);
     }
@@ -339,113 +259,18 @@ class BreakTime extends Component {
   setBreakTime = (date) => {
     date = date.toDate();
     this.setState({ breakTimeDate: date });
-    let tempDate =
-      String(date.getFullYear()) +
-      (date.getMonth() + 1 < 10
-        ? "0" + String(date.getMonth() + 1)
-        : String(date.getMonth() + 1));
-    if (tempDate <= this.state.nowDate) {
+
+    let tempDate = moment(date).format("YYYYMM");
+    const { nowDate } = this.state;
+    console.log(tempDate <= nowDate, tempDate < this.state.minDate);
+
+    if (tempDate <= nowDate) {
+      // 是否可以删除？
       var breakTimeInfo = {};
       breakTimeInfo["employeeNo"] = $("#employeeNo").val();
       breakTimeInfo["breakTimeYearMonth"] = tempDate;
-      let postData = {
-        yearMonth: tempDate,
-      };
-      axios
-        .post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
-        .then((resultMap) => {
-          if (resultMap.data.breakTime !== null) {
-            $("#breakTimeDayHourStart").val(
-              Number(
-                resultMap.data.breakTime.lunchBreakStartTime
-                  .toString()
-                  .substring(0, 2)
-              )
-            );
-            $("#breakTimeDayMinuteStart").val(
-              Number(
-                resultMap.data.breakTime.lunchBreakStartTime
-                  .toString()
-                  .substring(2)
-              )
-            );
-            $("#breakTimeDayHourEnd").val(
-              Number(
-                resultMap.data.breakTime.lunchBreakFinshTime
-                  .toString()
-                  .substring(0, 2)
-              )
-            );
-            $("#breakTimeDayMinuteEnd").val(
-              Number(
-                resultMap.data.breakTime.lunchBreakFinshTime
-                  .toString()
-                  .substring(2)
-              )
-            );
-            $("#breakTimeNightHourStart").val(
-              Number(
-                resultMap.data.breakTime.nightBreakStartTime
-                  .toString()
-                  .substring(0, 2)
-              )
-            );
-            $("#breakTimeNightMinuteStart").val(
-              Number(
-                resultMap.data.breakTime.nightBreakStartTime
-                  .toString()
-                  .substring(2)
-              )
-            );
-            $("#breakTimeNightHourEnd").val(
-              Number(
-                resultMap.data.breakTime.nightBreakfinshTime
-                  .toString()
-                  .substring(0, 2)
-              )
-            );
-            $("#breakTimeNightMinuteEnd").val(
-              Number(
-                resultMap.data.breakTime.nightBreakfinshTime
-                  .toString()
-                  .substring(2)
-              )
-            );
-            this.setState({
-              breakTimeDaybreakTimeHour:
-                resultMap.data.breakTime.lunchBreakTime,
-              breakTimeNightbreakTimeHour:
-                resultMap.data.breakTime.nightBreakTime,
-              breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
-            });
-          } else {
-            message.info("データ存在していません");
-            $("#breakTimeDayHourStart").val(0);
-            $("#breakTimeDayMinuteStart").val(0);
-            $("#breakTimeDayHourEnd").val(0);
-            $("#breakTimeDayMinuteEnd").val(0);
-            $("#breakTimeNightHourStart").val(0);
-            $("#breakTimeNightMinuteStart").val(0);
-            $("#breakTimeNightHourEnd").val(0);
-            $("#breakTimeNightMinuteEnd").val(0);
-            this.setState({
-              breakTimeDaybreakTimeHour: 0,
-              breakTimeNightbreakTimeHour: 0,
-              breakTimeSumHour: 0,
-              dateDisabledFlag: true,
-              disabledFlag: true,
-            });
-          }
-        })
-        .catch(function () {
-          notification.error({
-            message: "サーバーエラー",
-            description: "更新错误，请检查程序",
-            placement: "topLeft",
-          });
-        });
-    }
-    if (tempDate > this.state.nowDate) {
+      this.getDutyInfo(tempDate);
+    } else {
       $("#breakTimeDayHourStart").val(0);
       $("#breakTimeDayMinuteStart").val(0);
       $("#breakTimeDayHourEnd").val(0);
@@ -458,29 +283,128 @@ class BreakTime extends Component {
         breakTimeDaybreakTimeHour: 0,
         breakTimeNightbreakTimeHour: 0,
         breakTimeSumHour: 0,
-        disabledFlag: false,
-        dateDisabledFlag: false,
+        disabledFlag: true,
+        dateDisabledFlag: true,
       });
     }
   };
 
-  getDutyRegistrationFlag = () => {
-    let postData = {
-      yearMonth: this.state.year + this.state.month,
-    };
-    axios
-      .post(this.state.serverIP + "dutyRegistration/getDutyInfo", postData)
-      .then((resultMap) => {
-        if (resultMap.data.breakTime === null) {
-          this.setState({
-            breakTimeFlag: true,
-          });
+  getDutyInfo = async (tempDate = this.state.nowDate) => {
+    try {
+      let resultMap = await axios.post(
+        this.state.serverIP + "dutyRegistration/getDutyInfo",
+        {
+          yearMonth: tempDate,
         }
+      );
+      console.log(
+        resultMap.data.approvalStatus === "1" || tempDate < this.state.minDate,
+        'resultMap.data.approvalStatus === "1" || tempDate < this.state'
+      );
+      this.setState({
+        breakTimeUser: resultMap.data.employeeName,
       });
+      $("#employeeNo").val(resultMap.data.employeeNo);
+      if (resultMap.data.breakTime !== null) {
+        $("#breakTimeDayHourStart").val(
+          Number(
+            resultMap.data.breakTime.lunchBreakStartTime
+              .toString()
+              .substring(0, 2)
+          )
+        );
+        $("#breakTimeDayMinuteStart").val(
+          Number(
+            resultMap.data.breakTime.lunchBreakStartTime.toString().substring(2)
+          )
+        );
+        $("#breakTimeDayHourEnd").val(
+          Number(
+            resultMap.data.breakTime.lunchBreakFinshTime
+              .toString()
+              .substring(0, 2)
+          )
+        );
+        $("#breakTimeDayMinuteEnd").val(
+          Number(
+            resultMap.data.breakTime.lunchBreakFinshTime.toString().substring(2)
+          )
+        );
+        $("#breakTimeNightHourStart").val(
+          Number(
+            resultMap.data.breakTime.nightBreakStartTime
+              .toString()
+              .substring(0, 2)
+          )
+        );
+        $("#breakTimeNightMinuteStart").val(
+          Number(
+            resultMap.data.breakTime.nightBreakStartTime.toString().substring(2)
+          )
+        );
+        $("#breakTimeNightHourEnd").val(
+          Number(
+            resultMap.data.breakTime.nightBreakfinshTime
+              .toString()
+              .substring(0, 2)
+          )
+        );
+        $("#breakTimeNightMinuteEnd").val(
+          Number(
+            resultMap.data.breakTime.nightBreakfinshTime.toString().substring(2)
+          )
+        );
+        this.setState({
+          breakTimeDaybreakTimeHour: resultMap.data.breakTime.lunchBreakTime,
+          breakTimeNightbreakTimeHour: resultMap.data.breakTime.nightBreakTime,
+          breakTimeSumHour: resultMap.data.breakTime.totalBreakTime,
+        });
+      } else {
+        message.info("データ存在していません");
+        $("#breakTimeDayHourStart").val(0);
+        $("#breakTimeDayMinuteStart").val(0);
+        $("#breakTimeDayHourEnd").val(0);
+        $("#breakTimeDayMinuteEnd").val(0);
+        $("#breakTimeNightHourStart").val(0);
+        $("#breakTimeNightMinuteStart").val(0);
+        $("#breakTimeNightHourEnd").val(0);
+        $("#breakTimeNightMinuteEnd").val(0);
+        this.setState({
+          breakTimeDaybreakTimeHour: 0,
+          breakTimeNightbreakTimeHour: 0,
+          breakTimeSumHour: 0,
+        });
+      }
+
+      this.setState({
+        dateDisabledFlag:
+          resultMap.data.approvalStatus === "1" ||
+          tempDate < this.state.minDate,
+        disabledFlag:
+          resultMap.data.approvalStatus === "1" ||
+          tempDate < this.state.minDate,
+
+        breakTimeFlag:
+          resultMap.data.approvalStatus === "1"
+            ? "1"
+            : resultMap.data.breakTime === null
+            ? "0"
+            : "2",
+      });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "サーバーエラー",
+        description: "error",
+        placement: "topLeft",
+      });
+    }
   };
 
   render() {
     const { actionType, isMobileDevice } = this.state;
+    console.log({ state: this.state }, "render");
+
     return (
       <div className={isMobileDevice ? "clear-grid-padding" : ""}>
         <div style={{ display: this.state.myToastShow ? "block" : "none" }}>
@@ -584,6 +508,10 @@ class BreakTime extends Component {
                     variant="info"
                     type="button"
                     onClick={this.changeToDutyRegistration}
+                    disabled={
+                      moment(this.state.breakTimeDate).format("YYYYMM") <
+                      this.state.minDate
+                    }
                   >
                     勤務時間入力
                   </Button>

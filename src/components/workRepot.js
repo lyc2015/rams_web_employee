@@ -206,7 +206,6 @@ class workRepot extends React.Component {
           if (response.data != null) {
             this.searchWorkRepot();
             message.success("更新成功！");
-            //TODO: 整体重新加载用户体验不好,待调整
             this.setState({ rowSelectSumWorkTime: sumWorkTime });
             EventEmitter.emit("updateWorkRepot");
           } else {
