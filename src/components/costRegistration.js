@@ -192,6 +192,11 @@ class costRegistration extends React.Component {
         } else {
           var sumCost = "";
         }
+		if (data.length > 0 && data[0].approvalStatus == "1") {
+	      this.setState({
+	        disabledFlag: true,
+	      });
+	    }
         this.setState({
           employeeList: data,
           sumCost: utils.addComma(sumCost),
