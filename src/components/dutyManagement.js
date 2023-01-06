@@ -7,7 +7,6 @@ import {
   InputGroup,
   FormControl,
   OverlayTrigger,
-  Popover,
 } from "react-bootstrap";
 import axios from "axios";
 import "../asserts/css/development.css";
@@ -28,8 +27,12 @@ import * as publicUtils from "./utils/publicUtils.js";
 import MyToast from "./myToast";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import store from "./redux/store";
+import { message, Tooltip, Popover, notification } from "antd";
 registerLocale("ja", ja);
 axios.defaults.withCredentials = true;
+
+const SIZE_PRE_PAGE = 10;
+const MIN_WIDTH = 1650;
 
 /**
  * 社員勤務管理画面
@@ -37,11 +40,32 @@ axios.defaults.withCredentials = true;
 class dutyManagement extends React.Component {
   constructor(props) {
     super(props);
-    this.state = this.initialState; //初期化
+    this.state =
+      this.props.location?.state?.dutyManagementTempState || this.initialState; //初期化
     this.approvalStatusChange = this.approvalStatusChange.bind(this);
     this.searchEmployee = this.searchDutyManagement.bind(this);
   }
+
+  setStyleObjByWidth = (width) => {
+    let styleObj = {};
+    if (width < MIN_WIDTH) {
+      styleObj.padding = "0 15px";
+      styleObj.marginTop = "-1rem";
+    }
+    this.setState({ innerWidth: width, styleObj });
+  };
+
+  handleResize = (e) => {
+    this.setStyleObjByWidth(e.target.innerWidth);
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize.bind(this));
+  }
+
   componentDidMount() {
+    window.addEventListener("resize", this.handleResize.bind(this));
+    this.setStyleObjByWidth(document.body.offsetWidth);
     $("#update").attr("disabled", true);
     $("#syounin").attr("disabled", true);
     $("#upload").attr("disabled", true);
@@ -99,8 +123,81 @@ class dutyManagement extends React.Component {
       }
     );
   };
+  /**
+   * タイプが違う時に、色々な操作をします。
+   */
+  employeeStatusChange = (event) => {
+	const value = event.target.value;
+    let employeeInfoList = this.state.employeeInfoAll;
+    let newEmpInfoList = [];
+    if (value === "-1") {
+      for (let i in employeeInfoList) {
+        newEmpInfoList.push(employeeInfoList[i]);
+      }
+    } else if (value === "0") {
+      for (let i in employeeInfoList) {
+        if (employeeInfoList[i].code.substring(0, 3) === "LYC") {
+          newEmpInfoList.push(employeeInfoList[i]);
+        }
+      }
+    } else if (value === "1") {
+      for (let i in employeeInfoList) {
+        if (employeeInfoList[i].code.substring(0, 2) === "BP") {
+          newEmpInfoList.push(employeeInfoList[i]);
+        }
+      }
+    } else if (value === "2") {
+      for (let i in employeeInfoList) {
+        if (employeeInfoList[i].code.substring(0, 2) === "SP") {
+          newEmpInfoList.push(employeeInfoList[i]);
+        }
+      }
+    }
+    this.setState(
+      {
+		employeeInfo: newEmpInfoList,
+        employeeName: "",
+        employeeNo: null,
+        [event.target.name]: event.target.value,
+      },
+      () => {
+        this.searchDutyManagement();
+      }
+    );
+  };
+  
+      /**
+   * 社員名連想
+   *
+   * @param {}
+   *            event
+   */
+  getEmployeeName = (event, values) => {
+    this.setState(
+      {
+        [event.target.name]: event.target.value,
+      },
+      () => {
+        let employeeName = null;
+        let employeeNo = null;
+        if (values !== null) {
+          employeeName = values.text;
+          employeeNo = values.code;
+        }
+        this.setState({
+          employeeName: employeeName,
+          employeeNo: employeeNo,
+        },() => {
+        this.searchDutyManagement();
+      });
+      }
+    );
+  };
+  
   //　初期化データ
   initialState = {
+    employeeStatus: "-1",
+    employeeNo: null,
     //yearAndMonth: new Date(new Date().getFullYear() + '/' + (new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1))).getTime(),
     yearAndMonth: new Date(),
     month: new Date().getMonth() + 1,
@@ -117,11 +214,21 @@ class dutyManagement extends React.Component {
     rowDownload: "",
     customerNo: null,
     loading: true,
+    employeeInfoAll: store.getState().dropDown[9].slice(1),
+    employeeInfo: store.getState().dropDown[9].slice(1),
     customerAbbreviationList: store.getState().dropDown[73].slice(1),
     approvalStatuslist: store.getState().dropDown[27],
     checkSectionlist: store.getState().dropDown[28],
     costClassification: store.getState().dropDown[30],
     serverIP: store.getState().dropDown[store.getState().dropDown.length - 1],
+    employeeStatusS: store.getState().dropDown[4].slice(1)
+      ? store
+          .getState()
+          .dropDown[4].slice(1)
+          .filter((item, index) => {
+            return ["0", "1", "2"].includes(item.code);
+          })
+      : store.getState().dropDown[4].slice(1),
   };
   checkSection(code) {
     let checkSections = this.state.checkSectionlist;
@@ -154,12 +261,15 @@ class dutyManagement extends React.Component {
   }
 
   //　検索
-  searchDutyManagement = (rowNo) => {
+  searchDutyManagement = () => {
     const emp = {
       yearAndMonth: publicUtils.formateDate($("#datePicker").val(), false),
       approvalStatus: this.state.approvalStatus,
       customerNo: this.state.customerNo,
+      employeeStatus: this.state.employeeStatus,
+      employeeNo: this.state.employeeNo,
     };
+
     axios
       .post(this.state.serverIP + "dutyManagement/selectDutyManagement", emp)
       .then((response) => {
@@ -203,66 +313,104 @@ class dutyManagement extends React.Component {
         if (minWorkingTime === 999) minWorkingTime = "";
         if (totalWorkingTime === 0) totalWorkingTime = "";
         if (averageWorkingTime === 0) averageWorkingTime = "";
-        this.setState({
-          employeeList: response.data,
-          totalPersons: totalPersons,
-          totalWorkingTime: totalWorkingTime,
-          minWorkingTime: minWorkingTime,
-          averageWorkingTime: averageWorkingTime,
-        });
-        if (rowNo !== undefined) {
-          if (rowNo > response.data.length) {
-            this.setState({
-              rowSelectEmployeeNo: "",
-              rowSelectEmployeeName: "",
+        this.setState(
+          {
+            employeeList: response.data,
+            totalPersons,
+            totalWorkingTime,
+            minWorkingTime,
+            averageWorkingTime,
+          },
+          () => {
+            // 当前employeeNo对应res.data中的下标
+            let { rowSelectEmployeeNo } = this.state;
+            let rowNo;
+            response.data.forEach((item) => {
+              if (item.employeeNo === rowSelectEmployeeNo) rowNo = item.rowNo;
             });
-            this.refs.table.setState({
-              selectedRowKeys: [],
-            });
-            $("#update").attr("disabled", true);
-            $("#workRepot").attr("disabled", true);
-            $("#syounin").attr("disabled", true);
-            $("#upload").attr("disabled", true);
-          } else {
-            this.setState({
-              rowApprovalStatus: response.data[rowNo - 1].approvalStatus,
-            });
-            if (response.data[rowNo - 1].approvalStatus === "1") {
-              $("#update").attr("disabled", true);
-            } else {
-              $("#update").attr("disabled", false);
-            }
-          }
-        }
-        let flag = false;
-        for (let i in response.data) {
-          if (
-            String(response.data[i].employeeNo) ===
-            String(this.refs.table.state.selectedRowKeys)
-          ) {
-            flag = true;
-            break;
-          }
-        }
-        if (!flag) {
-          axios
-            .post(this.state.serverIP + "subMenu/checkSession")
-            .then((resultMap) => {
-              if (!(resultMap.data === null || resultMap.data === "")) {
+
+            if (rowNo) {
+              if (rowNo > response.data.length) {
                 this.setState({
                   rowSelectEmployeeNo: "",
                   rowSelectEmployeeName: "",
+                  currentPage: 1,
                 });
-                this.refs.table.setState({
-                  selectedRowKeys: [],
+                // this.refs.table.setState({
+                //   selectedRowKeys: [],
+                // });
+                $("#update").attr("disabled", true);
+                $("#workRepot").attr("disabled", true);
+                $("#syounin").attr("disabled", true);
+                $("#upload").attr("disabled", true);
+              } else {
+                let row = response.data[rowNo - 1];
+                this.setState({
+                  rowNo,
+                  rowApprovalStatus: row.approvalStatus,
+                  currentPage: Math.ceil(rowNo / SIZE_PRE_PAGE),
+                  rowSelectEmployeeNo: row.employeeNo,
+                  rowSelectEmployeeName: row.employeeName,
+                  rowSelectCheckSection: row.checkSection,
+                  rowSelectDeductionsAndOvertimePay:
+                    row.deductionsAndOvertimePay,
+                  rowSelectDeductionsAndOvertimePayOfUnitPrice:
+                    row.deductionsAndOvertimePayOfUnitPrice,
+                  rowWorkTime: row.workTime,
+                  rowSelectWorkingTimeReport: row.workingTimeReport,
+                  downloadEmployeeNo: row.employeeNo,
+                  downloadEmployeeName: row.employeeName.replaceAll(
+                    "\n\t\t",
+                    ""
+                  ),
                 });
+                $("#workRepot").attr("disabled", false);
+                $("#upload").attr("disabled", false);
+                $("#syounin").attr("disabled", false);
+                if (response.data[rowNo - 1].approvalStatus === "1") {
+                  $("#update").attr("disabled", true);
+                } else {
+                  $("#update").attr("disabled", false);
+                }
               }
-            });
-          $("#update").attr("disabled", true);
-          $("#workRepot").attr("disabled", true);
-          $("#syounin").attr("disabled", true);
-          $("#upload").attr("disabled", true);
-        }
+            } else {
+              this.setState({
+                rowSelectEmployeeNo: "",
+                rowSelectEmployeeName: "",
+                currentPage: 1,
+              });
+            }
+            let flag = false;
+            for (let i in response.data) {
+              if (
+                String(response.data[i].employeeNo) ===
+                String(this.refs.table.state.selectedRowKeys)
+              ) {
+                flag = true;
+                break;
+              }
+            }
+            if (!flag) {
+              axios
+                .post(this.state.serverIP + "subMenu/checkSession")
+                .then((resultMap) => {
+                  if (!(resultMap.data === null || resultMap.data === "")) {
+                    this.setState({
+                      rowSelectEmployeeNo: "",
+                      rowSelectEmployeeName: "",
+                    });
+                    this.refs.table.setState({
+                      selectedRowKeys: [],
+                    });
+                  }
+                });
+              $("#update").attr("disabled", true);
+              $("#workRepot").attr("disabled", true);
+              $("#syounin").attr("disabled", true);
+              $("#upload").attr("disabled", true);
+            }
+          }
+        );
       });
   };
   /**
@@ -282,11 +430,14 @@ class dutyManagement extends React.Component {
       ),
       approvalStatus: approvalStatus,
     };
+    this.setState({
+      rowApprovalStatus: approvalStatus,
+    });
     axios
       .post(this.state.serverIP + "dutyManagement/updateDutyManagement", emp)
       .then((result) => {
-        if (result.data == true) {
-          this.searchDutyManagement(this.state.rowNo);
+        if (result.data) {
+          this.searchDutyManagement();
           this.setState({
             myToastShow: true,
             message:
@@ -297,16 +448,41 @@ class dutyManagement extends React.Component {
                 : "承認成功!",
           });
           setTimeout(() => this.setState({ myToastShow: false }), 3000);
-        } else if (result.data == false) {
+        } else {
           this.setState({ myToastShow: false });
+          message.error("承認失敗");
         }
       })
       .catch(function (error) {
-        alert("承認失败，请检查程序");
+        notification.error({
+          message: "エラー",
+          description: "承認失败，请检查程序",
+          placement: "topLeft",
+        });
       });
   };
   state = {
     yearAndMonth: new Date(),
+  };
+
+  workTimeFormat = (cell, row) => {
+    let arr = [cell, `${cell}(アップロード)`, `${cell}(時間入力)`];
+    return (
+      <Tooltip title={String(row.checkSection) ? arr[row.checkSection] : cell}>
+        {cell}
+      </Tooltip>
+    );
+  };
+
+  employeeNameFormat = (cell, row) => {
+    let text = cell;
+
+    if (row.employeeNo?.startsWith("BP")) {
+      text += row.bpBelongCustomerAbbreviation
+        ? `(${row.bpBelongCustomerAbbreviation})`
+        : "(BP)";
+    }
+    return <Tooltip title={row.employeeNo}>{this.greyShow(text, row)}</Tooltip>;
   };
 
   overtimePayFormat = (cell, row) => {
@@ -330,9 +506,9 @@ class dutyManagement extends React.Component {
 
   handleRowClick = (row, isSelected, e) => {
     if (isSelected) {
-      this.setState({ rowDownload: row.costFile });
+      this.setState({ rowDownload: row.costFile, rowCost: row.cost });
     } else {
-      this.setState({ rowDownload: "" });
+      this.setState({ rowDownload: "", rowCost: "" });
     }
   };
 
@@ -340,6 +516,7 @@ class dutyManagement extends React.Component {
   handleRowSelect = (row, isSelected, e) => {
     if (isSelected) {
       this.setState({
+        rowSelected: row,
         rowNo: row.rowNo,
         rowSelectEmployeeNo: row.employeeNo,
         rowSelectEmployeeName: row.employeeName,
@@ -371,6 +548,7 @@ class dutyManagement extends React.Component {
       }
     } else {
       this.setState({
+        rowSelected: {},
         rowNo: "",
         rowSelectEmployeeNo: "",
         rowSelectEmployeeName: "",
@@ -405,6 +583,7 @@ class dutyManagement extends React.Component {
             sendValue: sendValue,
             searchFlag: true,
             actionType: "update",
+            dutyManagementTempState: this.state,
           },
         };
         break;
@@ -415,6 +594,7 @@ class dutyManagement extends React.Component {
             employeeNo: this.state.rowSelectEmployeeNo,
             backPage: "dutyManagement",
             sendValue: sendValue,
+            dutyManagementTempState: this.state,
           },
         };
         break;
@@ -425,6 +605,10 @@ class dutyManagement extends React.Component {
             yearAndMonth: this.state.yearAndMonth,
             backPage: "dutyManagement",
             sendValue: sendValue,
+            dutyManagementSelectedEmployeeNo: this.state.rowSelectEmployeeNo,
+            dutyManagementSelectedEmployeeName:
+              this.state.rowSelectEmployeeName,
+            dutyManagementTempState: this.state,
           },
         };
         break;
@@ -434,9 +618,10 @@ class dutyManagement extends React.Component {
           state: {
             employeeNo: this.state.rowSelectEmployeeNo,
             employeeName: this.state.rowSelectEmployeeName,
-            backPage: "employeeSearch",
+            backPage: "dutyManagement",
             sendValue: sendValue,
             searchFlag: this.state.searchFlag,
+            dutyManagementTempState: this.state,
           },
         };
         break;
@@ -445,8 +630,14 @@ class dutyManagement extends React.Component {
     this.props.history.push(path);
   };
 
-  renderShowsTotal(start, to, total) {
-    return (
+  renderShowsTotal = (start, to, total) => {
+	  var approvalStatusCount = 0;
+	  for (var i in this.state.employeeList) {
+	  	if(this.state.employeeList[i].approvalStatus === "1"){
+			  approvalStatusCount++;
+		  }
+	  }
+      return (
       <p
         style={{
           color: "dark",
@@ -454,7 +645,7 @@ class dutyManagement extends React.Component {
           display: total > 0 ? "block" : "none",
         }}
       >
-        {start}から {to}まで , 総計{total}
+        {start}から {to}まで , 総計{total} , 登録済み{approvalStatusCount}
       </p>
     );
   }
@@ -550,15 +741,39 @@ class dutyManagement extends React.Component {
       axios
         .post(this.state.serverIP + "dutyRegistration/downloadPDF", dataInfo)
         .then((resultMap) => {
+          let extraData = {
+            employeeNo: this.state.rowSelected.employeeNo,
+            employeeName: this.state.rowSelected.employeeName,
+            type: "作業報告書",
+          };
+          if (this.state.rowSelected.workTime !== null) {
+            extraData.workTime = this.state.rowSelected.workTime + "H";
+          }
+          // 報告書なら要らない
+          // if (this.state.rowSelected.cost > 0) {
+          //   extraData.cost =
+          //     publicUtils.addComma(this.state.rowSelected.cost) + "円";
+          // }
           if (resultMap.data) {
-            publicUtils.handleDownload(resultMap.data, this.state.serverIP);
+            publicUtils.handleDownload(resultMap.data, this.state.serverIP, {
+              clearName: true,
+              extraData,
+            });
           } else {
-            alert("download失败");
+            notification.error({
+              message: "エラー",
+              description: "download失败",
+              placement: "topLeft",
+            });
           }
           this.setState({ loading: true });
         })
         .catch(function () {
-          alert("download错误，请检查程序");
+          notification.error({
+            message: "エラー",
+            description: "download错误，请检查程序",
+            placement: "topLeft",
+          });
           this.setState({ loading: true });
         });
     } else {
@@ -571,6 +786,15 @@ class dutyManagement extends React.Component {
           downLoadPath = path.replaceAll("/", "//");
         }
       }
+      let extraData = {};
+      if (this.state.rowSelected.workTime !== null) {
+        extraData.workTime = this.state.rowSelected.workTime + "H";
+      }
+      // 報告書なら要らない
+      // if (this.state.rowSelected.cost > 0) {
+      //   extraData.cost =
+      //     publicUtils.addComma(this.state.rowSelected.cost) + "円";
+      // }
       axios
         .post(this.state.serverIP + "s3Controller/downloadFile", {
           fileKey: fileKey,
@@ -578,10 +802,16 @@ class dutyManagement extends React.Component {
         })
         .then((result) => {
           let path = downLoadPath.replaceAll("//", "/");
-          publicUtils.handleDownload(path, this.state.serverIP);
+          publicUtils.handleDownload(path, this.state.serverIP, {
+            extraData,
+          });
         })
         .catch(function (error) {
-          alert("ファイルが存在しません。");
+          notification.error({
+            message: "エラー",
+            description: "ファイルが存在しません。",
+            placement: "topLeft",
+          });
         });
     }
   };
@@ -610,10 +840,22 @@ class dutyManagement extends React.Component {
       })
       .then((result) => {
         let path = downLoadPath.replaceAll("//", "/");
-        publicUtils.handleDownload(path, this.state.serverIP);
+        let extraData = {};
+        // show cost when download
+        if (this.state.rowCost !== "") {
+          extraData.cost = publicUtils.addComma(this.state.rowCost) + "円";
+        }
+        publicUtils.handleDownload(path, this.state.serverIP, {
+          fileKey,
+          extraData,
+        });
       })
       .catch(function (error) {
-        alert("ファイルが存在しません。");
+        notification.error({
+          message: "エラー",
+          description: "ファイルが存在しません。",
+          placement: "topLeft",
+        });
       });
   };
 
@@ -663,115 +905,107 @@ class dutyManagement extends React.Component {
       clickToExpand: true,
       onSelect: this.handleRowClick,
     };
+
     returnItem = (
-      <OverlayTrigger
-        trigger="click"
-        placement={"left"}
-        overlay={
-          <Popover className="popoverC">
-            <Popover.Content>
-              <div>
-                <Row>
-                  <Col style={{ padding: "0px", marginTop: "10px" }}>
-                    <font>{this.state.month + "月"}</font>
-                  </Col>
-                  <Col style={{ padding: "0px", marginTop: "10px" }}>
-                    <h2>費用詳細</h2>
-                  </Col>
-                  <Col style={{ padding: "0px" }}>
-                    <div style={{ float: "right" }}>
-                      <Button
-                        variant="info"
-                        size="sm"
-                        disabled={this.state.rowDownload === ""}
-                        onClick={this.rowDownload}
-                        id="workRepot"
-                      >
-                        <FontAwesomeIcon icon={faDownload} />
-                        download
-                      </Button>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <BootstrapTable
-                    pagination={false}
-                    options={options}
-                    data={row.costRegistrationModel}
-                    selectRow={selectRow}
-                    headerStyle={{ background: "#5599FF" }}
-                    trClassName={this.rowClassNameFormat}
-                    condensed
+      <Popover
+        overlayClassName={"w50p"}
+        placement="leftBottom"
+        content={
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Row>
+              <Col style={{ padding: "0px", marginTop: "10px" }}>
+                <font>{this.state.month + "月"}</font>
+              </Col>
+              <Col style={{ padding: "0px", marginTop: "10px" }}>
+                <h2>費用詳細</h2>
+              </Col>
+              <Col style={{ padding: "0px" }}>
+                <div style={{ float: "right" }}>
+                  <Button
+                    variant="info"
+                    size="sm"
+                    disabled={this.state.rowDownload === ""}
+                    onClick={this.rowDownload}
+                    id="workRepot"
                   >
-                    <TableHeaderColumn
-                      isKey={true}
-                      dataField="rowNo"
-                      hidden
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      番号
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="costClassificationCode"
-                      width="10%"
-                      dataFormat={this.costClassificationCodeFormat.bind(this)}
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      種別
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="happendDate"
-                      width="30%"
-                      dataFormat={this.happendDateFormat.bind(this)}
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      日付・回数
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="cost"
-                      width="15%"
-                      dataFormat={this.cost.bind(this)}
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      費用
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="costFile"
-                      width="10%"
-                      dataFormat={this.costFileFormat.bind(this)}
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      添付
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="costTotal"
-                      width="15%"
-                      dataFormat={this.costTotalFormat.bind(this)}
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      合計
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      dataField="remark"
-                      width="20%"
-                      dataFormat={this.remarkFormat.bind(this)}
-                      tdStyle={{ padding: ".45em" }}
-                    >
-                      備考
-                    </TableHeaderColumn>
-                  </BootstrapTable>
-                </Row>
-              </div>
-            </Popover.Content>
-          </Popover>
+                    <FontAwesomeIcon icon={faDownload} />
+                    download
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <BootstrapTable
+                pagination={false}
+                options={options}
+                data={row.costRegistrationModel}
+                selectRow={selectRow}
+                headerStyle={{ background: "#5599FF" }}
+                trClassName={this.rowClassNameFormat}
+                condensed
+              >
+                <TableHeaderColumn isKey={true} dataField="rowNo" hidden>
+                  番号
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="costClassificationCode"
+                  width="10%"
+                  dataFormat={this.costClassificationCodeFormat.bind(this)}
+                >
+                  種別
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="happendDate"
+                  width="30%"
+                  dataFormat={this.happendDateFormat.bind(this)}
+                >
+                  日付・回数
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="cost"
+                  width="15%"
+                  dataFormat={this.cost.bind(this)}
+                >
+                  費用
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="costFile"
+                  width="10%"
+                  dataFormat={this.costFileFormat.bind(this)}
+                >
+                  添付
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="costTotal"
+                  width="15%"
+                  dataFormat={this.costTotalFormat.bind(this)}
+                >
+                  合計
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="remark"
+                  width="20%"
+                  dataFormat={this.remarkFormat.bind(this)}
+                >
+                  備考
+                </TableHeaderColumn>
+              </BootstrapTable>
+            </Row>
+          </div>
         }
+        title=""
+        trigger="click"
       >
         <div style={{ float: "right" }}>
           <Button variant="warning" size="sm">
             詳細
           </Button>
         </div>
-      </OverlayTrigger>
+      </Popover>
     );
     if (row.costRegistrationModel.length > 0)
       return (
@@ -804,7 +1038,7 @@ class dutyManagement extends React.Component {
       fileName[fileName.length - 1] === "pdf"
     ) {
     } else {
-      alert("PDF或いはexcelをアップロードしてください");
+      message.error("PDF或いはexcelをアップロードしてください");
       return false;
     }
     /*if($("#getFile").get(0).files[0].size>1048576){
@@ -828,13 +1062,74 @@ class dutyManagement extends React.Component {
           this.setState({ myToastShow: true, message: "アップロード成功！" });
           setTimeout(() => this.setState({ myToastShow: false }), 3000);
         } else {
-          alert("err");
+          notification.error({
+            message: "エラー",
+            description: "アップロード失敗",
+            placement: "topLeft",
+          });
         }
       });
   };
 
+  renderTimeRow = () => {
+    return (
+      <div className="df mb5" style={this.state.styleObj}>
+        <InputGroup className="mr5 " size="sm">
+          <InputGroup.Prepend>
+            <InputGroup.Text id="sixKanji" className="input-group-indiv">
+              最小稼働時間
+            </InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            className="w70"
+            defaultValue={this.state.minWorkingTime}
+            disabled
+          />
+        </InputGroup>
+        <InputGroup className="mr5" size="sm">
+          <InputGroup.Prepend>
+            <InputGroup.Text id="sixKanji" className="input-group-indiv">
+              最大稼働時間
+            </InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            className="w70"
+            defaultValue={this.state.totalWorkingTime}
+            disabled
+          />
+        </InputGroup>
+        <InputGroup size="sm">
+          <InputGroup.Prepend>
+            <InputGroup.Text id="sixKanji" className="input-group-indiv">
+              平均稼働時間
+            </InputGroup.Text>
+          </InputGroup.Prepend>
+          <FormControl
+            className="w70"
+            defaultValue={this.state.averageWorkingTime}
+            disabled
+          />
+        </InputGroup>
+      </div>
+    );
+  };
+
   render() {
-    const { approvalStatus, employeeList } = this.state;
+    const {
+      approvalStatus,
+      employeeList,
+      customerAbbreviationList,
+      employeeStatusS,
+    } = this.state;
+
+    console.log(
+      {
+        state: this.state,
+        propsState: this.props.location.state,
+      },
+      "render"
+    );
+
     //　テーブルの行の選択
     const selectRow = {
       mode: "radio",
@@ -844,11 +1139,18 @@ class dutyManagement extends React.Component {
       clickToSelect: true, // click to select, default is false
       clickToExpand: true, // click to expand row, default is false
       onSelect: this.handleRowSelect,
+      selected: this.state.rowSelectEmployeeNo
+        ? [this.state.rowSelectEmployeeNo]
+        : [],
     };
     //　 テーブルの定義
     const options = {
-      page: 1,
-      sizePerPage: 12, // which size per page you want to locate as default
+      // page: 1,
+      onPageChange: (page) => {
+        this.setState({ currentPage: page });
+      },
+      page: this.state.currentPage,
+      sizePerPage: SIZE_PRE_PAGE, // which size per page you want to locate as default
       pageStartIndex: 1, // where to start counting the pages
       paginationSize: 3, // the pagination bar size.
       prePage: "<", // Previous page button text
@@ -866,6 +1168,12 @@ class dutyManagement extends React.Component {
       mode: "click",
       blurToSave: true,
     };
+
+    let customerNoList = employeeList?.map((item) => item.customerNo);
+    let filteredCustomerAbbreviationList = customerAbbreviationList.filter(
+      (item) => customerNoList.includes(item.code)
+    );
+
     return (
       <div>
         <div style={{ display: this.state.myToastShow ? "block" : "none" }}>
@@ -896,26 +1204,29 @@ class dutyManagement extends React.Component {
             </Form.Group>
             <Form.Group>
               <Row>
-                <Col sm={5}>
-                  <InputGroup size="sm" className="mb-2">
+                <Col sm={2}>
+                  <InputGroup size="sm" className="mb-2 flexWrapNoWrap">
                     <InputGroup.Prepend>
                       <InputGroup.Text id="inputGroup-sizing-sm">
                         年月
                       </InputGroup.Text>
-                      <DatePicker
-                        selected={this.state.yearAndMonth}
-                        onChange={this.inactiveYearAndMonth}
-                        autoComplete="off"
-                        locale="ja"
-                        dateFormat="yyyy/MM"
-                        showMonthYearPicker
-                        showFullMonthYearPicker
-                        maxDate={new Date()}
-                        id="datePicker"
-                        className="form-control form-control-sm"
-                      />
                     </InputGroup.Prepend>
-                    <font style={{ marginRight: "30px" }}></font>
+                    <DatePicker
+                      selected={this.state.yearAndMonth}
+                      onChange={this.inactiveYearAndMonth}
+                      autoComplete="off"
+                      locale="ja"
+                      dateFormat="yyyy/MM"
+                      showMonthYearPicker
+                      showFullMonthYearPicker
+                      maxDate={new Date()}
+                      id="datePicker"
+                      className="form-control form-control-sm"
+                    />
+                  </InputGroup>
+                </Col>
+                <Col sm={2}>
+                  <InputGroup size="sm" className="mb-2 flexWrapNoWrap">
                     <InputGroup.Prepend>
                       <InputGroup.Text id="sixKanji">
                         ステータス
@@ -937,23 +1248,94 @@ class dutyManagement extends React.Component {
                       <option value="3">未承認</option>
                       <option value="4">承認済</option>
                     </Form.Control>
-                    <font style={{ marginLeft: "80px" }}></font>
                   </InputGroup>
                 </Col>
-                <Col sm={3} style={{ marginLeft: "-80px" }}>
+                <Col sm={2}>
+                  <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text id="inputGroup-sizing-sm">
+                        社員区分
+                      </InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <Form.Control
+                      as="select"
+                      size="sm"
+                      onChange={(event) => this.employeeStatusChange(event)}
+                      name="employeeStatus"
+                      value={this.state.employeeStatus}
+                      autoComplete="off"
+                    >
+                      <option key="all" value="-1">
+                        すべて
+                      </option>
+                      {employeeStatusS.length > 0
+                        ? employeeStatusS.map((date) => (
+                            <option key={date.code} value={date.code}>
+                              {date.name}
+                            </option>
+                          ))
+                        : null}
+                    </Form.Control>
+                    <font className="site-mark"></font>
+                  </InputGroup>
+                </Col>
+                <Col sm={3}>
                   <InputGroup size="sm" className="mb-3">
                     <InputGroup.Prepend>
-                      <InputGroup.Text id="sanKanji">お客様</InputGroup.Text>
+                      <InputGroup.Text id="fiveKanji">
+                        社員名(BP)
+                      </InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <Autocomplete
+                      className="fx1"
+                      id="employeeName"
+                      name="employeeName"
+                      value={
+                        this.state.employeeInfo.find(
+                          (v) => v.text === this.state.employeeName
+                        ) || {}
+                      }
+                      options={this.state.employeeInfo}
+                      getOptionLabel={(option) => option.name || ""}
+                      // onSelect={(event) =>
+                      //   this.handleTag(event, "employeeName")
+                      // }
+                      onChange={(event, values) =>
+                        this.getEmployeeName(event, values)
+                      }
+                      renderOption={(option) => {
+                        return (
+                          <React.Fragment>{option.name || ""}</React.Fragment>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <div ref={params.InputProps.ref}>
+                          <input
+                            type="text"
+                            {...params.inputProps}
+                            className="auto form-control Autocompletestyle-siteInfoSearch-employeeNo w100p"
+                          />
+                        </div>
+                      )}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col sm={3}>
+                  <InputGroup size="sm" className="mb-3 flexWrapNoWrap">
+                    <InputGroup.Prepend>
+                      <InputGroup.Text className="width-auto" id="sanKanji">
+                        お客様
+                      </InputGroup.Text>
                     </InputGroup.Prepend>
                     <Autocomplete
                       id="customerAbbreviation"
                       name="customerAbbreviation"
                       value={
-                        this.state.customerAbbreviationList.find(
+                        filteredCustomerAbbreviationList.find(
                           (v) => v.code === this.state.customerAbbreviation
                         ) || ""
                       }
-                      options={this.state.customerAbbreviationList}
+                      options={filteredCustomerAbbreviationList}
                       getOptionLabel={(option) =>
                         option.text ? option.text : ""
                       }
@@ -961,7 +1343,9 @@ class dutyManagement extends React.Component {
                         this.getCustomer(event, values)
                       }
                       renderOption={(option) => {
-                        return <React.Fragment>{option.name}</React.Fragment>;
+                        return (
+                          <React.Fragment>{option.name || ""}</React.Fragment>
+                        );
                       }}
                       renderInput={(params) => (
                         <div ref={params.InputProps.ref}>
@@ -980,125 +1364,134 @@ class dutyManagement extends React.Component {
           </div>
         </Form>
         <div>
-          <Row>
-            <Col sm={4}>
-              {/*<font style={{ whiteSpace: 'nowrap' }}>稼動人数：{this.state.totalPersons}</font>*/}
-              <Button
-                size="sm"
-                onClick={this.shuseiTo.bind(this, "employeeInfo")}
-                disabled={this.state.rowSelectEmployeeNo === "" ? true : false}
-                variant="info"
-                id="employeeInfo"
-              >
-                個人情報
-              </Button>{" "}
-              <Button
-                size="sm"
-                onClick={this.shuseiTo.bind(this, "siteInfo")}
-                disabled={this.state.rowSelectEmployeeNo === "" ? true : false}
-                name="clickButton"
-                variant="info"
-                id="siteInfo"
-              >
-                現場情報
-              </Button>{" "}
-              <Button
-                size="sm"
-                onClick={this.shuseiTo.bind(this, "sendInvoice")}
-                name="clickButton"
-                variant="info"
-                id="siteInfo"
-              >
-                請求書一覧
-              </Button>{" "}
-              <Button
-                size="sm"
-                onClick={this.shuseiTo.bind(this, "workRepot")}
-                disabled={this.state.rowSelectEmployeeNo === "" ? true : false}
-                hidden={this.state.authorityCode === "4" ? false : true}
-                name="clickButton"
-                variant="info"
-                id="workRepot"
-              >
-                勤務管理
-              </Button>{" "}
-            </Col>
-            <Col>
-              <InputGroup size="sm">
-                <InputGroup.Prepend>
-                  <InputGroup.Text id="sixKanji" className="input-group-indiv">
-                    最小稼働時間
-                  </InputGroup.Text>
-                </InputGroup.Prepend>
-                <FormControl value={this.state.minWorkingTime} disabled />
-              </InputGroup>
-            </Col>
-            <Col>
-              <InputGroup size="sm">
-                <InputGroup.Prepend>
-                  <InputGroup.Text id="sixKanji" className="input-group-indiv">
-                    最大稼働時間
-                  </InputGroup.Text>
-                </InputGroup.Prepend>
-                <FormControl value={this.state.totalWorkingTime} disabled />
-              </InputGroup>
-            </Col>
-            <Col>
-              <InputGroup size="sm">
-                <InputGroup.Prepend>
-                  <InputGroup.Text id="sixKanji" className="input-group-indiv">
-                    平均稼働時間
-                  </InputGroup.Text>
-                </InputGroup.Prepend>
-                <FormControl value={this.state.averageWorkingTime} disabled />
-              </InputGroup>
-            </Col>
+          {this.state.innerWidth > MIN_WIDTH ? null : (
+            <Row>{this.renderTimeRow()} </Row>
+          )}
 
-            <Col sm={3}>
-              <div style={{ float: "right" }}>
-                <Button
-                  variant="info"
-                  size="sm"
-                  onClick={this.downloadTest}
-                  id="workRepot"
-                >
-                  <FontAwesomeIcon icon={faDownload} />
-                  報告書
-                </Button>{" "}
-                <Button
-                  variant="info"
-                  size="sm"
-                  id="upload"
-                  onClick={this.getFile}
-                >
-                  <FontAwesomeIcon icon={faUpload} />
-                  upload
-                </Button>{" "}
-                <Button
-                  variant="info"
-                  size="sm"
-                  id="update"
-                  onClick={this.listApproval.bind(this, 2)}
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                  残控更新
-                </Button>{" "}
-                <Button
-                  variant="info"
-                  size="sm"
-                  id="syounin"
-                  onClick={
-                    this.state.rowApprovalStatus !== "1"
-                      ? this.listApproval.bind(this, 1)
-                      : this.listApproval.bind(this, 0)
-                  }
-                >
-                  <FontAwesomeIcon icon={faEdit} />
-                  {this.state.rowApprovalStatus !== "1" ? "承認" : "取消"}
-                </Button>{" "}
+          <Row>
+            <Col>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "5px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  {/*<font style={{ whiteSpace: 'nowrap' }}>稼動人数：{this.state.totalPersons}</font>*/}
+                  <Button
+                    size="sm"
+                    onClick={this.shuseiTo.bind(this, "employeeInfo")}
+                    disabled={
+                      this.state.rowSelectEmployeeNo === "" ? true : false
+                    }
+                    variant="info"
+                    id="employeeInfo"
+                  >
+                    個人情報
+                  </Button>{" "}
+                  <Button
+                    size="sm"
+                    onClick={this.shuseiTo.bind(this, "siteInfo")}
+                    disabled={
+                      this.state.rowSelectEmployeeNo === "" ? true : false
+                    }
+                    name="clickButton"
+                    variant="info"
+                    id="siteInfo"
+                  >
+                    現場情報
+                  </Button>{" "}
+                  <Button
+                    size="sm"
+                    onClick={this.shuseiTo.bind(this, "workRepot")}
+                    disabled={
+                      this.state.rowSelectEmployeeNo === "" ? true : false
+                    }
+                    hidden={this.state.authorityCode === "4" ? false : true}
+                    name="clickButton"
+                    variant="info"
+                    id="workRepot"
+                  >
+                    勤務管理
+                  </Button>{" "}
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      if (
+                        this.state.rowSelectEmployeeNo &&
+                        this.state?.rowApprovalStatus + "" !== "1"
+                      ) {
+                        message.info(
+                          `まず${this.state.rowSelectEmployeeName}のデータを承認してください！`
+                        );
+                        return;
+                      }
+                      this.shuseiTo("sendInvoice");
+                    }}
+                    name="clickButton"
+                    variant="info"
+                    id="siteInfo"
+                  >
+                    請求書一覧
+                  </Button>{" "}
+                </div>
+                {this.state.innerWidth > MIN_WIDTH
+                  ? this.renderTimeRow()
+                  : null}
+                <div>
+                  <Button
+                    variant="info"
+                    size="sm"
+                    onClick={this.downloadTest}
+                    id="workRepot"
+                    disabled={
+                      this.state.rowWorkTime === null ||
+                      (this.state.rowSelectEmployeeNo.includes("BP") &&
+                        this.state.rowSelectWorkingTimeReport === null)
+                    }
+                  >
+                    <FontAwesomeIcon icon={faDownload} />
+                    報告書
+                  </Button>{" "}
+                  <Button
+                    variant="info"
+                    size="sm"
+                    id="upload"
+                    onClick={this.getFile}
+                  >
+                    <FontAwesomeIcon icon={faUpload} />
+                    upload
+                  </Button>{" "}
+                  <Button
+                    variant="info"
+                    size="sm"
+                    id="update"
+                    onClick={this.listApproval.bind(this, 2)}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                    残控更新
+                  </Button>{" "}
+                  <Button
+                    variant="info"
+                    size="sm"
+                    id="syounin"
+                    onClick={
+                      this.state.rowApprovalStatus !== "1"
+                        ? this.listApproval.bind(this, 1)
+                        : this.listApproval.bind(this, 0)
+                    }
+                    // disable={!this.state.rowWorkTime}
+                  >
+                    <FontAwesomeIcon icon={faEdit} />
+                    {this.state.rowApprovalStatus !== "1" ? "承認" : "取消"}
+                  </Button>{" "}
+                </div>
               </div>
             </Col>
           </Row>
+
           <Col>
             <BootstrapTable
               data={employeeList}
@@ -1112,19 +1505,20 @@ class dutyManagement extends React.Component {
               striped
               hover
               condensed
+
+              // tdStyle={{ padding: ".45em" }}
             >
               <TableHeaderColumn
                 width="55"
-                tdStyle={{ padding: ".45em" }}
                 dataFormat={this.greyShow.bind(this)}
                 dataField="rowNo"
                 editable={false}
+                // hidden
               >
                 番号
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="90"
-                tdStyle={{ padding: ".45em" }}
                 dataFormat={this.greyShow.bind(this)}
                 dataField="employeeNo"
                 isKey
@@ -1133,17 +1527,15 @@ class dutyManagement extends React.Component {
                 社員番号
               </TableHeaderColumn>
               <TableHeaderColumn
-                width="120"
-                tdStyle={{ padding: ".45em" }}
-                dataFormat={this.greyShow.bind(this)}
+                width="150"
                 dataField="employeeName"
                 editable={false}
+                dataFormat={this.employeeNameFormat.bind(this)}
               >
                 氏名
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="150"
-                tdStyle={{ padding: ".45em" }}
                 dataFormat={this.greyShow.bind(this)}
                 dataField="customerName"
                 editable={false}
@@ -1151,8 +1543,7 @@ class dutyManagement extends React.Component {
                 お客様
               </TableHeaderColumn>
               <TableHeaderColumn
-                width="90"
-                tdStyle={{ padding: ".45em" }}
+                width="120"
                 dataFormat={this.greyShow.bind(this)}
                 dataField="stationName"
                 editable={false}
@@ -1161,7 +1552,6 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="95"
-                tdStyle={{ padding: ".45em" }}
                 dataFormat={this.greyShow.bind(this)}
                 dataField="payOffRange"
                 editable={false}
@@ -1170,15 +1560,14 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="90"
-                tdStyle={{ padding: ".45em" }}
                 dataField="workTime"
+                dataFormat={this.workTimeFormat.bind(this)}
                 editable={false}
               >
                 稼働時間
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="125"
-                tdStyle={{ padding: ".45em" }}
                 hidden={this.state.authorityCode === "4" ? false : true}
                 dataField="deductionsAndOvertimePay"
                 editable={
@@ -1194,7 +1583,6 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="110"
-                tdStyle={{ padding: ".45em" }}
                 dataField="deductionsAndOvertimePayOfUnitPrice"
                 editable={
                   !(
@@ -1209,7 +1597,6 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="110"
-                tdStyle={{ padding: ".45em" }}
                 dataFormat={this.checkSection.bind(this)}
                 hidden
                 dataField="checkSection"
@@ -1219,7 +1606,6 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="120"
-                tdStyle={{ padding: ".45em" }}
                 dataField="cost"
                 dataFormat={this.costFormat.bind(this)}
                 editable={false}
@@ -1228,7 +1614,6 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="160"
-                tdStyle={{ padding: ".45em" }}
                 dataField="updateTime"
                 dataFormat={this.updateTimeFormat.bind(this)}
                 editable={false}
@@ -1237,7 +1622,6 @@ class dutyManagement extends React.Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width="110"
-                tdStyle={{ padding: ".45em" }}
                 dataFormat={this.approvalStatus.bind(this)}
                 dataField="approvalStatus"
                 editable={false}
@@ -1248,7 +1632,7 @@ class dutyManagement extends React.Component {
           </Col>
         </div>
         <div className="loadingImageContainer">
-          <div className="loadingImage " hidden={this.state.loading}>
+          <div className="loadingImage" hidden={this.state.loading}>
             <Form.File
               id="getFile"
               custom

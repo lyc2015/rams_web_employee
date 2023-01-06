@@ -317,6 +317,9 @@ class workRepot extends React.Component {
         workRepotClear: true,
       });
       var TheYearMonth = publicUtils.setFullYearMonth(new Date()) - 1;
+      if(String(TheYearMonth).substring(4,6) === "00"){
+		  TheYearMonth = (Number(String(TheYearMonth).substring(0,4)) - 1) + "12";
+	  }
       this.setState({
         rowId: row.id,
         rowSelectAttendanceYearAndMonth: row.attendanceYearAndMonth,
@@ -331,6 +334,7 @@ class workRepot extends React.Component {
         rowDisabledFlag: row.disabledFlag,
       });
       if (
+
         row.attendanceYearAndMonth - 0 >= TheYearMonth &&
         row.approvalStatus !== "1"
       ) {

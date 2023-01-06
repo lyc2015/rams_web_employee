@@ -312,6 +312,7 @@ class costRegistration extends React.Component {
       remark: this.state.remark,
       employeeNo: this.state.employeeNo,
       employeeName: this.state.employeeName,
+      createTime: this.state.rowSelectCreateTime,
     };
     formData.append("emp", JSON.stringify(emp));
     formData.append(
@@ -439,6 +440,7 @@ class costRegistration extends React.Component {
             .formateDate(this.state.yearMonth, true)
             .substring(0, 6),
           employeeNo: this.state.employeeNo,
+          createTime: this.state.rowSelectCreateTime,
         };
         axios
           .post(
@@ -612,6 +614,7 @@ class costRegistration extends React.Component {
         .substring(0, 6),
       oldHappendDate: this.state.rowSelectHappendDate,
       oldCostClassificationCode: this.state.rowSelectCostClassificationCode,
+      createTime: this.state.rowSelectCreateTime,
     };
     formData.append("emp", JSON.stringify(emp));
     formData.append(
@@ -657,6 +660,7 @@ class costRegistration extends React.Component {
         rowSelectRemark: row.remark,
         rowSelectRoundCode: row.roundCode,
         rowSelectCostFile: row.costFile,
+        rowSelectCreateTime: row.createTime,
       });
       if (row.costClassificationCode === "0") {
         this.setState({
@@ -697,6 +701,7 @@ class costRegistration extends React.Component {
         rowSelectRoundCode: "",
         rowSelectCostFile: "",
         rowRemark: "",
+        rowSelectCreateTime: "",
         oldCostClassification1: "",
         oldHappendDate1: "",
         costClassification1: "",
@@ -1073,6 +1078,7 @@ class costRegistration extends React.Component {
             otherCostFile={this.state.oldCostFile}
             employeeNo={this.state.employeeNo}
             employeeName={this.state.employeeName}
+            createTime={this.state.rowSelectCreateTime}
           />
         </Modal>
         <Form>

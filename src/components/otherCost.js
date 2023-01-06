@@ -131,6 +131,7 @@ class otherCost extends React.Component {
           otherCostFilePath: this.props.otherCostFile,
           employeeNo: this.props.employeeNo,
           employeeName: this.props.employeeName,
+          createTime: this.props.createTime,
         });
       } else {
         this.setState({
@@ -149,6 +150,7 @@ class otherCost extends React.Component {
           otherCostFilePath: this.props.otherCostFile,
           employeeNo: this.props.employeeNo,
           employeeName: this.props.employeeName,
+          createTime: this.props.createTime,
         });
       }
     } else {
@@ -488,6 +490,7 @@ class otherCost extends React.Component {
         oldCostFile: this.state.oldCostFile,
         employeeNo: this.state.employeeNo,
         employeeName: this.state.employeeName,
+        createTime: this.state.createTime,
       };
       formData.append("emp", JSON.stringify(emp));
       formData.append(
@@ -571,6 +574,7 @@ class otherCost extends React.Component {
         oldCostFile: this.state.oldCostFile,
         employeeNo: this.state.employeeNo,
         employeeName: this.state.employeeName,
+        createTime: this.state.createTime,
       };
       formData.append("emp", JSON.stringify(emp));
       formData.append(
